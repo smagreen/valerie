@@ -1,4 +1,5 @@
-﻿// knockout.forms.core
+﻿///#source 1 1 knockout.forms.core.js
+// knockout.forms.core
 // (c) 2013 egrove Ltd.
 // License: MIT (http://www.opensource.org/licenses/mit-license.php)
 
@@ -136,4 +137,19 @@
 
 
     ko.forms = forms;
+})();
+///#source 1 1 knockout.forms.validators.js
+// knockout.forms.validators
+// (c) 2013 egrove Ltd.
+// License: MIT (http://www.opensource.org/licenses/mit-license.php)
+
+/// <reference path="frameworks/knockout-2.2.1.debug.js"/>
+/// <reference path="knockout.forms.core.js"/>
+
+(function () {
+    "use strict";
+
+    var validators = {};
+
+    ko.forms.validators = validators;
 })();
