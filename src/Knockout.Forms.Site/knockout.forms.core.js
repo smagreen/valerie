@@ -19,104 +19,169 @@
     (function () {
         forms.localisation = {
             "strings": {
-                "requiredRuleFailed": "An entry is required."
+                "missingMessage": "An entry is required.",
+                "invalidEntry": "The entry is invalid."
             }
         };
     });
 
-
     (function () {
-        var
-            entryValueRead = function () {
-                var formatter = this.validation.converter.formatter;
-                return formatter(this());
-            },
-            entryValueWrite = function (value) {
-                var parser = this.validation.converter.parser,
-                    parsedValue;
-                
-                if (typeof value === "undefined") {
-                    value = "";
-                }
+        var validationFailureMessageFunc = function () {
+            var testResult,
+                validation = this._ko_forms_validation;
 
-                parsedValue = parser(value);
-                
-                if (parsedValue === undefined) {
-                    this.entryValueFailedToParse(true);
-                    return;
-                }
+            // ToDo: Support formatted strings, including entry name and value.
 
-                this(parsedValue);
-            },
-            valid = function () {
-                var index,
-                    result,
-                    rule,
-                    validation = this.validation,
-                    value;
+            if (validation.missing()) {
+                return forms.localisation.strings.missingMessage;
+            }
 
-                if (this.entryValueFailedToParse) {
+            if (validation.parseFailed()) {
+                return forms.localisation.strings.invalidEntry;
+            }
+
+            testResult = validation.testResult();
+
+            if (testResult.failed) {
+                return testResult.failureMessage;
+            }
+
+            return "";
+        },
+            invalidComputation = function () {
+                var validation = this._ko_forms_validation;
+
+                if (validation.missing()) {
                     return false;
                 }
 
-                value = this();
-
-                for (index = 0; index < validation.rules.length; index++) {
-                    rule = validation.rules[index];
-                    result = rule.validate(value);
-
-                    if (!result.valid) {
-                        validation.message(result.message);
-                        return false;
-                    }
+                if (validation.parseFailed()) {
+                    return false;
                 }
 
-                validation.message("");
-                return true;
+                return !validation.testResult().failed;
+            },
+            entryValueReadFunc = function () {
+                var validation = this._ko_forms_validation;
+
+                if (this.validationFailed === false) {
+                    return validation.formattedValue();
+                }
+
+                return validation.enteredValue;
+            },
+            entryValueWriteFunc = function (value) {
+                var validation = this._ko_forms_validation;
+
+                if (validation.trimEntryValue) {
+                    // ToDo: Trim the entered value.
+                }
+
+                validation.enteredValue(value);
+            },
+            formattedValueFunc = function () {
+                var formattedValue = "",
+                    parsedValue,
+                    validation = this._ko_forms_validation;
+
+                if (validation.parseResult().failed === false) {
+                    parsedValue = validation.parseResult().value;
+                    formattedValue = validation.converter.format(parsedValue);
+                }
+
+                validation.formattedValue(formattedValue);
+            },
+            missingFunc = function () {
+                var missing,
+                    validation = this._ko_forms_validation;
+
+                missing = this.required() && (validation.enteredValue().length === 0);
+                validation.missing(missing);
+            },
+            parseResultFunc = function () {
+                var result,
+                    validation = this._ko_forms_validation;
+
+                result = validation.converter.parse(validation.enteredValue());
+
+                validation.parseResult(result);
+            },
+            testResultFunc = function () {
+                var result,
+                    validation = this._ko_forms_validation;
+
+                validation.test.subscribeToChanges();
+                result = validation.test.run(value);
+
+                validation.testResult(result);
+            },
+            valueChangedFunc = function (value) {
+                var validation = this._ko_forms_validation;
+
+                validation.value(value);
             };
 
-        ko.validatableObservable = function (value, options) {
-            var observable = (ko.utils.isObservable(value)) ? value : ko.observable(value);
+        ko.validatableObservable = function (value, validationOptions) {
+            var observable = (ko.utils.isObservable(value)) ? value : ko.observable(value),
+                validation = {
+                    // Internal state.
+                    "blurred": ko.observable(false),
+                    "formattedValue": ko.observable(""),
+                    "enteredValue": ko.observable(),
+                    "missing": ko.observable(false),
+                    "parseResult": ko.observable({ "failed": undefined, "value": undefined }),
+                    "testResult": ko.observable({ "failed": undefined, "failureMessage": "" }),
+                    "value": ko.observable(),
 
-            observable.validation = {
-                "applicable": ko.observable(true),
-                "context": forms.defaultValidationContext,
-                "converter": forms.passThroughConverter,
-                "entryValueFailedToParse": ko.observable(false),
-                "message": ko.observable(),
-                "required": ko.observable(false),
-                "rules": [],
-                "trimEntryValue": true,
-                "valid": ko.computed(valid, observable)
-            };
+                    // Options.
+                    "context": forms.defaultValidationContext,
+                    "converter": forms.passThroughConverter,
+                    "test": forms.passThroughTest,
+                    "trimEntryValue": true
+                };
+
+            ko.utils.extend(validation, validationOptions);
+            observable._ko_forms_validation = validation;
+
+            // Compute internal state. These act as cached one-way dependencies.
+            // ToDo: Determine whether to keep references for disposal later.
+            validation._formattedValue = ko.computed(formattedValueFunc, observable);
+            validation._missing = ko.computed(missingFunc, observable);
+            validation._parseResult = ko.computed(parseResultFunc, observable);
+            validation._testResult = ko.computed(testResultFunc, observable);
 
             ko.utils.extend(observable, ko.validatableObservable.fn);
-            ko.utils.extend(observable, options);
+            observable.subscribe(valueChangedFunc, observable);
 
-            observable.validation.entryValue = ko.computed({
-                "read": entryValueRead,
-                "write": entryValueWrite,
+            // Observables designed for binding.
+            observable.applicable = ko.observable(true);
+            observable.entryValue = ko.computed({
+                "read": entryValueReadFunc,
+                "write": entryValueWriteFunc,
                 "owner": observable
             });
+            observable.required = ko.observable(false);
+            observable.showValidationFailure = ko.computed(showFailureMessageFunc, observable);
+            observable.validationFailed = ko.computed(validationFailedFunc, observable);
+            observable.validationFailureMessage = ko.computed(validationFailureMessageFunc, observable);
 
             return observable;
         };
 
         ko.validatableObservable.fn = {
             "inapplicable": function () {
-                this.applicable(false);
+                this._ko_forms_validation.applicable(false);
             },
             "noTrim": function () {
-                this.trimEntryValue = false;
+                this._ko_forms_validation.trimEntryValue = false;
                 return this;
             },
             "required": function () {
-                this.entryRequired = true;
+                this._ko_forms_validation.entryRequired = true;
                 return this;
             }
         };
     });
-
 
     (function () {
         forms.ValidationContext = function (options) {
@@ -128,12 +193,23 @@
         forms.defaultValidationContext = new forms.ValidationContext();
     })();
 
-
     (function () {
-        forms.ValidationRule = function () {
+        forms.ValidationTest = function () {
+            this.subscribeToChanges = ko.observable();
         };
-    });
 
+        // ReSharper disable UnusedParameter
+        forms.ValidationTest.prototype.run = function (value) {
+
+            return {
+                "failureMessage": "",
+                "passed": true
+            };
+        };
+        // ReSharper restore UnusedParameter
+
+        forms.passThroughTest = new forms.ValidationText();
+    });
 
     ko.forms = forms;
 })();
