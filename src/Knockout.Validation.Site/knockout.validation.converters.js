@@ -8,7 +8,7 @@
 (function () {
     "use strict";
 
-    var validators = {};
+    var converters = {};
 
-    ko.validation.validators = validators;
+    ko.validation.converters = converters;
 })();

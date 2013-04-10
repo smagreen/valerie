@@ -1,17 +1,17 @@
 ﻿(function () {
     module("namespaces");
 
-    test("ko.forms exists", function () {
-        ok(typeof ko.forms === "object");
+    test("ko.validation exists", function () {
+        ok(typeof ko.validation === "object");
     });
 })();
 
 
 (function () {
-    module("ko.forms.validatableObservable");
+    module("ko.validatableObservable");
 
     test("created without options", function () {
-        var o = ko.forms.validatableObservable("");
+        var o = ko.validatableObservable("");
 
         ok(o.applicable(), "observable is applicable by default");
         strictEqual(o.validationContext, ko.forms.defaultValidationContext,
