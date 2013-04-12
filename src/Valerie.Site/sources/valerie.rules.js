@@ -3,18 +3,13 @@
 // License: MIT (http://www.opensource.org/licenses/mit-license.php)
 
 /*global valerie: false */
-/// <reference path="valerie.core.js"/>
+// <reference path="valerie.core.js"/>
 
 (function () {
     "use strict";
 
     var rules = valerie.rules,
         utils = valerie.utils;
-
-    rules.successfulTestResult = {
-        "failed": false,
-        "failedMessage": ""
-    };
 
     rules.Range = function (minimumValueOrFunction, maximumValueOrFunction, options) {
         if (arguments.length < 2 || arguments.length > 3) {
@@ -24,14 +19,8 @@
             };
         }
 
-        this.minimum = (typeof minimumValueOrFunction === "function") ?
-            minimumValueOrFunction :
-            function () { return minimumValueOrFunction; };
-
-        this.maximum = (typeof maximumValueOrFunction === "function") ?
-            maximumValueOrFunction :
-            function () { return maximumValueOrFunction; };
-
+        this.minimum = utils.asFunction(minimumValueOrFunction);
+        this.maximum = utils.asFunction(maximumValueOrFunction);
         this.options = utils.mergeOptions(rules.Range.defaultOptions, options);
     };
 

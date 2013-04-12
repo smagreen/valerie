@@ -1,12 +1,13 @@
-﻿// knockout.validation.core
+﻿// valerie.knockout
 // (c) 2013 egrove Ltd.
 // License: MIT (http://www.opensource.org/licenses/mit-license.php)
 
-/// <reference path="frameworks/knockout-2.2.1.debug.js"/>
+/*global ko: false, valerie: false */
+/// <reference path="../frameworks/knockout-2.2.1.debug.js"/>
+/// <reference path="valerie.core.js"/>
 
 (function() {
     "use strict";
-    /*global ko */
 
     if (typeof ko === "undefined") {
         throw {
@@ -15,19 +16,45 @@
         };
     }
 
-    var library = {};
+    var converters = valerie.converters,
+        rules = valerie.rules,
+        utils = valerie.utils,
+        knockout = valerie.knockout = {};
 
-    // ToDo: Support formatted strings, including entry name and value.
     (function() {
-        library.localisation = {
-            "strings": {
-                "valueMissingMessage": "An entry is required.",
-                "invalidEntry": "The entry is invalid."
-            }
+        knockout.ValidationContext = function(options) {
+            this.submissionAttempted = ko.observable(false);
+
+            ko.utils.extend(this, options);
         };
-    });
+
+        knockout.ValidationContext.default = new knockout.ValidationContext();
+    })();
 
     (function() {
+        var
+            validate = ko.observable.fn.validate = ko.computed.fn.validate = function(options) {
+            var validation;
+
+            options = utils.mergeOptions(validate.defaultOptions, options);
+            options.applicable = utils.asFunction(options.applicable);
+            options.required = utils.asFunction(options.required);
+
+            validation = this.validation = {
+                "entryValue": ko.observable(),
+                "options": options
+            };
+        };
+
+        validate.defaultOptions = {
+            "applicable": utils.asFunction(true),
+            "context": knockout.ValidationContext.default,
+            "converter": converters.passThrough,
+            "missingTest": utils.isMissing,            
+            "required": utils.asFunction(false),
+            "rule": rules.passThrough
+        };
+
         var failureMessageFunc = function() {
             var state = this._ko_validation.state,
                 testResult;
@@ -144,7 +171,8 @@
                 var result,
                     state = this._ko_validation.state;
 
-                result = this.required() && (this.().length === 0);
+                result = this.required() && (this.().length === 0)
+                ;
 
                 return (result);
             };
@@ -205,16 +233,6 @@
             }
         };
     });
-
-    (function() {
-        library.ValidationContext = function(options) {
-            this.showSubmissionErrors = ko.observable(false);
-
-            ko.utils.extend(this, options);
-        };
-
-        library.defaultValidationContext = new library.ValidationContext();
-    })();
 
     (function() {
         library.ValidationTest = function() {
