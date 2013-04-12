@@ -167,10 +167,17 @@
     };
 
     rules.Range = function (minimumValueOrFunction, maximumValueOrFunction, options) {
+        if (arguments.length < 2 || arguments.length > 3) {
+            throw {
+                "name": "ArgumentException",
+                "description": "2 or 3 arguments expected."
+            };
+        }
+
         this.minimum = (typeof minimumValueOrFunction === "function") ?
             minimumValueOrFunction :
             function () { return minimumValueOrFunction; };
-        
+
         this.maximum = (typeof maximumValueOrFunction === "function") ?
             maximumValueOrFunction :
             function () { return maximumValueOrFunction; };
@@ -179,52 +186,61 @@
     };
 
     rules.Range.defaultOptions = {
-        "failedMessageFormatWithMinimumOnly": "The value must be no less than {minimum}.",
-        "failedMessageFormatWithMaximumOnly": "The value must be no greater than {maximum}.",
+        "failedMessageFormatForMinimumOnly": "The value must be no less than {minimum}.",
+        "failedMessageFormatForMaximumOnly": "The value must be no greater than {maximum}.",
         "failedMessageFormatForRange": "The value must be between {minimum} and {maximum}.",
         "valueFormatter": valerie.converters.passThrough.formatter
     };
 
     rules.Range.prototype = {
-        "test": function(value) {
-            var failed = true,
-                failedMessage,
-                failedMessageFormat = options.failedMessageFormatForRange,
+        "test": function (value) {
+            var failedMessage,
+                failedMessageFormat = this.options.failedMessageFormatForRange,
+                maximum = this.maximum(),
                 minimum = this.minimum(),
-                maximum = this.maximum();
+                haveMaximum = maximum !== undefined && maximum !== null,
+                haveMinimum = minimum !== undefined && minimum !== null,
+                haveValue = value !== undefined && value !== null,
+                valueInsideRange = true;
 
-            if ((minimum === undefined || minimum === null) && (maximum === undefined || maximum === null)) {
+            if (!haveMaximum && !haveMinimum) {
                 return rules.successfulTestResult;
             }
 
-            if (minimum === undefined || minimum === null) {
-                failedMessageFormat = options.failedMessageFormatWithMaximumOnly;
-            }
-            
-            if (maximum === undefined || maximum === null) {
-                failedMessageFormat = options.failedMessageFormatWithMinimumOnly;
-            }
-            
-            if (value !== undefined && value !== null) {
-                failedMessage = utils.formatString(
-                    this.options.failedMessageFormat, {
-                        "maximum": this.options.valueFormatter(maximum),
-                        "value": this.options.valueFormatter(value)
-                    });
+            if (haveValue) {
+                if (haveMaximum) {
+                    valueInsideRange = value <= maximum;
+                } else {
+                    failedMessageFormat = this.options.failedMessageFormatForMinimumOnly;
+                }
 
-                return {
-                    "failed": true,
-                    "failedMessage": failedMessage
-                };
+                if (haveMinimum) {
+                    valueInsideRange = valueInsideRange && value >= minimum;
+                } else {
+                    failedMessageFormat = this.options.failedMessageFormatForMaximumOnly;
+                }
+            } else {
+                valueInsideRange = false;
             }
 
-            return rules.successfulTestResult;
+            if (valueInsideRange) {
+                return rules.successfulTestResult;
+            }
+
+            failedMessage = utils.formatString(
+                failedMessageFormat, {
+                    "maximum": this.options.valueFormatter(maximum),
+                    "minimum": this.options.valueFormatter(minimum),
+                    "value": this.options.valueFormatter(value)
+                });
+
+            return {
+                "failed": true,
+                "failedMessage": failedMessage
+            };
         }
     };
-    
-    // ToDo: After
-    // ToDo: Before
-    // ToDo: Minimum
-    // ToDo: Range
+
+    // ToDo: During (Range for dates and times).
 
 })();
