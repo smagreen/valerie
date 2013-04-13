@@ -3,21 +3,35 @@
 <head>
     <meta charset="utf-8">
     <title>Valerie Tests</title>
-    <link rel="stylesheet" type="text/css" href="frameworks/qunit-1.11.0.css">
     <style type="text/css">
-        * { font-family: "Calibri"; }
+        * {
+            font-family: "Calibri";
+        }
+
+        div {
+            float: left;
+            margin-right: 2em;
+        }
+
+        iframe {
+            width: 80%;
+            height: 800px;
+        }
     </style>
 </head>
 <body>
-    <div id="qunit"></div>
-    <div id="qunit-fixture"></div>
-    
-    <script type="text/javascript" src="frameworks/knockout-2.2.1.debug.js"></script>
-    <script type="text/javascript" src="bundles/valerie.js"></script>
-
-    <script type="text/javascript" src="frameworks/qunit-1.11.0.js"></script>
-    <script type="text/javascript" src="tests/valerie.namespace.tests.js"></script>
-    <script type="text/javascript" src="tests/valerie.rules.tests.js"></script>
-    <script type="text/javascript" src="tests/valerie.utils.tests.js"></script>
+    <h1>Valerie Tests</h1>
+    <div>
+        <ul>
+            <li><a href="core-tests.html" target="tests">Core</a></li>
+            <li><a href="knockout-core-tests.html" target="tests">Knockout (Core)</a></li>
+            <li><a href="knockout-fluent-tests.html" target="tests">Knockout (Fluent)</a></li>
+            <li><a href="rules-tests.html" target="tests">Rules</a></li>
+        </ul>
+        <ul>
+            <li><a href="knockout-scratchpad.html" target="tests">Knockout Scratchpad</a></li>
+        </ul>
+    </div>
+    <iframe name="tests"></iframe>
 </body>
 </html>

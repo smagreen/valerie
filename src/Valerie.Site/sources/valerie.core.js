@@ -1,4 +1,5 @@
 ﻿// valerie.core
+// - the core namespaces, objects and utility functions
 // (c) 2013 egrove Ltd.
 // License: MIT (http://www.opensource.org/licenses/mit-license.php)
 
@@ -94,14 +95,6 @@
             return true;
         }
 
-        if (value === "") {
-            return true;
-        }
-        
-        if (value === NaN) {
-            return true;
-        }
-
         if (value.length === 0) {
             return true;
         }
@@ -129,19 +122,19 @@
     };
 })();
 
-(function () {
+(function() {
     "use strict";
 
     var rules = valerie.rules;
-   
+
     rules.passThrough = {
-        "test": function () {
+        "test": function() {
             return rules.successfulTestResult;
         }
     };
 
     rules.successfulTestResult = {
         "failed": false,
-        "failedMessage": ""
+        "failureMessage": ""
     };
 })();

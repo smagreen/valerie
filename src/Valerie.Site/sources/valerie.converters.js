@@ -1,4 +1,5 @@
 ﻿// valerie.converters
+// - additional converters for use with valerie
 // (c) 2013 egrove Ltd.
 // License: MIT (http://www.opensource.org/licenses/mit-license.php)
 
@@ -45,5 +46,5 @@
             return value;
         }
     };
-}
-)();
+})();
+

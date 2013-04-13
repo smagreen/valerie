@@ -56,58 +56,58 @@
     });
 
     test("result includes default failure message when rule fails", function () {
-        strictEqual(new rules.Range(1, 10).test(0).failedMessage, "The value must be between 1 and 10.",
+        strictEqual(new rules.Range(1, 10).test(0).failureMessage, "The value must be between 1 and 10.",
             "message as expected with value < minimum < maximum ");
 
-        strictEqual(new rules.Range(1, 10).test(11).failedMessage, "The value must be between 1 and 10.",
+        strictEqual(new rules.Range(1, 10).test(11).failureMessage, "The value must be between 1 and 10.",
             "message as expected with value > maximum > minimum");
 
-        strictEqual(new rules.Range(1, undefined).test(0).failedMessage, "The value must be no less than 1.",
+        strictEqual(new rules.Range(1, undefined).test(0).failureMessage, "The value must be no less than 1.",
             "message as expected with value < minimum");
 
-        strictEqual(new rules.Range(undefined, 10).test(11).failedMessage, "The value must be no greater than 10.",
+        strictEqual(new rules.Range(undefined, 10).test(11).failureMessage, "The value must be no greater than 10.",
             "message as expected with value > maximum");
     });
 
     test("result includes changed default failure message when rule fails", function () {
         rules.Range.defaultOptions = {
-            "failedMessageFormatForMinimumOnly": "{value} < {minimum}.",
-            "failedMessageFormatForMaximumOnly": "{value} > {maximum}.",
-            "failedMessageFormatForRange": "!({minimum} >= {value} <= {maximum}).",
+            "failureMessageFormatForMinimumOnly": "{value} < {minimum}.",
+            "failureMessageFormatForMaximumOnly": "{value} > {maximum}.",
+            "failureMessageFormatForRange": "!({minimum} >= {value} <= {maximum}).",
             "valueFormatter": valerie.converters.passThrough.formatter
         };
         
-        strictEqual(new rules.Range(1, 10).test(0).failedMessage, "!(1 >= 0 <= 10).",
+        strictEqual(new rules.Range(1, 10).test(0).failureMessage, "!(1 >= 0 <= 10).",
             "message as expected with value < minimum < maximum ");
 
-        strictEqual(new rules.Range(1, 10).test(11).failedMessage, "!(1 >= 11 <= 10).",
+        strictEqual(new rules.Range(1, 10).test(11).failureMessage, "!(1 >= 11 <= 10).",
             "message as expected with value > maximum > minimum");
 
-        strictEqual(new rules.Range(1, undefined).test(0).failedMessage, "0 < 1.",
+        strictEqual(new rules.Range(1, undefined).test(0).failureMessage, "0 < 1.",
             "message as expected with value < minimum");
 
-        strictEqual(new rules.Range(undefined, 10).test(11).failedMessage, "11 > 10.",
+        strictEqual(new rules.Range(undefined, 10).test(11).failureMessage, "11 > 10.",
             "message as expected with value > maximum");
     });
     
     test("result includes overridden failure messages when rule fails", function () {
         var options = {
-            "failedMessageFormatForMinimumOnly": "OMG! {value} < {minimum}.",
-            "failedMessageFormatForMaximumOnly": "OMG! {value} > {maximum}.",
-            "failedMessageFormatForRange": "OMG! !({minimum} >= {value} <= {maximum}).",
+            "failureMessageFormatForMinimumOnly": "OMG! {value} < {minimum}.",
+            "failureMessageFormatForMaximumOnly": "OMG! {value} > {maximum}.",
+            "failureMessageFormatForRange": "OMG! !({minimum} >= {value} <= {maximum}).",
             "valueFormatter": valerie.converters.passThrough.formatter
         };
 
-        strictEqual(new rules.Range(1, 10, options).test(0).failedMessage, "OMG! !(1 >= 0 <= 10).",
+        strictEqual(new rules.Range(1, 10, options).test(0).failureMessage, "OMG! !(1 >= 0 <= 10).",
             "message as expected with value < minimum < maximum ");
 
-        strictEqual(new rules.Range(1, 10, options).test(11).failedMessage, "OMG! !(1 >= 11 <= 10).",
+        strictEqual(new rules.Range(1, 10, options).test(11).failureMessage, "OMG! !(1 >= 11 <= 10).",
             "message as expected with value > maximum > minimum");
 
-        strictEqual(new rules.Range(1, undefined, options).test(0).failedMessage, "OMG! 0 < 1.",
+        strictEqual(new rules.Range(1, undefined, options).test(0).failureMessage, "OMG! 0 < 1.",
             "message as expected with value < minimum");
 
-        strictEqual(new rules.Range(undefined, 10, options).test(11).failedMessage, "OMG! 11 > 10.",
+        strictEqual(new rules.Range(undefined, 10, options).test(11).failureMessage, "OMG! 11 > 10.",
             "message as expected with value > maximum");
     });
 

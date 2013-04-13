@@ -25,16 +25,16 @@
     };
 
     rules.Range.defaultOptions = {
-        "failedMessageFormatForMinimumOnly": "The value must be no less than {minimum}.",
-        "failedMessageFormatForMaximumOnly": "The value must be no greater than {maximum}.",
-        "failedMessageFormatForRange": "The value must be between {minimum} and {maximum}.",
+        "failureMessageFormatForMinimumOnly": "The value must be no less than {minimum}.",
+        "failureMessageFormatForMaximumOnly": "The value must be no greater than {maximum}.",
+        "failureMessageFormatForRange": "The value must be between {minimum} and {maximum}.",
         "valueFormatter": valerie.converters.passThrough.formatter
     };
 
     rules.Range.prototype = {
         "test": function (value) {
-            var failedMessage,
-                failedMessageFormat = this.options.failedMessageFormatForRange,
+            var failureMessage,
+                failureMessageFormat = this.options.failureMessageFormatForRange,
                 maximum = this.maximum(),
                 minimum = this.minimum(),
                 haveMaximum = maximum !== undefined && maximum !== null,
@@ -50,13 +50,13 @@
                 if (haveMaximum) {
                     valueInsideRange = value <= maximum;
                 } else {
-                    failedMessageFormat = this.options.failedMessageFormatForMinimumOnly;
+                    failureMessageFormat = this.options.failureMessageFormatForMinimumOnly;
                 }
 
                 if (haveMinimum) {
                     valueInsideRange = valueInsideRange && value >= minimum;
                 } else {
-                    failedMessageFormat = this.options.failedMessageFormatForMaximumOnly;
+                    failureMessageFormat = this.options.failureMessageFormatForMaximumOnly;
                 }
             } else {
                 valueInsideRange = false;
@@ -66,8 +66,8 @@
                 return rules.successfulTestResult;
             }
 
-            failedMessage = utils.formatString(
-                failedMessageFormat, {
+            failureMessage = utils.formatString(
+                failureMessageFormat, {
                     "maximum": this.options.valueFormatter(maximum),
                     "minimum": this.options.valueFormatter(minimum),
                     "value": this.options.valueFormatter(value)
@@ -75,11 +75,10 @@
 
             return {
                 "failed": true,
-                "failedMessage": failedMessage
+                "failureMessage": failureMessage
             };
         }
     };
 
     // ToDo: During (Range for dates and times).
-
 })();
