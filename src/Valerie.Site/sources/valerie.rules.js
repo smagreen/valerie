@@ -13,10 +13,7 @@
 
     rules.Range = function (minimumValueOrFunction, maximumValueOrFunction, options) {
         if (arguments.length < 2 || arguments.length > 3) {
-            throw {
-                "name": "ArgumentException",
-                "description": "2 or 3 arguments expected."
-            };
+            throw "2 or 3 arguments expected.";
         }
 
         this.minimum = utils.asFunction(minimumValueOrFunction);

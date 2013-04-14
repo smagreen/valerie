@@ -1,5 +1,5 @@
 ﻿// valerie.knockout.core
-// - the core namespaces and objects for using valerie with knockoutjs
+// - the core namespaces and objects for using valerie with knockout
 // (c) 2013 egrove Ltd.
 // License: MIT (http://www.opensource.org/licenses/mit-license.php)
 
@@ -11,16 +11,16 @@
     var statePropertyName = "__valerie_knockout_state";
 
     if (typeof ko === "undefined") {
-        throw {
-            "name": "DependencyException",
-            "message": "KnockoutJS is required. Please reference it before referencing this library."
-        };
+        throw "KnockoutJS is required. Please reference it before referencing this library.";
     }
 
     // Define functions for getting, setting and testing the existence of the underlying validation state.
     valerie.knockout = {
         "getState": function (observableOrComputed) {
             return observableOrComputed[statePropertyName];
+        },
+        "hasState": function (observableOrComputed) {
+            return observableOrComputed.hasOwnProperty(statePropertyName);
         },
         "setState": function (observableOrComputed, state) {
             observableOrComputed[statePropertyName] = state;
@@ -69,7 +69,7 @@
 
                 return {
                     "failed": true,
-                    "failureMessage": "A value is required."
+                    "failureMessage": this.options.missing
                 };
             },
                 ruleResultFunction = function () {
@@ -122,15 +122,16 @@
             // - options can be modified using a fluent interface
             knockout.ValidationState = function (observableOrComputed, options) {
                 options = utils.mergeOptions(knockout.ValidationState.defaultOptions, options);
+                options.applicable = utils.asFunction(options.applicable);
+                options.required = utils.asFunction(options.required);
                 this.options = options;
 
                 this.binding = {
+                    "active": false,
                     "result": ko.observable(knockout.ValidationResult.success)
                 };
 
                 this.observableOrComputed = observableOrComputed;
-                knockout.setState(observableOrComputed, this);
-
                 this.failed = ko.computed(failedFunction, this, { "deferEvaluation": true });
                 this.message = ko.computed(messageFunction, this, { "deferEvaluation": true });
                 this.passed = ko.computed(passedFunction, this, { "deferEvaluation": true });
@@ -140,15 +141,23 @@
         })();
 
         knockout.ValidationState.prototype = {
-            "end": function() {
-                return this.observableOrComputed;
-            },
-            "inapplicable": function () {
-                this.options.applicable = utils.asFunction(false);
+            "applicable": function (valueOrFunction) {
+                if (valueOrFunction === undefined) {
+                    valueOrFunction = true;
+                }
+
+                this.options.applicable = utils.asFunction(valueOrFunction);
                 return this;
             },
-            "required": function () {
-                this.options.required = utils.asFunction(true);
+            "end": function () {
+                return this.observableOrComputed;
+            },
+            "required": function (valueOrFunction) {
+                if (valueOrFunction === undefined) {
+                    valueOrFunction = true;
+                }
+
+                this.options.required = utils.asFunction(valueOrFunction);
                 return this;
             }
         };
@@ -157,24 +166,18 @@
             "applicable": utils.asFunction(true),
             "context": knockout.ValidationContext.defaultContext,
             "converter": converters.passThrough,
+            "invalidEntryFailureMessage": "The value entered is invalid.",
+            "missingFailureMessage": "A value is required.",
             "missingTest": utils.isMissing,
             "required": utils.asFunction(false),
             "rule": rules.passThrough
         };
     })();
 
-    // Initialises the valerie.knockout library.
-    // - the name of the extension function attached to observables and computeds can be defined
-    knockout.initialise = function (initialisationOptions) {
-        var fnName,
-            validationFunction;
+    (function () {
+        var extensionFunctionName = "validation";
 
-        initialisationOptions = utils.mergeOptions({
-            "fnName": "validation"
-        }, initialisationOptions);
-
-        // The extension function attached to observables and computeds to read or initialise the validation state.
-        validationFunction = function (validationOptions) {
+        ko.observable.fn[extensionFunctionName] = ko.computed.fn[extensionFunctionName] = function (validationOptions) {
             var state = knockout.getState(this);
 
             // Return any existing validation state.
@@ -183,12 +186,10 @@
             }
 
             state = new knockout.ValidationState(this, validationOptions);
+            knockout.setState(this, state);
 
             // Return the validation state after creation, so it can be modified fluently.
             return state;
         };
-
-        fnName = initialisationOptions.fnName;
-        ko.observable.fn[fnName] = ko.computed.fn[fnName] = validationFunction;
-    };
+    })();
 })();

@@ -7,5 +7,6 @@
   <file>../sources/valerie.converters.js</file>
   <file>../sources/valerie.rules.js</file>
   <file>../sources/valerie.knockout.core.js</file>
+  <file>../sources/valerie.knockout.bindings.js</file>
   <file>../sources/valerie.knockout.fluent.js</file>
 </bundle>

@@ -22,11 +22,31 @@
         <form>
             <div>
                 <label>
-                    House Price
-                        <input data-bind="value: housePrice" /></label>
-                <span data-bind="text: housePrice.validation().message(), visible: housePrice.validation().failed()"></span>
+                    <input data-bind="checked: houseType" name="houseType" type="radio" value="Terraced" />
+                    Terraced
+                </label>
+                <label>
+                    <input data-bind="checked: houseType" name="houseType" type="radio" value="Semi Detached" />
+                    Semi Detached</label>
+                <label>
+                    <input data-bind="checked: houseType" name="houseType" type="radio" value="Detached" />
+                    Detached</label>
+                <span data-bind="visibleWhenInvalid: houseType">An option must be selected.</span>
+
             </div>
-            <div data-bind="visible: housePrice.validation().passed()">
+            <div>
+                <label>
+                    House Price
+                        <input data-bind="validatedValue: housePrice" /></label>
+                <span data-bind="text: housePrice.validation().message(), visibleWhenInvalid: housePrice"></span>
+            </div>
+            <div>
+                <input type="button" value="Small House" data-bind="click: function () { housePrice(125000); }" />
+                <input type="button" value="Large House" data-bind="click: function () { housePrice(250000); }" />
+                <input type="button" value="Big House" data-bind="click: function () { housePrice(500000); }" />
+                <input type="button" value="Too Big a House" data-bind="click: function () { housePrice(750000); }" />
+            </div>
+            <div data-bind="visibleWhenValid: housePrice">
                 <p>
                     You can borrow between: &pound;<strong data-bind="text: loanAmountMin"></strong> and
                         &pound;<strong data-bind="text: loanAmountMax"></strong>.
@@ -34,8 +54,8 @@
                 <div>
                     <label>
                         Loan Amount
-                            <input data-bind="value: loanAmount" /></label>
-                    <span data-bind="text: loanAmount.validation().message(), visible: loanAmount.validation().failed()"></span>
+                            <input data-bind="validatedValue: loanAmount" /></label>
+                    <span data-bind="text: loanAmount.validation().message(), visibleWhenInvalid: loanAmount"></span>
                 </div>
             </div>
         </form>
@@ -44,24 +64,31 @@
     <script type="text/javascript" src="bundles/valerie-for-knockout.js"></script>
     <script type="text/javascript">
         window.onload = function () {
-            valerie.knockout.initialise();
-
-            var housePrice = ko.observable(150000).validation()
+            var viewModel,
+                validationState,
+                housePrice = ko.observable(150000).validation()
+                .integer()
                 .required()
                 .between(75000, 500000)
                 .end(),
                 loanAmountMin = ko.computed(function () { return housePrice() / 4; }),
                 loanAmountMax = ko.computed(function () { return (housePrice() * 3) / 4; });
 
-            var viewModel = {
+            viewModel = {
+                "houseType": ko.observable(),
                 "housePrice": housePrice,
                 "loanAmount": ko.observable(20000).validation()
+                    .integer()
                     .required()
                     .between(loanAmountMin, loanAmountMax)
                     .end(),
                 "loanAmountMin": loanAmountMin,
                 "loanAmountMax": loanAmountMax
             };
+
+            // Initialising validation non-fluently.
+            validationState = new valerie.knockout.ValidationState(viewModel.houseType, { "required": true });
+            valerie.knockout.setState(viewModel.houseType, validationState);
 
             ko.applyBindings(viewModel, document.getElementById("view"));
         };

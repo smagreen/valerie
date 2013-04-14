@@ -164,11 +164,17 @@
         },
         "parser": function (value) {
             if (value === undefined || value === null) {
-                return NaN;
+                return undefined;
+            }
+            
+            // ToDo: Change this very noddy, permissive implementation.
+            var parsedValue = parseInt(value, 10);
+            
+            if (isNaN(parsedValue)) {
+                return undefined;
             }
 
-            // ToDo: Change this very noddy, permissive implementation.
-            return parseInt(value, 10);
+            return parsedValue;
         }
     };
 
@@ -183,7 +189,7 @@
 
         "parser": function (value) {
             if (value === undefined || value === null) {
-                return "";
+                return undefined;
             }
 
             return value;
@@ -208,10 +214,7 @@
 
     rules.Range = function (minimumValueOrFunction, maximumValueOrFunction, options) {
         if (arguments.length < 2 || arguments.length > 3) {
-            throw {
-                "name": "ArgumentException",
-                "description": "2 or 3 arguments expected."
-            };
+            throw "2 or 3 arguments expected.";
         }
 
         this.minimum = utils.asFunction(minimumValueOrFunction);

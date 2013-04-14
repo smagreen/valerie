@@ -21,11 +21,17 @@
         },
         "parser": function (value) {
             if (value === undefined || value === null) {
-                return NaN;
+                return undefined;
+            }
+            
+            // ToDo: Change this very noddy, permissive implementation.
+            var parsedValue = parseInt(value, 10);
+            
+            if (isNaN(parsedValue)) {
+                return undefined;
             }
 
-            // ToDo: Change this very noddy, permissive implementation.
-            return parseInt(value, 10);
+            return parsedValue;
         }
     };
 
@@ -40,7 +46,7 @@
 
         "parser": function (value) {
             if (value === undefined || value === null) {
-                return "";
+                return undefined;
             }
 
             return value;

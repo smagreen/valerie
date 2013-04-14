@@ -1,6 +1,4 @@
 ﻿(function () {
-    valerie.knockout.initialise();
-
     //#region Namespace
 
     module("valerie.knockout.namespace");

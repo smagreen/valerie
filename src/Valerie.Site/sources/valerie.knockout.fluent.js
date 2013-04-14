@@ -12,11 +12,17 @@
 (function () {
     "use strict";
 
-    var prototype = valerie.knockout.ValidationState.prototype,
+    var converters = valerie.converters,
+        prototype = valerie.knockout.ValidationState.prototype,
         rules = valerie.rules;
 
     prototype.between = function (minimumValueOrFunction, maximumValueOrFunction) {
         this.options.rule = new rules.Range(minimumValueOrFunction, maximumValueOrFunction);
+        return this;
+    };
+
+    prototype.integer = function () {
+        this.options.converter = converters.integer;
         return this;
     };
 })();

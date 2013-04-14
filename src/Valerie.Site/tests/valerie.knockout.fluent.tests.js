@@ -1,6 +1,4 @@
 ﻿(function () {
-    valerie.knockout.initialise();
-
     //#region Fluent
 
     module("valerie.knockout.fluent.between");
