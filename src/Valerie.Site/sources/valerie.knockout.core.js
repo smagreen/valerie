@@ -69,7 +69,7 @@
 
                 return {
                     "failed": true,
-                    "failureMessage": this.options.missing
+                    "failureMessage": this.options.missingFailureMessage
                 };
             },
                 ruleResultFunction = function () {
