@@ -1,4 +1,6 @@
-﻿///#source 1 1 ../sources/valerie.core.js
+﻿///#source 1 1 valerie-for-knockout.license.js
+"valerie for knockout (c) 2013 egrove Ltd. License: MIT (http://www.opensource.org/licenses/mit-license.php)";
+///#source 1 1 ../sources/valerie.core.js
 // valerie.core
 // - the core namespaces, objects and utility functions
 // (c) 2013 egrove Ltd.
@@ -142,7 +144,7 @@
 
 ///#source 1 1 ../sources/valerie.converters.js
 // valerie.converters
-// - additional converters for use with valerie
+// - general purpose converters for use with valerie
 // (c) 2013 egrove Ltd.
 // License: MIT (http://www.opensource.org/licenses/mit-license.php)
 
@@ -200,6 +202,7 @@
 
 ///#source 1 1 ../sources/valerie.rules.js
 // valerie.rules
+// - general purpose rules for use with valerie
 // (c) 2013 egrove Ltd.
 // License: MIT (http://www.opensource.org/licenses/mit-license.php)
 
