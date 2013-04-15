@@ -37,7 +37,7 @@
             <div>
                 <label>
                     House Price
-                        <input data-bind="validatedValue: housePrice" /></label>
+                    <input data-bind="validatedValue: housePrice" /></label>
                 <span data-bind="text: housePrice.validation().message(), visibleWhenInvalid: housePrice"></span>
             </div>
             <div>
@@ -49,16 +49,17 @@
             <div data-bind="visibleWhenValid: housePrice">
                 <p>
                     You can borrow between: &pound;<strong data-bind="text: loanAmountMin"></strong> and
-                        &pound;<strong data-bind="text: loanAmountMax"></strong>.
+                    &pound;<strong data-bind="text: loanAmountMax"></strong>.
                 </p>
                 <div>
                     <label>
                         Loan Amount
-                            <input data-bind="validatedValue: loanAmount" /></label>
+                        <input data-bind="validatedValue: loanAmount" /></label>
                     <span data-bind="text: loanAmount.validation().message(), visibleWhenInvalid: loanAmount"></span>
                 </div>
             </div>
         </form>
+        <pre data-bind="text: JSON.stringify(ko.toJS($data), null, 2)"></pre>
     </div>
     <script type="text/javascript" src="frameworks/knockout-2.2.1.debug.js"></script>
     <script type="text/javascript" src="bundles/valerie-for-knockout.js"></script>
