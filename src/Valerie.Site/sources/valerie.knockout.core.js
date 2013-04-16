@@ -41,10 +41,14 @@
         // - aggregates validatable observables or computeds
         // - records whether an attempt has been made to submit them
         // - ToDo: can be used to determine if any them are invalid
-        knockout.ValidationContext = function (options) {
+        knockout.ValidationContext = function () {
+            this.status = ko.observableArray();
             this.submissionAttempted = ko.observable(false);
+        };
 
-            ko.utils.extend(this, options);
+        knockout.ValidationContext.prototype = {
+            "anyFailed": function () {
+            }
         };
 
         knockout.ValidationContext.defaultContext = new knockout.ValidationContext();
