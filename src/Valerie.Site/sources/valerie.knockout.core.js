@@ -140,6 +140,7 @@
             };
         })();
 
+        // Add methods for modifying state in a fluent manner.
         knockout.ValidationState.prototype = {
             "applicable": function (valueOrFunction) {
                 if (valueOrFunction === undefined) {
