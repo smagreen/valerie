@@ -1,4 +1,4 @@
-﻿///#source 1 1 valerie-for-knockout.license.js
+﻿///#source 1 1 ../bundles/valerie-for-knockout.license.js
 "valerie for knockout (c) 2013 egrove Ltd. License: MIT (http://www.opensource.org/licenses/mit-license.php)";
 ///#source 1 1 ../sources/valerie.core.js
 // valerie.core
@@ -324,6 +324,31 @@
         utils = valerie.utils;
 
     (function () {
+        // pausableComputed factory function
+        // - a Knockout computed whose evaluation can be paused and resumed
+        var pausableComputed = function (evaluatorFunction, evaluatorFunctionTarget, options) {
+            var lastValue,
+                paused = ko.observable(false),
+                computed = ko.computed(function () {
+                    if (paused()) {
+                        return lastValue;
+                    }
+
+                    return evaluatorFunction.call(evaluatorFunctionTarget);
+                }, evaluatorFunctionTarget, options);
+
+            computed.pause = function () {
+                lastValue = this();
+                paused(true);
+            }.bind(computed);
+
+            computed.resume = function () {
+                paused(false);
+            };
+
+            return computed;
+        };
+
         // ValidationContext
         // - aggregates validatable observables or computeds
         // - records whether an attempt has been made to submit them
@@ -405,7 +430,7 @@
                 },
                 showMessageFunction = function () {
                     return this.binding.result().failed ||
-                        (this.options.context.submissionAttempted() && failedFunction.apply(this));
+                        (this.touched() && failedFunction.apply(this));
                 };
 
             // Constructor Function
@@ -418,16 +443,18 @@
                 this.options = options;
 
                 this.binding = {
-                    "active": false,
-                    "result": ko.observable(knockout.ValidationResult.success)
+                    "focused": false,
+                    "result": ko.observable(knockout.ValidationResult.success),
+                    "textualInput": false
                 };
 
                 this.observableOrComputed = observableOrComputed;
                 this.failed = ko.computed(failedFunction, this, { "deferEvaluation": true });
-                this.message = ko.computed(messageFunction, this, { "deferEvaluation": true });
+                this.message = pausableComputed(messageFunction, this, { "deferEvaluation": true });
                 this.passed = ko.computed(passedFunction, this, { "deferEvaluation": true });
                 this.result = ko.computed(resultFunction, this, { "deferEvaluation": true });
-                this.showMessage = ko.computed(showMessageFunction, this, { "deferEvaluation": true });
+                this.showMessage = pausableComputed(showMessageFunction, this, { "deferEvaluation": true });
+                this.touched = ko.observable(false);
             };
         })();
 
@@ -439,6 +466,7 @@
                 }
 
                 this.options.applicable = utils.asFunction(valueOrFunction);
+
                 return this;
             },
             "end": function () {
@@ -450,6 +478,7 @@
                 }
 
                 this.options.required = utils.asFunction(valueOrFunction);
+
                 return this;
             }
         };
@@ -458,6 +487,7 @@
             "applicable": utils.asFunction(true),
             "context": knockout.ValidationContext.defaultContext,
             "converter": converters.passThrough,
+            "defaultValue": undefined,
             "invalidEntryFailureMessage": "The value entered is invalid.",
             "missingFailureMessage": "A value is required.",
             "missingTest": utils.isMissing,
@@ -485,6 +515,7 @@
         };
     })();
 })();
+
 ///#source 1 1 ../sources/valerie.knockout.bindings.js
 // valerie.knockout.bindings
 // - knockout bindings that use valerie
@@ -498,98 +529,13 @@
 (function () {
     "use strict";
 
-    var knockout = valerie.knockout;
-
-    // validatedValue binding
-    (function () {
-        var validatedValueBlurHandler = function (element, observableOrComputed) {
-            var validationState = knockout.getState(observableOrComputed);
-
-            if (validationState.binding.active) {
-                validationState.binding.active = false;
-
-                if (validationState.binding.result.peek().failed) {
-                    return;
-                }
-
-                element.value = validationState.options.converter.formatter(observableOrComputed());
-            }
-        },
-            validatedValueKeyUpHandler = function (event, element, observableOrComputed) {
-                var enteredValue = ko.utils.stringTrim(element.value),
-                    parsedValue,
-                    validationState = knockout.getState(observableOrComputed),
-                    options = validationState.options;
-
-                validationState.binding.active = true;
-
-                if (enteredValue.length === 0 && options.required()) {
-                    validationState.binding.result(new knockout.ValidationResult(true, options.missingFailureMessage));
-                    return;
-                }
-
-                parsedValue = options.converter.parser(enteredValue);
-                if (parsedValue === undefined) {
-                    validationState.binding.result(new knockout.ValidationResult(true, options.invalidEntryFailureMessage));
-                    return;
-                }
-
-                validationState.binding.result(knockout.ValidationResult.success);
-                observableOrComputed(parsedValue);
-            };
-
-        ko.bindingHandlers.validatedValue = {
-            "init": function (element, valueAccessor) {
-                var observableOrComputed = valueAccessor(),
-                    tagName = element.tagName.toLowerCase();
-
-                if (!((tagName === "input" && element.type.toLowerCase() === "text") || tagName === "textarea")) {
-                    throw "The 'validatedValue' binding can only be applied to text input and text area elements.";
-                }
-
-                if (!knockout.hasState(observableOrComputed)) {
-                    throw "The 'validatedValue' binding can only be applied to validatable observables or computeds.";
-                }
-
-                // Closures to capture the element and observable or computed.
-                ko.utils.registerEventHandler(element, "blur", function () {
-                    validatedValueBlurHandler(element, observableOrComputed);
-                });
-
-                ko.utils.registerEventHandler(element, "keyup", function (event) {
-                    validatedValueKeyUpHandler(event, element, observableOrComputed);
-                });
-            },
-            "update": function (element, valueAccessor) {
-                var observableOrComputed = valueAccessor(),
-                    validationState = knockout.getState(observableOrComputed);
-
-                // Prevent the model from updating the element's value if this binding is "active".
-                if (validationState.binding.active) {
-                    return;
-                }
-
-                validationState.binding.result(knockout.ValidationResult.success);
-                element.value = validationState.options.converter.formatter(observableOrComputed());
-            }
-        };
-    })();
-
-    // visibleWhenValid and visibleWhenInvalid bindings.
-    (function () {
-        var visibleDependingOnValidity = function (element, valueAccessor, determineVisibilityFunction) {
-            var currentVisibility,
-                newVisibility,
-                observableOrComputed = valueAccessor(),
-                validationState;
-
-            if (!knockout.hasState(observableOrComputed))
-                return;
-
-            validationState = knockout.getState(observableOrComputed);
-            currentVisibility = (element.style.display !== "none");
-            newVisibility = determineVisibilityFunction(validationState);
-
+    var knockout = valerie.knockout,
+        checkedBindingHandler = ko.bindingHandlers.checked,
+        validatedCheckedBindingHandler,
+        valueBindingHandler = ko.bindingHandlers.value,
+        validatedValueBindingHandler,
+        setElementVisibility = function (element, newVisibility) {
+            var currentVisibility = (element.style.display !== "none");
             if (currentVisibility === newVisibility) {
                 return;
             }
@@ -597,6 +543,220 @@
             element.style.display = (newVisibility) ? "" : "none";
         };
 
+    // Define validatedChecked and validatedValue binding handlers.
+    (function () {
+        var blurHandler = function (element, observableOrComputed) {
+            var validationState = knockout.getState(observableOrComputed);
+
+            validationState.touched(true);
+            validationState.binding.focused = false;
+            validationState.message.resume();
+            validationState.showMessage.resume();
+        },
+            textEntryBlurHandler = function (element, observableOrComputed) {
+                var validationState = knockout.getState(observableOrComputed);
+
+                if (validationState.binding.result.peek().failed) {
+                    return;
+                }
+
+                element.value = validationState.options.converter.formatter(observableOrComputed.peek());
+            },
+            textEntryFocusHandler = function (element, observableOrComputed) {
+                var validationState = knockout.getState(observableOrComputed);
+
+                validationState.binding.focused = true;
+                validationState.showMessage.pause();
+                validationState.message.pause();
+            },
+            textEntryKeyUpHandler = function (element, observableOrComputed) {
+                var enteredValue = ko.utils.stringTrim(element.value),
+                    parsedValue,
+                    validationState = knockout.getState(observableOrComputed),
+                    options = validationState.options;
+
+                if (enteredValue.length === 0 && options.required()) {
+                    validationState.binding.result(new knockout.ValidationResult(true, options.missingFailureMessage));
+
+                    observableOrComputed(validationState.options.defaultValue);
+
+                    return;
+                }
+
+                parsedValue = options.converter.parser(enteredValue);
+
+                if (parsedValue === undefined) {
+                    validationState.binding.result(new knockout.ValidationResult(true,
+                        options.invalidEntryFailureMessage));
+
+                    observableOrComputed(validationState.options.defaultValue);
+
+                    return;
+                }
+
+                validationState.binding.result(knockout.ValidationResult.success);
+                observableOrComputed(parsedValue);
+            };
+
+        // validatedChecked binding handler
+        // - functions in the same way as the replaced "checked" binding handler
+        // - registers a blur event handler so validation messages for missing selections can be displayed
+        validatedCheckedBindingHandler = ko.bindingHandlers.validatedChecked = {
+            "init": function (element, valueAccessor, allBindingsAccessor, viewModel, bindingContext) {
+                var observableOrComputed = valueAccessor();
+
+                checkedBindingHandler.init(element, valueAccessor, allBindingsAccessor, viewModel,
+                    bindingContext);
+
+                if (knockout.hasState(observableOrComputed)) {
+                    ko.utils.registerEventHandler(element, "blur", function () {
+                        blurHandler(element, observableOrComputed);
+                    });
+                }
+            },
+            "update": checkedBindingHandler.update
+        };
+
+        // validatedValue binding handler
+        // - with the exception of textual inputs, functions in the same way as the replaced "value" binding handler
+        // - registers a blur event handler so validation messages for completed entries or selections can be displayed
+        // - registers a blur event handler to reformat parsed textual entries
+        validatedValueBindingHandler = ko.bindingHandlers.validatedValue = {
+            "init": function (element, valueAccessor, allBindingsAccessor, viewModel, bindingContext) {
+                var observableOrComputed = valueAccessor(),
+                    hasValidationState = knockout.hasState(observableOrComputed),
+                    tagName = ko.utils.tagNameLower(element),
+                    textualInput,
+                    validationState;
+
+                if (!hasValidationState) {
+                    valueBindingHandler.init(element, valueAccessor, allBindingsAccessor, viewModel,
+                        bindingContext);
+
+                    return;
+                }
+
+                ko.utils.registerEventHandler(element, "blur", function () {
+                    blurHandler(element, observableOrComputed);
+                });
+
+                textualInput = (tagName === "input" && element.type.toLowerCase() === "text") || tagName === "textarea";
+
+                if (!textualInput) {
+                    valueBindingHandler.init(element, valueAccessor, allBindingsAccessor, viewModel,
+                        bindingContext);
+
+                    return;
+                }
+
+                validationState = knockout.getState(observableOrComputed);
+                validationState.binding.textualInput = true;
+
+                ko.utils.registerEventHandler(element, "blur", function () {
+                    textEntryBlurHandler(element, observableOrComputed);
+                });
+
+                ko.utils.registerEventHandler(element, "focus", function () {
+                    textEntryFocusHandler(element, observableOrComputed);
+                });
+
+                ko.utils.registerEventHandler(element, "keyup", function () {
+                    textEntryKeyUpHandler(element, observableOrComputed);
+                });
+            },
+            "update": function (element, valueAccessor, allBindingsAccessor, viewModel, bindingContext) {
+                var observableOrComputed = valueAccessor(),
+                    validationState,
+                    value;
+
+                if (!knockout.hasState(observableOrComputed)) {
+                    valueBindingHandler.update(element, valueAccessor, allBindingsAccessor, viewModel,
+                        bindingContext);
+
+                    return;
+                }
+
+                // Always get the value so this function becomes dependent on the observable or computed.
+                value = observableOrComputed();
+
+                validationState = knockout.getState(observableOrComputed);
+
+                if (!validationState.binding.textualInput) {
+                    valueBindingHandler.update(element, valueAccessor, allBindingsAccessor, viewModel,
+                        bindingContext);
+
+                    return;
+                }
+
+                // Prevent a focused element from being updated by the model.
+                if (validationState.binding.focused) {
+                    return;
+                }
+
+                validationState.binding.result(knockout.ValidationResult.success);
+                element.value = validationState.options.converter.formatter(value);
+            }
+        };
+
+        // Record the original binding handlers.
+        knockout.originalBindingHandlers = {
+            "checked": checkedBindingHandler,
+            "value": valueBindingHandler
+        };
+
+        // Explicitly make available the replacement binding handlers.
+        knockout.replacementBindingHandlers = {
+            "checked": validatedCheckedBindingHandler,
+            "value": validatedValueBindingHandler
+        };
+
+        // Replaces the original "checked" and "value" binding handlers with validated equivalents.
+        knockout.useValidatedBindingHandlers = function () {
+            ko.bindingHandlers.checked = validatedCheckedBindingHandler;
+            ko.bindingHandlers.value = validatedValueBindingHandler;
+        };
+
+        // Restores the original "checked" and "value" binding handlers.
+        knockout.useOriginalBindingHandlers = function () {
+            ko.bindingHandlers.checked = checkedBindingHandler;
+            ko.bindingHandlers.value = valueBindingHandler;
+        };
+    })();
+
+    // validationMessage binding handler
+    // - makes the bound element visible if the value is invalid
+    // - sets the text of the bound element to be the validation message
+    ko.bindingHandlers.validationMessage = {
+        "update": function (element, valueAccessor) {
+            var observableOrComputed = valueAccessor(),
+                validationState = knockout.getState(observableOrComputed);
+
+            if (!knockout.hasState(observableOrComputed))
+                return;
+
+            setElementVisibility(element, validationState.showMessage());
+            ko.utils.setTextContent(element, validationState.message());
+        }
+    };
+
+    // visibility binding handlers
+    (function () {
+        var visibleDependingOnValidity = function (element, valueAccessor, determineVisibilityFunction) {
+            var newVisibility,
+                observableOrComputed = valueAccessor(),
+                validationState;
+
+            if (!knockout.hasState(observableOrComputed))
+                return;
+
+            validationState = knockout.getState(observableOrComputed);
+            newVisibility = determineVisibilityFunction(validationState);
+
+            setElementVisibility(element, newVisibility);
+        };
+
+        // visibleWhenInvalid binding handler
+        // - makes the bound element visible if the value is invalid, invisible otherwise
         ko.bindingHandlers.visibleWhenInvalid = {
             "update": function (element, valueAccessor) {
                 visibleDependingOnValidity(element, valueAccessor, function (validationState) {
@@ -605,6 +765,8 @@
             }
         };
 
+        // visibleWhenValid binding handler
+        // - makes the bound element visible if the value is valid, invisible otherwise
         ko.bindingHandlers.visibleWhenValid = {
             "update": function (element, valueAccessor) {
                 visibleDependingOnValidity(element, valueAccessor, function (validationState) {
@@ -614,6 +776,7 @@
         };
     })();
 })();
+
 ///#source 1 1 ../sources/valerie.knockout.fluent.js
 // valerie.knockout.fluent
 // - additional functions for defining validation options on ko.observables and ko.computeds

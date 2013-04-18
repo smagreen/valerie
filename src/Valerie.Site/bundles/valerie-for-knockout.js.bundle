@@ -3,7 +3,7 @@
 		runOnBuild="true"
 		output="valerie-for-knockout.js">
 	<!--The order of the <file> elements determines the order of them when bundled.-->
-  <file>valerie-for-knockout.license.js</file>
+  <file>../bundles/valerie-for-knockout.license.js</file>
 	<file>../sources/valerie.core.js</file>
   <file>../sources/valerie.converters.js</file>
   <file>../sources/valerie.rules.js</file>

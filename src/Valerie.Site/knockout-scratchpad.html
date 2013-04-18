@@ -22,6 +22,17 @@
         <form>
             <div>
                 <label>
+                    Location                    
+                        <select data-bind="value: location">
+                            <option value="">Please Select...</option>
+                            <option>England</option>
+                            <option>Wales</option>
+                        </select>
+                </label>
+                <span data-bind="validationMessage: location"></span>
+            </div>
+            <div>
+                <label>
                     <input data-bind="checked: houseType" name="houseType" type="radio" value="Terraced" />
                     Terraced
                 </label>
@@ -31,14 +42,15 @@
                 <label>
                     <input data-bind="checked: houseType" name="houseType" type="radio" value="Detached" />
                     Detached</label>
-                <span data-bind="visibleWhenInvalid: houseType">An option must be selected.</span>
-
+                <span data-bind="validationMessage: houseType"></span>
             </div>
+            <!-- ToDo: Add checklist array for features. -->
+            <!-- ToDo: Add multi-select array for utilities. -->
             <div>
                 <label>
                     House Price
-                    <input data-bind="validatedValue: housePrice" /></label>
-                <span data-bind="text: housePrice.validation().message(), visibleWhenInvalid: housePrice"></span>
+                        <input data-bind="value: housePrice" /></label>
+                <span data-bind="validationMessage: housePrice"></span>
             </div>
             <div>
                 <input type="button" value="Small House" data-bind="click: function () { housePrice(125000); }" />
@@ -49,48 +61,68 @@
             <div data-bind="visibleWhenValid: housePrice">
                 <p>
                     You can borrow between: &pound;<strong data-bind="text: loanAmountMin"></strong> and
-                    &pound;<strong data-bind="text: loanAmountMax"></strong>.
+                        &pound;<strong data-bind="text: loanAmountMax"></strong>.
                 </p>
                 <div>
                     <label>
                         Loan Amount
-                        <input data-bind="validatedValue: loanAmount" /></label>
-                    <span data-bind="text: loanAmount.validation().message(), visibleWhenInvalid: loanAmount"></span>
+                            <input data-bind="value: loanAmount" /></label>
+                    <span data-bind="validationMessage: loanAmount"></span>
                 </div>
             </div>
         </form>
-        <pre data-bind="text: JSON.stringify(ko.toJS($data), null, 2)"></pre>
+        <!-- <pre data-bind="text: JSON.stringify(ko.toJS($data), null, 2)"></pre> -->
     </div>
+    <!--[if lt IE 8]>
+            <script type="text/javascript" src="frameworks/json3.min.js"></script>
+        <![endif]-->
     <script type="text/javascript" src="frameworks/knockout-2.2.1.debug.js"></script>
     <script type="text/javascript" src="bundles/valerie-for-knockout.js"></script>
     <script type="text/javascript">
-        window.onload = function () {
+        window.onload = function() {
             var viewModel,
                 validationState,
-                housePrice = ko.observable(150000).validation()
-                .integer()
-                .required()
-                .between(75000, 500000)
-                .end(),
-                loanAmountMin = ko.computed(function () { return housePrice() / 4; }),
-                loanAmountMax = ko.computed(function () { return (housePrice() * 3) / 4; });
+                housePrice = ko.observable(150000)
+                    .validation()
+                    .integer()
+                    .required()
+                    .between(75000, 500000)
+                    .end(),
+                loanAmountMin = ko.computed(function() { return housePrice() / 4; }),
+                loanAmountMax = ko.computed(function() { return (housePrice() * 3) / 4; });
 
             viewModel = {
-                "houseType": ko.observable(),
                 "housePrice": housePrice,
-                "loanAmount": ko.observable(20000).validation()
+                "houseType": ko.observable(),
+                "loanAmount": ko.observable(20000)
+                    .validation()
                     .integer()
                     .required()
                     .between(loanAmountMin, loanAmountMax)
                     .end(),
                 "loanAmountMin": loanAmountMin,
-                "loanAmountMax": loanAmountMax
+                "loanAmountMax": loanAmountMax,
+                "location": ko.observable().validation()
+                    .required()
+                    .end()
             };
 
             // Initialising validation non-fluently.
             validationState = new valerie.knockout.ValidationState(viewModel.houseType, { "required": true });
             valerie.knockout.setState(viewModel.houseType, validationState);
 
+            // Use the validated binding handlers
+            valerie.knockout.useValidatedBindingHandlers();
+
+            /*
+            viewModel.validationStates = {
+                "housePrice": housePrice.validation(),
+                "houseType": viewModel.houseType.validation(),
+                "loanAmount": viewModel.loanAmount.validation()
+            };
+            */
+
+            // Apply bindings
             ko.applyBindings(viewModel, document.getElementById("view"));
         };
     </script>

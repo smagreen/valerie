@@ -1,4 +1,4 @@
-﻿///#source 1 1 valerie.license.js
+﻿///#source 1 1 ../bundles/valerie.license.js
 "valerie (c) 2013 egrove Ltd. License: MIT (http://www.opensource.org/licenses/mit-license.php)";
 ///#source 1 1 ../sources/valerie.core.js
 // valerie.core

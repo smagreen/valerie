@@ -37,6 +37,31 @@
         utils = valerie.utils;
 
     (function () {
+        // pausableComputed factory function
+        // - a Knockout computed whose evaluation can be paused and resumed
+        var pausableComputed = function (evaluatorFunction, evaluatorFunctionTarget, options) {
+            var lastValue,
+                paused = ko.observable(false),
+                computed = ko.computed(function () {
+                    if (paused()) {
+                        return lastValue;
+                    }
+
+                    return evaluatorFunction.call(evaluatorFunctionTarget);
+                }, evaluatorFunctionTarget, options);
+
+            computed.pause = function () {
+                lastValue = this();
+                paused(true);
+            }.bind(computed);
+
+            computed.resume = function () {
+                paused(false);
+            };
+
+            return computed;
+        };
+
         // ValidationContext
         // - aggregates validatable observables or computeds
         // - records whether an attempt has been made to submit them
@@ -118,7 +143,7 @@
                 },
                 showMessageFunction = function () {
                     return this.binding.result().failed ||
-                        (this.options.context.submissionAttempted() && failedFunction.apply(this));
+                        (this.touched() && failedFunction.apply(this));
                 };
 
             // Constructor Function
@@ -131,16 +156,18 @@
                 this.options = options;
 
                 this.binding = {
-                    "active": false,
-                    "result": ko.observable(knockout.ValidationResult.success)
+                    "focused": false,
+                    "result": ko.observable(knockout.ValidationResult.success),
+                    "textualInput": false
                 };
 
                 this.observableOrComputed = observableOrComputed;
                 this.failed = ko.computed(failedFunction, this, { "deferEvaluation": true });
-                this.message = ko.computed(messageFunction, this, { "deferEvaluation": true });
+                this.message = pausableComputed(messageFunction, this, { "deferEvaluation": true });
                 this.passed = ko.computed(passedFunction, this, { "deferEvaluation": true });
                 this.result = ko.computed(resultFunction, this, { "deferEvaluation": true });
-                this.showMessage = ko.computed(showMessageFunction, this, { "deferEvaluation": true });
+                this.showMessage = pausableComputed(showMessageFunction, this, { "deferEvaluation": true });
+                this.touched = ko.observable(false);
             };
         })();
 
@@ -152,6 +179,7 @@
                 }
 
                 this.options.applicable = utils.asFunction(valueOrFunction);
+
                 return this;
             },
             "end": function () {
@@ -163,6 +191,7 @@
                 }
 
                 this.options.required = utils.asFunction(valueOrFunction);
+
                 return this;
             }
         };
@@ -171,6 +200,7 @@
             "applicable": utils.asFunction(true),
             "context": knockout.ValidationContext.defaultContext,
             "converter": converters.passThrough,
+            "defaultValue": undefined,
             "invalidEntryFailureMessage": "The value entered is invalid.",
             "missingFailureMessage": "A value is required.",
             "missingTest": utils.isMissing,
