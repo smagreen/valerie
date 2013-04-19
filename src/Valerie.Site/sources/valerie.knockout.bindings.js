@@ -119,7 +119,7 @@
             };
 
         // validatedChecked binding handler
-        // - functions in the same way as the replaced "checked" binding handler
+        // - functions in the same way as the "checked" binding handler
         // - registers a blur event handler so validation messages for missing selections can be displayed
         validatedCheckedBindingHandler = ko.bindingHandlers.validatedChecked = {
             "init": function (element, valueAccessor, allBindingsAccessor, viewModel, bindingContext) {
@@ -138,7 +138,7 @@
         };
 
         // validatedValue binding handler
-        // - with the exception of textual inputs, functions in the same way as the replaced "value" binding handler
+        // - with the exception of textual inputs, functions in the same way as the "value" binding handler
         // - registers a blur event handler so validation messages for completed entries or selections can be displayed
         // - registers a blur event handler to reformat parsed textual entries
         validatedValueBindingHandler = ko.bindingHandlers.validatedValue = {
