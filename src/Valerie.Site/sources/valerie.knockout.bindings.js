@@ -249,11 +249,7 @@
 
             if (value === true) {
                 bindings = allBindingsAccessor();
-
-                value = bindings["value"] ||
-                    bindings["checked"] ||
-                    bindings["validatedValue"] ||
-                    bindings["validatedChecked"];
+                value = bindings.value || bindings.checked || bindings.validatedValue || bindings.validatedChecked;
             }
 
             if (!knockout.hasState(value))
