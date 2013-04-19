@@ -184,7 +184,7 @@
                     textualInputKeyUpHandler(element, observableOrComputed);
                 });
 
-                // Ensure the texutal input's value is changed only when the observable or computed is changed, not when
+                // Ensure the textual input's value is changed only when the observable or computed is changed, not when
                 // another binding is changed.
                 ko.computed({
                     "read": function () {
