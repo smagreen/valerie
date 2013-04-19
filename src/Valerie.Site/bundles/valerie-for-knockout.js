@@ -396,7 +396,7 @@
                 resultFunction = function () {
                     var result;
 
-                    result = this.binding.result();
+                    result = this.boundEntry.result();
                     if (result.failed) {
                         return result;
                     }
@@ -429,7 +429,7 @@
                     return !result.failed;
                 },
                 showMessageFunction = function () {
-                    return this.binding.result().failed ||
+                    return this.boundEntry.result().failed ||
                         (this.touched() && failedFunction.apply(this));
                 };
 
@@ -442,8 +442,8 @@
                 options.required = utils.asFunction(options.required);
                 this.options = options;
 
-                this.binding = {
-                    "focused": false,
+                this.boundEntry = {
+                    "focused": ko.observable(false),
                     "result": ko.observable(knockout.ValidationResult.success),
                     "textualInput": false
                 };
@@ -469,6 +469,11 @@
 
                 return this;
             },
+            "defaultValue": function(valueOrFunction) {
+                this.options.defaultValue = utils.asFunction(valueOrFunction);
+
+                return this;
+            },
             "end": function () {
                 return this.observableOrComputed;
             },
@@ -487,7 +492,7 @@
             "applicable": utils.asFunction(true),
             "context": knockout.ValidationContext.defaultContext,
             "converter": converters.passThrough,
-            "defaultValue": undefined,
+            "defaultValue": utils.asFunction(undefined),
             "invalidEntryFailureMessage": "The value entered is invalid.",
             "missingFailureMessage": "A value is required.",
             "missingTest": utils.isMissing,
@@ -549,14 +554,14 @@
             var validationState = knockout.getState(observableOrComputed);
 
             validationState.touched(true);
-            validationState.binding.focused = false;
+            validationState.boundEntry.focused(false);
             validationState.message.resume();
             validationState.showMessage.resume();
         },
             textEntryBlurHandler = function (element, observableOrComputed) {
                 var validationState = knockout.getState(observableOrComputed);
 
-                if (validationState.binding.result.peek().failed) {
+                if (validationState.boundEntry.result.peek().failed) {
                     return;
                 }
 
@@ -565,7 +570,7 @@
             textEntryFocusHandler = function (element, observableOrComputed) {
                 var validationState = knockout.getState(observableOrComputed);
 
-                validationState.binding.focused = true;
+                validationState.boundEntry.focused(true);
                 validationState.showMessage.pause();
                 validationState.message.pause();
             },
@@ -576,9 +581,10 @@
                     options = validationState.options;
 
                 if (enteredValue.length === 0 && options.required()) {
-                    validationState.binding.result(new knockout.ValidationResult(true, options.missingFailureMessage));
+                    validationState.boundEntry.result(new knockout.ValidationResult(true,
+                        options.missingFailureMessage));
 
-                    observableOrComputed(validationState.options.defaultValue);
+                    observableOrComputed(validationState.options.defaultValue());
 
                     return;
                 }
@@ -586,15 +592,15 @@
                 parsedValue = options.converter.parser(enteredValue);
 
                 if (parsedValue === undefined) {
-                    validationState.binding.result(new knockout.ValidationResult(true,
+                    validationState.boundEntry.result(new knockout.ValidationResult(true,
                         options.invalidEntryFailureMessage));
 
-                    observableOrComputed(validationState.options.defaultValue);
+                    observableOrComputed(validationState.options.defaultValue());
 
                     return;
                 }
 
-                validationState.binding.result(knockout.ValidationResult.success);
+                validationState.boundEntry.result(knockout.ValidationResult.success);
                 observableOrComputed(parsedValue);
             };
 
@@ -650,7 +656,7 @@
                 }
 
                 validationState = knockout.getState(observableOrComputed);
-                validationState.binding.textualInput = true;
+                validationState.boundEntry.textualInput = true;
 
                 ko.utils.registerEventHandler(element, "blur", function () {
                     textEntryBlurHandler(element, observableOrComputed);
@@ -681,7 +687,7 @@
 
                 validationState = knockout.getState(observableOrComputed);
 
-                if (!validationState.binding.textualInput) {
+                if (!validationState.boundEntry.textualInput) {
                     valueBindingHandler.update(element, valueAccessor, allBindingsAccessor, viewModel,
                         bindingContext);
 
@@ -689,20 +695,23 @@
                 }
 
                 // Prevent a focused element from being updated by the model.
-                if (validationState.binding.focused) {
+                if (validationState.boundEntry.focused.peek()) {
                     return;
                 }
 
-                validationState.binding.result(knockout.ValidationResult.success);
+                validationState.boundEntry.result(knockout.ValidationResult.success);
                 element.value = validationState.options.converter.formatter(value);
             }
         };
 
-        // Record the original binding handlers.
+        // Record and alias the original binding handlers
         knockout.originalBindingHandlers = {
             "checked": checkedBindingHandler,
             "value": valueBindingHandler
         };
+
+        ko.bindingHandlers.koChecked = checkedBindingHandler;
+        ko.bindingHandlers.koValue = valueBindingHandler;
 
         // Explicitly make available the replacement binding handlers.
         knockout.replacementBindingHandlers = {

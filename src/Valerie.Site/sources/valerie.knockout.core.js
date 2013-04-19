@@ -109,7 +109,7 @@
                 resultFunction = function () {
                     var result;
 
-                    result = this.binding.result();
+                    result = this.boundEntry.result();
                     if (result.failed) {
                         return result;
                     }
@@ -142,7 +142,7 @@
                     return !result.failed;
                 },
                 showMessageFunction = function () {
-                    return this.binding.result().failed ||
+                    return this.boundEntry.result().failed ||
                         (this.touched() && failedFunction.apply(this));
                 };
 
@@ -155,8 +155,8 @@
                 options.required = utils.asFunction(options.required);
                 this.options = options;
 
-                this.binding = {
-                    "focused": false,
+                this.boundEntry = {
+                    "focused": ko.observable(false),
                     "result": ko.observable(knockout.ValidationResult.success),
                     "textualInput": false
                 };
@@ -182,6 +182,11 @@
 
                 return this;
             },
+            "defaultValue": function(valueOrFunction) {
+                this.options.defaultValue = utils.asFunction(valueOrFunction);
+
+                return this;
+            },
             "end": function () {
                 return this.observableOrComputed;
             },
@@ -200,7 +205,7 @@
             "applicable": utils.asFunction(true),
             "context": knockout.ValidationContext.defaultContext,
             "converter": converters.passThrough,
-            "defaultValue": undefined,
+            "defaultValue": utils.asFunction(undefined),
             "invalidEntryFailureMessage": "The value entered is invalid.",
             "missingFailureMessage": "A value is required.",
             "missingTest": utils.isMissing,
