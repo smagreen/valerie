@@ -122,13 +122,13 @@
     };
 })();
 
-(function() {
+(function () {
     "use strict";
 
     var rules = valerie.rules;
 
     rules.passThrough = {
-        "test": function() {
+        "test": function () {
             return rules.successfulTestResult;
         }
     };

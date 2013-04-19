@@ -125,13 +125,13 @@
     };
 })();
 
-(function() {
+(function () {
     "use strict";
 
     var rules = valerie.rules;
 
     rules.passThrough = {
-        "test": function() {
+        "test": function () {
             return rules.successfulTestResult;
         }
     };
@@ -168,10 +168,10 @@
             if (value === undefined || value === null) {
                 return undefined;
             }
-            
+
             // ToDo: Change this very noddy, permissive implementation.
             var parsedValue = parseInt(value, 10);
-            
+
             if (isNaN(parsedValue)) {
                 return undefined;
             }
@@ -198,7 +198,6 @@
         }
     };
 })();
-
 
 ///#source 1 1 ../sources/valerie.rules.js
 // valerie.rules

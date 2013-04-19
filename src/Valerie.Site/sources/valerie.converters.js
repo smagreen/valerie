@@ -23,10 +23,10 @@
             if (value === undefined || value === null) {
                 return undefined;
             }
-            
+
             // ToDo: Change this very noddy, permissive implementation.
             var parsedValue = parseInt(value, 10);
-            
+
             if (isNaN(parsedValue)) {
                 return undefined;
             }
@@ -53,4 +53,3 @@
         }
     };
 })();
-

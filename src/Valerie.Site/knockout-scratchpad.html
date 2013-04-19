@@ -9,11 +9,15 @@
             font-size: 105%;
         }
 
-        form div span {
-            background-color: #db7093;
-            color: #fff;
-            padding: 0.25em;
+        form div {
+            margin-top: 1em;
         }
+
+            form div span {
+                background-color: #aa3333;
+                color: #fff;
+                padding: 0.25em;
+            }
     </style>
 </head>
 <body>
@@ -29,7 +33,7 @@
                             <option>Wales</option>
                         </select>
                 </label>
-                <span data-bind="validationMessage: location"></span>
+                <span data-bind="validationMessageFor: location"></span>
             </div>
             <div>
                 <label>
@@ -42,15 +46,19 @@
                 <label>
                     <input data-bind="checked: houseType" name="houseType" type="radio" value="Detached" />
                     Detached</label>
-                <span data-bind="validationMessage: houseType"></span>
+                <span data-bind="validationMessageFor: houseType"></span>
             </div>
             <!-- ToDo: Add checklist array for features. -->
             <!-- ToDo: Add multi-select array for utilities. -->
             <div>
                 <label>
                     House Price
-                        <input data-bind="value: housePrice" /></label>
-                <span data-bind="validationMessage: housePrice"></span>
+                        <input data-bind="value: housePrice, enabledWhenApplicable: true" /></label>
+                <span data-bind="validationMessageFor: housePrice"></span>
+            </div>
+            <div>
+                <input type="button" value="Toggle House Price applicability"
+                    data-bind="click: toggleHousePriceApplicability" />
             </div>
             <div>
                 <input type="button" value="Small House" data-bind="click: function () { housePrice(125000); }" />
@@ -67,11 +75,11 @@
                     <label>
                         Loan Amount
                             <input data-bind="value: loanAmount" /></label>
-                    <span data-bind="validationMessage: loanAmount"></span>
+                    <span data-bind="validationMessageFor: loanAmount"></span>
                 </div>
             </div>
         </form>
-        <!-- <pre data-bind="text: JSON.stringify(ko.toJS($data), null, 2)"></pre> -->
+        <pre data-bind="text: JSON.stringify(ko.toJS($data), null, 2)"></pre>
     </div>
     <!--[if lt IE 8]>
             <script type="text/javascript" src="frameworks/json3.min.js"></script>
@@ -84,6 +92,7 @@
                 validationState,
                 housePrice = ko.observable(150000)
                     .validation()
+                    .applicable(ko.observable(true))
                     .integer()
                     .required()
                     .between(75000, 500000)
@@ -91,7 +100,7 @@
                 loanAmountMin = ko.computed(function() { return housePrice() / 4; }),
                 loanAmountMax = ko.computed(function() { return (housePrice() * 3) / 4; });
 
-            viewModel = {
+            viewModel = viewModel = {
                 "housePrice": housePrice,
                 "houseType": ko.observable(),
                 "loanAmount": ko.observable(20000)
@@ -104,23 +113,19 @@
                 "loanAmountMax": loanAmountMax,
                 "location": ko.observable().validation()
                     .required()
-                    .end()
+                    .end(),
+                "toggleHousePriceApplicability": function() {
+                    var applicable = housePrice.validation().options.applicable;
+                    applicable(!applicable());
+                }
             };
 
             // Initialising validation non-fluently.
             validationState = new valerie.knockout.ValidationState(viewModel.houseType, { "required": true });
             valerie.knockout.setState(viewModel.houseType, validationState);
 
-            // Use the validated binding handlers
-            valerie.knockout.useValidatedBindingHandlers();
-
-            /*
-            viewModel.validationStates = {
-                "housePrice": housePrice.validation(),
-                "houseType": viewModel.houseType.validation(),
-                "loanAmount": viewModel.loanAmount.validation()
-            };
-            */
+            // Use the validating binding handlers
+            valerie.knockout.useValidatingBindingHandlers();
 
             // Apply bindings
             ko.applyBindings(viewModel, document.getElementById("view"));

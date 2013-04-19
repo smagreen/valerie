@@ -38,7 +38,7 @@
 
     (function () {
         // pausableComputed factory function
-        // - a Knockout computed whose evaluation can be paused and resumed
+        // - creates a Knockout computed whose evaluation can be paused and resumed
         var pausableComputed = function (evaluatorFunction, evaluatorFunctionTarget, options) {
             var lastValue,
                 paused = ko.observable(false),
@@ -61,6 +61,8 @@
 
             return computed;
         };
+
+        knockout.pausableComputed = pausableComputed;
 
         // ValidationContext
         // - aggregates validatable observables or computeds
@@ -141,7 +143,7 @@
 
                     return !result.failed;
                 },
-                showMessageFunction = function () {
+                showState = function () {
                     return this.boundEntry.result().failed ||
                         (this.touched() && failedFunction.apply(this));
                 };
@@ -153,7 +155,6 @@
                 options = utils.mergeOptions(knockout.ValidationState.defaultOptions, options);
                 options.applicable = utils.asFunction(options.applicable);
                 options.required = utils.asFunction(options.required);
-                this.options = options;
 
                 this.boundEntry = {
                     "focused": ko.observable(false),
@@ -161,12 +162,13 @@
                     "textualInput": false
                 };
 
-                this.observableOrComputed = observableOrComputed;
                 this.failed = ko.computed(failedFunction, this, { "deferEvaluation": true });
                 this.message = pausableComputed(messageFunction, this, { "deferEvaluation": true });
+                this.observableOrComputed = observableOrComputed;
+                this.options = options;
                 this.passed = ko.computed(passedFunction, this, { "deferEvaluation": true });
                 this.result = ko.computed(resultFunction, this, { "deferEvaluation": true });
-                this.showMessage = pausableComputed(showMessageFunction, this, { "deferEvaluation": true });
+                this.showState = pausableComputed(showState, this, { "deferEvaluation": true });
                 this.touched = ko.observable(false);
             };
         })();
@@ -179,11 +181,6 @@
                 }
 
                 this.options.applicable = utils.asFunction(valueOrFunction);
-
-                return this;
-            },
-            "defaultValue": function(valueOrFunction) {
-                this.options.defaultValue = utils.asFunction(valueOrFunction);
 
                 return this;
             },
@@ -205,12 +202,12 @@
             "applicable": utils.asFunction(true),
             "context": knockout.ValidationContext.defaultContext,
             "converter": converters.passThrough,
-            "defaultValue": utils.asFunction(undefined),
             "invalidEntryFailureMessage": "The value entered is invalid.",
             "missingFailureMessage": "A value is required.",
             "missingTest": utils.isMissing,
             "required": utils.asFunction(false),
-            "rule": rules.passThrough
+            "rule": rules.passThrough,
+            "valueFormat": undefined
         };
     })();
 
