@@ -54,7 +54,7 @@
             valueBindingHandler = ko.bindingHandlers.value,
             validatedValueBindingHandler,
             blurHandler = function (element, observableOrComputed) {
-                var validationState = knockout.getState(observableOrComputed);
+                var validationState = knockout.PropertyValidationState.getState(observableOrComputed);
 
                 validationState.touched(true);
                 validationState.boundEntry.focused(false);
@@ -62,7 +62,7 @@
                 validationState.showState.resume();
             },
             textualInputBlurHandler = function (element, observableOrComputed) {
-                var validationState = knockout.getState(observableOrComputed);
+                var validationState = knockout.PropertyValidationState.getState(observableOrComputed);
 
                 if (validationState.boundEntry.result.peek().failed) {
                     return;
@@ -71,7 +71,7 @@
                 element.value = validationState.options.converter.formatter(observableOrComputed.peek());
             },
             textualInputFocusHandler = function (element, observableOrComputed) {
-                var validationState = knockout.getState(observableOrComputed);
+                var validationState = knockout.PropertyValidationState.getState(observableOrComputed);
 
                 validationState.boundEntry.focused(true);
                 validationState.message.pause();
@@ -80,7 +80,7 @@
             textualInputKeyUpHandler = function (element, observableOrComputed) {
                 var enteredValue = ko.utils.stringTrim(element.value),
                     parsedValue,
-                    validationState = knockout.getState(observableOrComputed),
+                    validationState = knockout.PropertyValidationState.getState(observableOrComputed),
                     options = validationState.options;
 
                 if (enteredValue.length === 0 && options.required()) {
@@ -169,7 +169,7 @@
                     return;
                 }
 
-                validationState = knockout.getState(observableOrComputed);
+                validationState = knockout.PropertyValidationState.getState(observableOrComputed);
                 validationState.boundEntry.textualInput = true;
 
                 ko.utils.registerEventHandler(element, "blur", function () {
@@ -184,8 +184,9 @@
                     textualInputKeyUpHandler(element, observableOrComputed);
                 });
 
-                // Ensure the textual input's value is changed only when the observable or computed is changed, not when
-                // another binding is changed.
+                // Rather than update the textual input in the "update" method we use a compued to ensure the textual
+                // input's value is changed only when the observable or computed is changed, not when another binding is
+                // changed.
                 ko.computed({
                     "read": function () {
                         textualInputUpdateFunction(observableOrComputed, validationState, element);
@@ -198,7 +199,7 @@
                     validationState;
 
                 if (knockout.hasState(observableOrComputed)) {
-                    validationState = knockout.getState(observableOrComputed);
+                    validationState = knockout.PropertyValidationState.getState(observableOrComputed);
 
                     if (validationState.boundEntry.textualInput) {
                         return;
@@ -255,7 +256,7 @@
             if (!knockout.hasState(value))
                 return;
 
-            validationState = knockout.getState(value);
+            validationState = knockout.PropertyValidationState.getState(value);
             element.disabled = !validationState.options.applicable();
         });
 
@@ -269,7 +270,7 @@
             if (!knockout.hasState(observableOrComputed))
                 return;
 
-            validationState = knockout.getState(observableOrComputed);
+            validationState = knockout.PropertyValidationState.getState(observableOrComputed);
             newVisibility = determineVisibilityFunction(validationState);
 
             setElementVisibility(element, newVisibility);
@@ -300,7 +301,7 @@
     ko.bindingHandlers.validationMessageFor = knockout.isolatedBindingHandler(
         function (element, valueAccessor) {
             var observableOrComputed = valueAccessor(),
-                validationState = knockout.getState(observableOrComputed);
+                validationState = knockout.PropertyValidationState.getState(observableOrComputed);
 
             if (!knockout.hasState(observableOrComputed))
                 return;

@@ -294,29 +294,17 @@
 /// <reference path="valerie.core.js"/>
 
 (function () {
-    var statePropertyName = "__valerie_knockout_state";
+    "use strict";
 
     if (typeof ko === "undefined") {
         throw "KnockoutJS is required. Please reference it before referencing this library.";
     }
 
-    // Define functions for getting, setting and testing the existence of the underlying validation state.
-    valerie.knockout = {
-        "getState": function (observableOrComputed) {
-            return observableOrComputed[statePropertyName];
-        },
-        "hasState": function (observableOrComputed) {
-            return observableOrComputed.hasOwnProperty(statePropertyName);
-        },
-        "setState": function (observableOrComputed, state) {
-            observableOrComputed[statePropertyName] = state;
-        }
-    };
+    valerie.knockout = {};
 })();
 
 (function () {
     "use strict";
-
     var converters = valerie.converters,
         knockout = valerie.knockout,
         rules = valerie.rules,
@@ -324,7 +312,7 @@
 
     (function () {
         // pausableComputed factory function
-        // - creates a Knockout computed whose evaluation can be paused and resumed
+        // - creates a computed whose evaluation can be paused and resumed
         var pausableComputed = function (evaluatorFunction, evaluatorFunctionTarget, options) {
             var lastValue,
                 paused = ko.observable(false),
@@ -349,7 +337,9 @@
         };
 
         knockout.pausableComputed = pausableComputed;
+    })();
 
+    (function () {
         // ValidationContext
         // - aggregates validatable observables or computeds
         // - records whether an attempt has been made to submit them
@@ -375,7 +365,8 @@
 
         knockout.ValidationResult.success = new knockout.ValidationResult(false, "");
 
-        // ValidationState
+        // PropertyValidationState
+        // - validation state for a single observable or computed        
         (function () {
             var missingResultFunction = function () {
                 var value = this.observableOrComputed();
@@ -432,12 +423,12 @@
                 showState = function () {
                     return this.boundEntry.result().failed ||
                         (this.touched() && failedFunction.apply(this));
-                };
+                },
+                statePropertyName = "__valerie.knockout.PropertyValidationState";
 
             // Constructor Function
-            // - validation state for a single observable or computed
             // - options can be modified using a fluent interface
-            knockout.ValidationState = function (observableOrComputed, options) {
+            knockout.PropertyValidationState = function (observableOrComputed, options) {
                 options = utils.mergeOptions(knockout.ValidationState.defaultOptions, options);
                 options.applicable = utils.asFunction(options.applicable);
                 options.required = utils.asFunction(options.required);
@@ -457,47 +448,60 @@
                 this.showState = pausableComputed(showState, this, { "deferEvaluation": true });
                 this.touched = ko.observable(false);
             };
+
+            // Add methods for modifying state in a fluent manner.
+            knockout.PropertyValidationState.prototype = {
+                "applicable": function (valueOrFunction) {
+                    if (valueOrFunction === undefined) {
+                        valueOrFunction = true;
+                    }
+
+                    this.options.applicable = utils.asFunction(valueOrFunction);
+
+                    return this;
+                },
+                "end": function () {
+                    return this.observableOrComputed;
+                },
+                "required": function (valueOrFunction) {
+                    if (valueOrFunction === undefined) {
+                        valueOrFunction = true;
+                    }
+
+                    this.options.required = utils.asFunction(valueOrFunction);
+
+                    return this;
+                }
+            };
+
+            // Define default options.
+            knockout.PropertyValidationState.defaultOptions = {
+                "applicable": utils.asFunction(true),
+                "context": knockout.ValidationContext.defaultContext,
+                "converter": converters.passThrough,
+                "invalidEntryFailureMessage": "The value entered is invalid.",
+                "missingFailureMessage": "A value is required.",
+                "missingTest": utils.isMissing,
+                "required": utils.asFunction(false),
+                "rule": rules.passThrough,
+                "valueFormat": undefined
+            };
+
+            // Define functions for getting, setting and testing the existence of the underlying validation state.
+            knockout.PropertyValidationState.getState = function (observableOrComputed) {
+                return observableOrComputed[statePropertyName];
+            };
+
+            knockout.PropertyValidationState.hasState = function (observableOrComputed) {
+                return observableOrComputed.hasOwnProperty(statePropertyName);
+            };
+
+
+            knockout.PropertyValidationState.setState = function (observableOrComputed, state) {
+                observableOrComputed[statePropertyName] = state;
+            };
         })();
 
-        // Add methods for modifying state in a fluent manner.
-        knockout.ValidationState.prototype = {
-            "applicable": function (valueOrFunction) {
-                if (valueOrFunction === undefined) {
-                    valueOrFunction = true;
-                }
-
-                this.options.applicable = utils.asFunction(valueOrFunction);
-
-                return this;
-            },
-            "end": function () {
-                return this.observableOrComputed;
-            },
-            "required": function (valueOrFunction) {
-                if (valueOrFunction === undefined) {
-                    valueOrFunction = true;
-                }
-
-                this.options.required = utils.asFunction(valueOrFunction);
-
-                return this;
-            }
-        };
-
-        knockout.ValidationState.defaultOptions = {
-            "applicable": utils.asFunction(true),
-            "context": knockout.ValidationContext.defaultContext,
-            "converter": converters.passThrough,
-            "invalidEntryFailureMessage": "The value entered is invalid.",
-            "missingFailureMessage": "A value is required.",
-            "missingTest": utils.isMissing,
-            "required": utils.asFunction(false),
-            "rule": rules.passThrough,
-            "valueFormat": undefined
-        };
-    })();
-
-    (function () {
         var extensionFunctionName = "validation";
 
         ko.observable.fn[extensionFunctionName] = ko.computed.fn[extensionFunctionName] = function (validationOptions) {
@@ -508,7 +512,7 @@
                 return state;
             }
 
-            state = new knockout.ValidationState(this, validationOptions);
+            state = new knockout.PropertyValidationState(this, validationOptions);
             knockout.setState(this, state);
 
             // Return the validation state after creation, so it can be modified fluently.
@@ -574,7 +578,7 @@
             valueBindingHandler = ko.bindingHandlers.value,
             validatedValueBindingHandler,
             blurHandler = function (element, observableOrComputed) {
-                var validationState = knockout.getState(observableOrComputed);
+                var validationState = knockout.PropertyValidationState.getState(observableOrComputed);
 
                 validationState.touched(true);
                 validationState.boundEntry.focused(false);
@@ -582,7 +586,7 @@
                 validationState.showState.resume();
             },
             textualInputBlurHandler = function (element, observableOrComputed) {
-                var validationState = knockout.getState(observableOrComputed);
+                var validationState = knockout.PropertyValidationState.getState(observableOrComputed);
 
                 if (validationState.boundEntry.result.peek().failed) {
                     return;
@@ -591,7 +595,7 @@
                 element.value = validationState.options.converter.formatter(observableOrComputed.peek());
             },
             textualInputFocusHandler = function (element, observableOrComputed) {
-                var validationState = knockout.getState(observableOrComputed);
+                var validationState = knockout.PropertyValidationState.getState(observableOrComputed);
 
                 validationState.boundEntry.focused(true);
                 validationState.message.pause();
@@ -600,7 +604,7 @@
             textualInputKeyUpHandler = function (element, observableOrComputed) {
                 var enteredValue = ko.utils.stringTrim(element.value),
                     parsedValue,
-                    validationState = knockout.getState(observableOrComputed),
+                    validationState = knockout.PropertyValidationState.getState(observableOrComputed),
                     options = validationState.options;
 
                 if (enteredValue.length === 0 && options.required()) {
@@ -689,7 +693,7 @@
                     return;
                 }
 
-                validationState = knockout.getState(observableOrComputed);
+                validationState = knockout.PropertyValidationState.getState(observableOrComputed);
                 validationState.boundEntry.textualInput = true;
 
                 ko.utils.registerEventHandler(element, "blur", function () {
@@ -704,8 +708,9 @@
                     textualInputKeyUpHandler(element, observableOrComputed);
                 });
 
-                // Ensure the textual input's value is changed only when the observable or computed is changed, not when
-                // another binding is changed.
+                // Rather than update the textual input in the "update" method we use a compued to ensure the textual
+                // input's value is changed only when the observable or computed is changed, not when another binding is
+                // changed.
                 ko.computed({
                     "read": function () {
                         textualInputUpdateFunction(observableOrComputed, validationState, element);
@@ -718,7 +723,7 @@
                     validationState;
 
                 if (knockout.hasState(observableOrComputed)) {
-                    validationState = knockout.getState(observableOrComputed);
+                    validationState = knockout.PropertyValidationState.getState(observableOrComputed);
 
                     if (validationState.boundEntry.textualInput) {
                         return;
@@ -775,7 +780,7 @@
             if (!knockout.hasState(value))
                 return;
 
-            validationState = knockout.getState(value);
+            validationState = knockout.PropertyValidationState.getState(value);
             element.disabled = !validationState.options.applicable();
         });
 
@@ -789,7 +794,7 @@
             if (!knockout.hasState(observableOrComputed))
                 return;
 
-            validationState = knockout.getState(observableOrComputed);
+            validationState = knockout.PropertyValidationState.getState(observableOrComputed);
             newVisibility = determineVisibilityFunction(validationState);
 
             setElementVisibility(element, newVisibility);
@@ -820,7 +825,7 @@
     ko.bindingHandlers.validationMessageFor = knockout.isolatedBindingHandler(
         function (element, valueAccessor) {
             var observableOrComputed = valueAccessor(),
-                validationState = knockout.getState(observableOrComputed);
+                validationState = knockout.PropertyValidationState.getState(observableOrComputed);
 
             if (!knockout.hasState(observableOrComputed))
                 return;
