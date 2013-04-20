@@ -1,31 +1,19 @@
 ﻿///#source 1 1 ../bundles/valerie-for-knockout.license.js
 "valerie for knockout (c) 2013 egrove Ltd. License: MIT (http://www.opensource.org/licenses/mit-license.php)";
-///#source 1 1 ../sources/valerie.core.js
-// valerie.core
-// - the core namespaces, objects and utility functions
+///#source 1 1 ../sources/valerie.utils.js
+// valerie.utils
+// - general purpose utilities
+// - used by other parts of the valerie library
 // (c) 2013 egrove Ltd.
 // License: MIT (http://www.opensource.org/licenses/mit-license.php)
 
 /*global valerie: true */
-
-(function () {
-    // ReSharper disable AssignToImplicitGlobalInFunctionScope
-    if (typeof valerie === "undefined") {
-        valerie = {};
-    }
-
-    valerie = valerie || {};
-    // ReSharper restore AssignToImplicitGlobalInFunctionScope
-
-    valerie.converters = valerie.converters || {};
-    valerie.rules = valerie.rules || {};
-    valerie.utils = valerie.utils || {};
-})();
+var valerie = valerie || {};
 
 (function () {
     "use strict";
 
-    var utils = valerie.utils;
+    var utils = valerie.utils = valerie.utils || {};
 
     utils.asFunction = function (valueOrFunction) {
         if (utils.isFunction(valueOrFunction)) {
@@ -106,55 +94,111 @@
     };
 })();
 
+///#source 1 1 ../sources/valerie.knockout.extras.js
+// valerie.knockout.extras
+// - extra functionality for KnockoutJS
+// - used by other parts of the valerie library
+// (c) 2013 egrove Ltd.
+// License: MIT (http://www.opensource.org/licenses/mit-license.php)
+
+/*global ko: false, valerie: true */
+if (typeof ko === "undefined") throw "KnockoutJS is required.";
+var valerie = valerie || {};
+
 (function () {
     "use strict";
 
-    var converters = valerie.converters;
+    var knockout = valerie.knockout = valerie.knockout || {},
+        extras = knockout.extras = knockout.extras || {};
 
-    converters.passThrough = {
-        "formatter": function (value) {
-            if (value === undefined || value === null) {
-                return "";
+    // isolatedBindingHandler factory function
+    // - creates a binding handler in which update is called only when a dependency changes and not when another
+    //   binding changes
+    extras.isolatedBindingHandler = function (initOrUpdateFunction, updateFunction) {
+        var initFunction = (arguments.length === 1) ? function () {
+        } : initOrUpdateFunction;
+        updateFunction = (arguments.length === 2) ? updateFunction : initOrUpdateFunction;
+
+        return {
+            "init": function (element, valueAccessor, allBindingsAccessor, viewModel, bindingContext) {
+                initFunction(element, valueAccessor, allBindingsAccessor, viewModel, bindingContext);
+
+                ko.computed({
+                    "read": function () {
+                        updateFunction(element, valueAccessor, allBindingsAccessor, viewModel,
+                            bindingContext);
+                    },
+                    "disposeWhenNodeIsRemoved": element
+                });
             }
+        };
+    };
 
-            return value.toString();
-        },
-        "parser": function (value) {
-            return value;
-        }
+    // pausableComputed factory function
+    // - creates a computed whose evaluation can be paused and resumed
+    extras.pausableComputed = function (evaluatorFunction, evaluatorFunctionTarget, options) {
+        var lastValue,
+            paused = ko.observable(false),
+            computed = ko.computed(function () {
+                if (paused()) {
+                    return lastValue;
+                }
+
+                return evaluatorFunction.call(evaluatorFunctionTarget);
+            }, evaluatorFunctionTarget, options);
+
+        computed.pause = function () {
+            lastValue = this();
+            paused(true);
+        }.bind(computed);
+
+        computed.resume = function () {
+            paused(false);
+        };
+
+        return computed;
     };
 })();
 
+///#source 1 1 ../sources/valerie.dom.js
+// valerie.dom
+// - utilities for working with the document object model
+// - used by other parts of the valerie library
+// (c) 2013 egrove Ltd.
+// License: MIT (http://www.opensource.org/licenses/mit-license.php)
+
+/*global valerie: true */
+var valerie = valerie || {};
+
 (function () {
     "use strict";
 
-    var rules = valerie.rules;
+    var dom = valerie.dom = valerie.dom || {};
 
-    rules.passThrough = {
-        "test": function () {
-            return rules.successfulTestResult;
+    dom.setElementVisibility = function (element, newVisibility) {
+        var currentVisibility = (element.style.display !== "none");
+        if (currentVisibility === newVisibility) {
+            return;
         }
-    };
 
-    rules.successfulTestResult = {
-        "failed": false,
-        "failureMessage": ""
+        element.style.display = (newVisibility) ? "" : "none";
     };
 })();
 
 ///#source 1 1 ../sources/valerie.converters.js
 // valerie.converters
-// - general purpose converters for use with valerie
+// - general purpose converters
+// - used by other parts of the valerie library
 // (c) 2013 egrove Ltd.
 // License: MIT (http://www.opensource.org/licenses/mit-license.php)
 
-/*global valerie: false */
-/// <reference path="valerie.core.js"/>
+/*global valerie: true */
+var valerie = valerie || {};
 
 (function () {
     "use strict";
 
-    var converters = valerie.converters;
+    var converters = valerie.converters = valerie.converters || {};
 
     converters.integer = {
         "formatter": function (value) {
@@ -180,6 +224,19 @@
         }
     };
 
+    converters.passThrough = {
+        "formatter": function (value) {
+            if (value === undefined || value === null) {
+                return "";
+            }
+
+            return value.toString();
+        },
+        "parser": function (value) {
+            return value;
+        }
+    };
+
     converters.string = {
         "formatter": function (value) {
             if (value === undefined || value === null) {
@@ -201,18 +258,29 @@
 
 ///#source 1 1 ../sources/valerie.rules.js
 // valerie.rules
-// - general purpose rules for use with valerie
+// - general purpose rules
+// - used by other parts of the valerie library
 // (c) 2013 egrove Ltd.
 // License: MIT (http://www.opensource.org/licenses/mit-license.php)
 
+/// <reference path="valerie.utils.js"/>
+
 /*global valerie: false */
-// <reference path="valerie.core.js"/>
+if (typeof valerie === "undefined" || !valerie.utils) throw "valerie.utils is required.";
 
 (function () {
     "use strict";
 
-    var rules = valerie.rules,
+    var rules = valerie.rules = valerie.rules || {},
         utils = valerie.utils;
+
+    // ToDo: During (Range for dates and times).
+
+    rules.passThrough = {
+        "test": function () {
+            return rules.successfulTestResult;
+        }
+    };
 
     rules.Range = function (minimumValueOrFunction, maximumValueOrFunction, options) {
         if (arguments.length < 2 || arguments.length > 3) {
@@ -280,82 +348,40 @@
         }
     };
 
-    // ToDo: During (Range for dates and times).
+    rules.successfulTestResult = {
+        "failed": false,
+        "failureMessage": ""
+    };
 })();
 
-///#source 1 1 ../sources/valerie.knockout.core.js
-// valerie.knockout.core
-// - the core namespaces and objects for using valerie with knockout
+///#source 1 1 ../sources/valerie.knockout.js
+// valerie.knockout
+// - the class and functions that validate a view-model constructed using knockout observables and computeds
 // (c) 2013 egrove Ltd.
 // License: MIT (http://www.opensource.org/licenses/mit-license.php)
 
-/*global ko: false, valerie: false */
 /// <reference path="../frameworks/knockout-2.2.1.debug.js"/>
-/// <reference path="valerie.core.js"/>
+/// <reference path="valerie.knockout.extras.js"/>
+/// <reference path="valerie.utils.js"/> 
+/// <reference path="valerie.converters.js"/>
+/// <reference path="valerie.rules.js"/>
+
+/*global ko: false, valerie: false */
+if (typeof ko === "undefined") throw "KnockoutJS is required.";
+if (typeof valerie === "undefined" || !valerie.utils) throw "valerie.utils is required.";
+if (!valerie.converters) throw "valerie.converters is required.";
+if (!valerie.rules) throw "valerie.rules is required.";
+if (!valerie.knockout || !valerie.knockout.extras) throw "valerie.knockout.extras is required.";
 
 (function () {
     "use strict";
 
-    if (typeof ko === "undefined") {
-        throw "KnockoutJS is required. Please reference it before referencing this library.";
-    }
-
-    valerie.knockout = {};
-})();
-
-(function () {
-    "use strict";
     var converters = valerie.converters,
-        knockout = valerie.knockout,
+        utils = valerie.utils,
         rules = valerie.rules,
-        utils = valerie.utils;
+        knockout = valerie.knockout;
 
     (function () {
-        // pausableComputed factory function
-        // - creates a computed whose evaluation can be paused and resumed
-        var pausableComputed = function (evaluatorFunction, evaluatorFunctionTarget, options) {
-            var lastValue,
-                paused = ko.observable(false),
-                computed = ko.computed(function () {
-                    if (paused()) {
-                        return lastValue;
-                    }
-
-                    return evaluatorFunction.call(evaluatorFunctionTarget);
-                }, evaluatorFunctionTarget, options);
-
-            computed.pause = function () {
-                lastValue = this();
-                paused(true);
-            }.bind(computed);
-
-            computed.resume = function () {
-                paused(false);
-            };
-
-            return computed;
-        };
-
-        knockout.pausableComputed = pausableComputed;
-    })();
-
-    (function () {
-        // ValidationContext
-        // - aggregates validatable observables or computeds
-        // - records whether an attempt has been made to submit them
-        // - ToDo: can be used to determine if any them are invalid
-        knockout.ValidationContext = function () {
-            this.status = ko.observableArray();
-            this.submissionAttempted = ko.observable(false);
-        };
-
-        knockout.ValidationContext.prototype = {
-            "anyFailed": function () {
-            }
-        };
-
-        knockout.ValidationContext.defaultContext = new knockout.ValidationContext();
-
         // ValidationResult
         // - the result of a validation test
         knockout.ValidationResult = function (failed, failureMessage) {
@@ -366,7 +392,7 @@
         knockout.ValidationResult.success = new knockout.ValidationResult(false, "");
 
         // PropertyValidationState
-        // - validation state for a single observable or computed        
+        // - validation state for a single observable or computed property
         (function () {
             var missingResultFunction = function () {
                 var value = this.observableOrComputed();
@@ -429,7 +455,7 @@
             // Constructor Function
             // - options can be modified using a fluent interface
             knockout.PropertyValidationState = function (observableOrComputed, options) {
-                options = utils.mergeOptions(knockout.ValidationState.defaultOptions, options);
+                options = utils.mergeOptions(knockout.PropertyValidationState.defaultOptions, options);
                 options.applicable = utils.asFunction(options.applicable);
                 options.required = utils.asFunction(options.required);
 
@@ -440,12 +466,12 @@
                 };
 
                 this.failed = ko.computed(failedFunction, this, { "deferEvaluation": true });
-                this.message = pausableComputed(messageFunction, this, { "deferEvaluation": true });
+                this.message = knockout.extras.pausableComputed(messageFunction, this, { "deferEvaluation": true });
                 this.observableOrComputed = observableOrComputed;
                 this.options = options;
                 this.passed = ko.computed(passedFunction, this, { "deferEvaluation": true });
                 this.result = ko.computed(resultFunction, this, { "deferEvaluation": true });
-                this.showState = pausableComputed(showState, this, { "deferEvaluation": true });
+                this.showState = knockout.extras.pausableComputed(showState, this, { "deferEvaluation": true });
                 this.touched = ko.observable(false);
             };
 
@@ -460,8 +486,18 @@
 
                     return this;
                 },
+                "between": function (minimumValueOrFunction, maximumValueOrFunction) {
+                    this.options.rule = new rules.Range(minimumValueOrFunction, maximumValueOrFunction);
+
+                    return this;
+                },
                 "end": function () {
                     return this.observableOrComputed;
+                },
+                "integer": function () {
+                    this.options.converter = converters.integer;
+
+                    return this;
                 },
                 "required": function (valueOrFunction) {
                     if (valueOrFunction === undefined) {
@@ -477,7 +513,6 @@
             // Define default options.
             knockout.PropertyValidationState.defaultOptions = {
                 "applicable": utils.asFunction(true),
-                "context": knockout.ValidationContext.defaultContext,
                 "converter": converters.passThrough,
                 "invalidEntryFailureMessage": "The value entered is invalid.",
                 "missingFailureMessage": "A value is required.",
@@ -505,7 +540,7 @@
         var extensionFunctionName = "validation";
 
         ko.observable.fn[extensionFunctionName] = ko.computed.fn[extensionFunctionName] = function (validationOptions) {
-            var state = knockout.getState(this);
+            var state = knockout.PropertyValidationState.getState(this);
 
             // Return any existing validation state.
             if (state) {
@@ -513,7 +548,7 @@
             }
 
             state = new knockout.PropertyValidationState(this, validationOptions);
-            knockout.setState(this, state);
+            knockout.PropertyValidationState.setState(this, state);
 
             // Return the validation state after creation, so it can be modified fluently.
             return state;
@@ -523,53 +558,27 @@
 
 ///#source 1 1 ../sources/valerie.knockout.bindings.js
 // valerie.knockout.bindings
-// - knockout bindings that use valerie
+// - knockout bindings for:
+//   - validating user entries
+//   - showing the validation state of a view-model
 // (c) 2013 egrove Ltd.
 // License: MIT (http://www.opensource.org/licenses/mit-license.php)
 
-/*global ko: false, valerie: false */
 /// <reference path="../frameworks/knockout-2.2.1.debug.js"/>
-/// <reference path="valerie.knockout.core.js"/>
+/// <reference path="~/sources/valerie.knockout.extras.js"/>
+/// <reference path="valerie.dom.js"/>
+/// <reference path="valerie.knockout.js"/>
+
+/*global ko: false, valerie: false */
+if (typeof ko === "undefined") throw "KnockoutJS is required.";
+if (typeof valerie === "undefined" || !valerie.dom) throw "valerie.dom is required.";
+if (!valerie.knockout) throw "valerie.knockout is required.";
+if (!valerie.knockout.extras) throw "valerie.knockout.extras is required.";
 
 (function () {
     "use strict";
 
-    var knockout = valerie.knockout,
-        setElementVisibility = function (element, newVisibility) {
-            var currentVisibility = (element.style.display !== "none");
-            if (currentVisibility === newVisibility) {
-                return;
-            }
-
-            element.style.display = (newVisibility) ? "" : "none";
-        };
-
-    (function () {
-        var emptyInitFunction = function () {
-        };
-
-        // isolatedBindingHandler factory function
-        // - creates a binding handler in which update is called only when a dependency changes and not when another
-        //   binding changes
-        knockout.isolatedBindingHandler = function (initOrUpdateFunction, updateFunction) {
-            var initFunction = (arguments.length === 1) ? emptyInitFunction : initOrUpdateFunction;
-            updateFunction = (arguments.length === 2) ? updateFunction : initOrUpdateFunction;
-
-            return {
-                "init": function (element, valueAccessor, allBindingsAccessor, viewModel, bindingContext) {
-                    initFunction(element, valueAccessor, allBindingsAccessor, viewModel, bindingContext);
-
-                    ko.computed({
-                        "read": function () {
-                            updateFunction(element, valueAccessor, allBindingsAccessor, viewModel,
-                                bindingContext);
-                        },
-                        "disposeWhenNodeIsRemoved": element
-                    });
-                }
-            };
-        };
-    })();
+    var knockout = valerie.knockout;
 
     // Define validatedChecked and validatedValue binding handlers.
     (function () {
@@ -652,7 +661,7 @@
                 checkedBindingHandler.init(element, valueAccessor, allBindingsAccessor, viewModel,
                     bindingContext);
 
-                if (knockout.hasState(observableOrComputed)) {
+                if (knockout.PropertyValidationState.hasState(observableOrComputed)) {
                     ko.utils.registerEventHandler(element, "blur", function () {
                         blurHandler(element, observableOrComputed);
                     });
@@ -668,12 +677,11 @@
         validatedValueBindingHandler = ko.bindingHandlers.validatedValue = {
             "init": function (element, valueAccessor, allBindingsAccessor, viewModel, bindingContext) {
                 var observableOrComputed = valueAccessor(),
-                    hasValidationState = knockout.hasState(observableOrComputed),
                     tagName = ko.utils.tagNameLower(element),
                     textualInput,
-                    validationState;
+                    validationState = knockout.PropertyValidationState.getState(observableOrComputed);
 
-                if (!hasValidationState) {
+                if (!validationState) {
                     valueBindingHandler.init(element, valueAccessor, allBindingsAccessor, viewModel,
                         bindingContext);
 
@@ -693,7 +701,6 @@
                     return;
                 }
 
-                validationState = knockout.PropertyValidationState.getState(observableOrComputed);
                 validationState.boundEntry.textualInput = true;
 
                 ko.utils.registerEventHandler(element, "blur", function () {
@@ -720,14 +727,10 @@
             },
             "update": function (element, valueAccessor, allBindingsAccessor, viewModel, bindingContext) {
                 var observableOrComputed = valueAccessor(),
-                    validationState;
-
-                if (knockout.hasState(observableOrComputed)) {
                     validationState = knockout.PropertyValidationState.getState(observableOrComputed);
 
-                    if (validationState.boundEntry.textualInput) {
-                        return;
-                    }
+                if (validationState && validationState.boundEntry.textualInput) {
+                    return;
                 }
 
                 valueBindingHandler.update(element, valueAccessor, allBindingsAccessor, viewModel,
@@ -766,7 +769,7 @@
     })();
 
     // applicability binding handlers
-    ko.bindingHandlers.enabledWhenApplicable = knockout.isolatedBindingHandler(
+    ko.bindingHandlers.enabledWhenApplicable = knockout.extras.isolatedBindingHandler(
         function (element, valueAccessor, allBindingsAccessor) {
             var bindings,
                 value = valueAccessor(),
@@ -777,11 +780,11 @@
                 value = bindings.value || bindings.checked || bindings.validatedValue || bindings.validatedChecked;
             }
 
-            if (!knockout.hasState(value))
-                return;
-
             validationState = knockout.PropertyValidationState.getState(value);
-            element.disabled = !validationState.options.applicable();
+
+            if (validationState) {
+                element.disabled = !validationState.options.applicable();
+            }
         });
 
     // visibility binding handlers
@@ -789,20 +792,17 @@
         var visibleDependingOnValidity = function (element, valueAccessor, determineVisibilityFunction) {
             var newVisibility,
                 observableOrComputed = valueAccessor(),
-                validationState;
+                validationState = knockout.PropertyValidationState.getState(observableOrComputed);
 
-            if (!knockout.hasState(observableOrComputed))
-                return;
-
-            validationState = knockout.PropertyValidationState.getState(observableOrComputed);
-            newVisibility = determineVisibilityFunction(validationState);
-
-            setElementVisibility(element, newVisibility);
+            if (validationState) {
+                newVisibility = determineVisibilityFunction(validationState);
+                valerie.dom.setElementVisibility(element, newVisibility);
+            }
         };
 
         // visibleWhenInvalid binding handler
         // - makes the bound element visible if the value is invalid, invisible otherwise
-        ko.bindingHandlers.visibleWhenInvalid = knockout.isolatedBindingHandler(
+        ko.bindingHandlers.visibleWhenInvalid = knockout.extras.isolatedBindingHandler(
             function (element, valueAccessor) {
                 visibleDependingOnValidity(element, valueAccessor, function (validationState) {
                     return validationState.failed();
@@ -811,7 +811,7 @@
 
         // visibleWhenValid binding handler
         // - makes the bound element visible if the value is valid, invisible otherwise
-        ko.bindingHandlers.visibleWhenValid = knockout.isolatedBindingHandler(
+        ko.bindingHandlers.visibleWhenValid = knockout.extras.isolatedBindingHandler(
             function (element, valueAccessor) {
                 visibleDependingOnValidity(element, valueAccessor, function (validationState) {
                     return validationState.passed();
@@ -822,46 +822,15 @@
     // validationMessageFor binding handler
     // - makes the bound element visible if the value is invalid
     // - sets the text of the bound element to be the validation message
-    ko.bindingHandlers.validationMessageFor = knockout.isolatedBindingHandler(
+    ko.bindingHandlers.validationMessageFor = knockout.extras.isolatedBindingHandler(
         function (element, valueAccessor) {
             var observableOrComputed = valueAccessor(),
                 validationState = knockout.PropertyValidationState.getState(observableOrComputed);
 
-            if (!knockout.hasState(observableOrComputed))
-                return;
-
-            setElementVisibility(element, validationState.showState());
-            ko.utils.setTextContent(element, validationState.message());
+            if (validationState) {
+                valerie.dom.setElementVisibility(element, validationState.showState());
+                ko.utils.setTextContent(element, validationState.message());
+            }
         });
-})();
-
-///#source 1 1 ../sources/valerie.knockout.fluent.js
-// valerie.knockout.fluent
-// - additional functions for defining validation options on ko.observables and ko.computeds
-// (c) 2013 egrove Ltd.
-// License: MIT (http://www.opensource.org/licenses/mit-license.php)
-
-/*global valerie: false */
-/// <reference path="valerie.core.js"/>
-/// <reference path="valerie.converters.js"/>
-/// <reference path="valerie.rules.js"/>
-/// <reference path="valerie.knockout.core.js"/>
-
-(function () {
-    "use strict";
-
-    var converters = valerie.converters,
-        prototype = valerie.knockout.ValidationState.prototype,
-        rules = valerie.rules;
-
-    prototype.between = function (minimumValueOrFunction, maximumValueOrFunction) {
-        this.options.rule = new rules.Range(minimumValueOrFunction, maximumValueOrFunction);
-        return this;
-    };
-
-    prototype.integer = function () {
-        this.options.converter = converters.integer;
-        return this;
-    };
 })();
 

@@ -76,7 +76,7 @@
             "failureMessageFormatForRange": "!({minimum} >= {value} <= {maximum}).",
             "valueFormatter": valerie.converters.passThrough.formatter
         };
-        
+
         strictEqual(new rules.Range(1, 10).test(0).failureMessage, "!(1 >= 0 <= 10).",
             "message as expected with value < minimum < maximum ");
 
@@ -89,7 +89,7 @@
         strictEqual(new rules.Range(undefined, 10).test(11).failureMessage, "11 > 10.",
             "message as expected with value > maximum");
     });
-    
+
     test("result includes overridden failure messages when rule fails", function () {
         var options = {
             "failureMessageFormatForMinimumOnly": "OMG! {value} < {minimum}.",

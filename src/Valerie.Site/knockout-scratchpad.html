@@ -100,7 +100,7 @@
                 loanAmountMin = ko.computed(function() { return housePrice() / 4; }),
                 loanAmountMax = ko.computed(function() { return (housePrice() * 3) / 4; });
 
-            viewModel = viewModel = {
+            viewModel = {
                 "housePrice": housePrice,
                 "houseType": ko.observable(),
                 "loanAmount": ko.observable(20000)
@@ -117,12 +117,16 @@
                 "toggleHousePriceApplicability": function() {
                     var applicable = housePrice.validation().options.applicable;
                     applicable(!applicable());
+                },
+                "validation": {
+                    "housePrice": valerie.knockout.PropertyValidationState.getState(housePrice)
                 }
             };
+            
 
             // Initialising validation non-fluently.
-            validationState = new valerie.knockout.ValidationState(viewModel.houseType, { "required": true });
-            valerie.knockout.setState(viewModel.houseType, validationState);
+            validationState = new valerie.knockout.PropertyValidationState(viewModel.houseType, { "required": true });
+            valerie.knockout.PropertyValidationState.setState(viewModel.houseType, validationState);
 
             // Use the validating binding handlers
             valerie.knockout.useValidatingBindingHandlers();

@@ -1,31 +1,19 @@
 ﻿///#source 1 1 ../bundles/valerie.license.js
 "valerie (c) 2013 egrove Ltd. License: MIT (http://www.opensource.org/licenses/mit-license.php)";
-///#source 1 1 ../sources/valerie.core.js
-// valerie.core
-// - the core namespaces, objects and utility functions
+///#source 1 1 ../sources/valerie.utils.js
+// valerie.utils
+// - general purpose utilities
+// - used by other parts of the valerie library
 // (c) 2013 egrove Ltd.
 // License: MIT (http://www.opensource.org/licenses/mit-license.php)
 
 /*global valerie: true */
-
-(function () {
-    // ReSharper disable AssignToImplicitGlobalInFunctionScope
-    if (typeof valerie === "undefined") {
-        valerie = {};
-    }
-
-    valerie = valerie || {};
-    // ReSharper restore AssignToImplicitGlobalInFunctionScope
-
-    valerie.converters = valerie.converters || {};
-    valerie.rules = valerie.rules || {};
-    valerie.utils = valerie.utils || {};
-})();
+var valerie = valerie || {};
 
 (function () {
     "use strict";
 
-    var utils = valerie.utils;
+    var utils = valerie.utils = valerie.utils || {};
 
     utils.asFunction = function (valueOrFunction) {
         if (utils.isFunction(valueOrFunction)) {
@@ -106,55 +94,20 @@
     };
 })();
 
-(function () {
-    "use strict";
-
-    var converters = valerie.converters;
-
-    converters.passThrough = {
-        "formatter": function (value) {
-            if (value === undefined || value === null) {
-                return "";
-            }
-
-            return value.toString();
-        },
-        "parser": function (value) {
-            return value;
-        }
-    };
-})();
-
-(function () {
-    "use strict";
-
-    var rules = valerie.rules;
-
-    rules.passThrough = {
-        "test": function () {
-            return rules.successfulTestResult;
-        }
-    };
-
-    rules.successfulTestResult = {
-        "failed": false,
-        "failureMessage": ""
-    };
-})();
-
 ///#source 1 1 ../sources/valerie.converters.js
 // valerie.converters
-// - general purpose converters for use with valerie
+// - general purpose converters
+// - used by other parts of the valerie library
 // (c) 2013 egrove Ltd.
 // License: MIT (http://www.opensource.org/licenses/mit-license.php)
 
-/*global valerie: false */
-/// <reference path="valerie.core.js"/>
+/*global valerie: true */
+var valerie = valerie || {};
 
 (function () {
     "use strict";
 
-    var converters = valerie.converters;
+    var converters = valerie.converters = valerie.converters || {};
 
     converters.integer = {
         "formatter": function (value) {
@@ -180,6 +133,19 @@
         }
     };
 
+    converters.passThrough = {
+        "formatter": function (value) {
+            if (value === undefined || value === null) {
+                return "";
+            }
+
+            return value.toString();
+        },
+        "parser": function (value) {
+            return value;
+        }
+    };
+
     converters.string = {
         "formatter": function (value) {
             if (value === undefined || value === null) {
@@ -201,18 +167,29 @@
 
 ///#source 1 1 ../sources/valerie.rules.js
 // valerie.rules
-// - general purpose rules for use with valerie
+// - general purpose rules
+// - used by other parts of the valerie library
 // (c) 2013 egrove Ltd.
 // License: MIT (http://www.opensource.org/licenses/mit-license.php)
 
+/// <reference path="valerie.utils.js"/>
+
 /*global valerie: false */
-// <reference path="valerie.core.js"/>
+if (typeof valerie === "undefined" || !valerie.utils) throw "valerie.utils is required.";
 
 (function () {
     "use strict";
 
-    var rules = valerie.rules,
+    var rules = valerie.rules = valerie.rules || {},
         utils = valerie.utils;
+
+    // ToDo: During (Range for dates and times).
+
+    rules.passThrough = {
+        "test": function () {
+            return rules.successfulTestResult;
+        }
+    };
 
     rules.Range = function (minimumValueOrFunction, maximumValueOrFunction, options) {
         if (arguments.length < 2 || arguments.length > 3) {
@@ -280,6 +257,9 @@
         }
     };
 
-    // ToDo: During (Range for dates and times).
+    rules.successfulTestResult = {
+        "failed": false,
+        "failureMessage": ""
+    };
 })();
 

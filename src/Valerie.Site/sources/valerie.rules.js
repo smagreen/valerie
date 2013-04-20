@@ -1,16 +1,27 @@
 ﻿// valerie.rules
-// - general purpose rules for use with valerie
+// - general purpose rules
+// - used by other parts of the valerie library
 // (c) 2013 egrove Ltd.
 // License: MIT (http://www.opensource.org/licenses/mit-license.php)
 
+/// <reference path="valerie.utils.js"/>
+
 /*global valerie: false */
-// <reference path="valerie.core.js"/>
+if (typeof valerie === "undefined" || !valerie.utils) throw "valerie.utils is required.";
 
 (function () {
     "use strict";
 
-    var rules = valerie.rules,
+    var rules = valerie.rules = valerie.rules || {},
         utils = valerie.utils;
+
+    // ToDo: During (Range for dates and times).
+
+    rules.passThrough = {
+        "test": function () {
+            return rules.successfulTestResult;
+        }
+    };
 
     rules.Range = function (minimumValueOrFunction, maximumValueOrFunction, options) {
         if (arguments.length < 2 || arguments.length > 3) {
@@ -78,5 +89,8 @@
         }
     };
 
-    // ToDo: During (Range for dates and times).
+    rules.successfulTestResult = {
+        "failed": false,
+        "failureMessage": ""
+    };
 })();

@@ -1,14 +1,4 @@
 ﻿(function () {
-    //#region Namespace
-
-    module("valerie.knockout.namespace");
-
-    test("valerie.knockout namespace exists", function () {
-        ok(typeof valerie.knockout === "object");
-    });
-
-    //#endregion
-
     //#region Validation
 
     module("valerie.knockout.validation");
@@ -72,7 +62,7 @@
 
         o("valerie");
         ok(o.validation().failed() === false, "validation passed for required: true, value: \"valerie\"");
-        
+
         o(10);
         ok(o.validation().failed() === false, "validation passed for required: true, value: 10");
     });

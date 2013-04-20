@@ -2,9 +2,9 @@
 <bundle minify="true"
 		runOnBuild="true"
 		output="valerie.js">
-	<!--The order of the <file> elements determines the order of them when bundled.-->
+  <!--The order of the <file> elements determines the order of them when bundled.-->
   <file>../bundles/valerie.license.js</file>
-	<file>../sources/valerie.core.js</file>
+  <file>../sources/valerie.utils.js</file>
   <file>../sources/valerie.converters.js</file>
   <file>../sources/valerie.rules.js</file>
 </bundle>

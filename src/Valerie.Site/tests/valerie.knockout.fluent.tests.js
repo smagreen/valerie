@@ -43,7 +43,7 @@
         o(11);
         result = o.validation().result();
         deepEqual(result, rangeFailureResult, "validation failed for required: false, value: 11");
-        
+
         o = ko.observable().validation().required().between(1, 10).end();
 
         o(undefined);

@@ -1,28 +1,16 @@
-﻿// valerie.core
-// - the core namespaces, objects and utility functions
+﻿// valerie.utils
+// - general purpose utilities
+// - used by other parts of the valerie library
 // (c) 2013 egrove Ltd.
 // License: MIT (http://www.opensource.org/licenses/mit-license.php)
 
 /*global valerie: true */
-
-(function () {
-    // ReSharper disable AssignToImplicitGlobalInFunctionScope
-    if (typeof valerie === "undefined") {
-        valerie = {};
-    }
-
-    valerie = valerie || {};
-    // ReSharper restore AssignToImplicitGlobalInFunctionScope
-
-    valerie.converters = valerie.converters || {};
-    valerie.rules = valerie.rules || {};
-    valerie.utils = valerie.utils || {};
-})();
+var valerie = valerie || {};
 
 (function () {
     "use strict";
 
-    var utils = valerie.utils;
+    var utils = valerie.utils = valerie.utils || {};
 
     utils.asFunction = function (valueOrFunction) {
         if (utils.isFunction(valueOrFunction)) {
@@ -100,41 +88,5 @@
         }
 
         return false;
-    };
-})();
-
-(function () {
-    "use strict";
-
-    var converters = valerie.converters;
-
-    converters.passThrough = {
-        "formatter": function (value) {
-            if (value === undefined || value === null) {
-                return "";
-            }
-
-            return value.toString();
-        },
-        "parser": function (value) {
-            return value;
-        }
-    };
-})();
-
-(function () {
-    "use strict";
-
-    var rules = valerie.rules;
-
-    rules.passThrough = {
-        "test": function () {
-            return rules.successfulTestResult;
-        }
-    };
-
-    rules.successfulTestResult = {
-        "failed": false,
-        "failureMessage": ""
     };
 })();
