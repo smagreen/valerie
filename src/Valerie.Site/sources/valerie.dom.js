@@ -12,6 +12,8 @@ var valerie = valerie || {};
 
     var dom = valerie.dom = valerie.dom || {};
 
+    // + setElementVisibility
+    // - sets the visibility of the given DOM element
     dom.setElementVisibility = function (element, newVisibility) {
         var currentVisibility = (element.style.display !== "none");
         if (currentVisibility === newVisibility) {

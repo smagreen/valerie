@@ -17,12 +17,14 @@ if (typeof valerie === "undefined" || !valerie.utils) throw "valerie.utils is re
 
     // ToDo: During (Range for dates and times).
 
+    // + rules.passThrough
     rules.passThrough = {
         "test": function () {
             return rules.successfulTestResult;
         }
     };
 
+    // + rules.Range
     rules.Range = function (minimumValueOrFunction, maximumValueOrFunction, options) {
         if (arguments.length < 2 || arguments.length > 3) {
             throw "2 or 3 arguments expected.";
@@ -34,9 +36,9 @@ if (typeof valerie === "undefined" || !valerie.utils) throw "valerie.utils is re
     };
 
     rules.Range.defaultOptions = {
-        "failureMessageFormatForMinimumOnly": "The value must be no less than {minimum}.",
-        "failureMessageFormatForMaximumOnly": "The value must be no greater than {maximum}.",
-        "failureMessageFormatForRange": "The value must be between {minimum} and {maximum}.",
+        "failureMessageFormatForMinimumOnly": "The value must be no less than {minimum}.", /*resource*/
+        "failureMessageFormatForMaximumOnly": "The value must be no greater than {maximum}.", /*resource*/
+        "failureMessageFormatForRange": "The value must be between {minimum} and {maximum}.", /*resource*/
         "valueFormatter": valerie.converters.passThrough.formatter
     };
 

@@ -27,11 +27,11 @@
             <div>
                 <label>
                     Location                    
-                        <select data-bind="value: location">
-                            <option value="">Please Select...</option>
-                            <option>England</option>
-                            <option>Wales</option>
-                        </select>
+                    <select data-bind="value: location">
+                        <option value="">Please Select...</option>
+                        <option>England</option>
+                        <option>Wales</option>
+                    </select>
                 </label>
                 <span data-bind="validationMessageFor: location"></span>
             </div>
@@ -53,12 +53,12 @@
             <div>
                 <label>
                     House Price
-                        <input data-bind="value: housePrice, enabledWhenApplicable: true" /></label>
+                    <input data-bind="value: housePrice, enabledWhenApplicable: true" /></label>
                 <span data-bind="validationMessageFor: housePrice"></span>
             </div>
             <div>
                 <input type="button" value="Toggle House Price applicability"
-                    data-bind="click: toggleHousePriceApplicability" />
+                       data-bind="click: toggleHousePriceApplicability" />
             </div>
             <div>
                 <input type="button" value="Small House" data-bind="click: function () { housePrice(125000); }" />
@@ -69,16 +69,19 @@
             <div data-bind="visibleWhenValid: housePrice">
                 <p>
                     You can borrow between: &pound;<strong data-bind="text: loanAmountMin"></strong> and
-                        &pound;<strong data-bind="text: loanAmountMax"></strong>.
+                    &pound;<strong data-bind="text: loanAmountMax"></strong>.
                 </p>
                 <div>
                     <label>
                         Loan Amount
-                            <input data-bind="value: loanAmount" /></label>
+                        <input data-bind="value: loanAmount" /></label>
                     <span data-bind="validationMessageFor: loanAmount"></span>
                 </div>
             </div>
         </form>
+        <ul data-bind="foreach: validationErrors">
+            <li data-bind="text: result().failureMessage"></li>
+        </ul>
         <pre data-bind="text: JSON.stringify(ko.toJS($data), null, 2)"></pre>
     </div>
     <!--[if lt IE 8]>
@@ -87,7 +90,12 @@
     <script type="text/javascript" src="frameworks/knockout-2.2.1.debug.js"></script>
     <script type="text/javascript" src="bundles/valerie-for-knockout.js"></script>
     <script type="text/javascript">
-        window.onload = function() {
+        window.onload = function () {
+            var v = valerie.knockout;
+
+            // Configure valerie
+            v.useValidatingBindingHandlers();
+
             var viewModel,
                 validationState,
                 housePrice = ko.observable(150000)
@@ -97,10 +105,10 @@
                     .required()
                     .between(75000, 500000)
                     .end(),
-                loanAmountMin = ko.computed(function() { return housePrice() / 4; }),
-                loanAmountMax = ko.computed(function() { return (housePrice() * 3) / 4; });
+                loanAmountMin = ko.computed(function () { return housePrice() / 4; }),
+                loanAmountMax = ko.computed(function () { return (housePrice() * 3) / 4; });
 
-            viewModel = {
+            viewModel = v.validatableModel({
                 "housePrice": housePrice,
                 "houseType": ko.observable(),
                 "loanAmount": ko.observable(20000)
@@ -119,17 +127,16 @@
                     applicable(!applicable());
                 },
                 "validation": {
-                    "housePrice": valerie.knockout.PropertyValidationState.getState(housePrice)
+                    "housePrice": v.getValidationState(housePrice)
                 }
-            };
-            
+            });
+
+            viewModel.validation().validationStates.push(housePrice.validation(), viewModel.loanAmount.validation());
+            viewModel.validationErrors = viewModel.validation().result().data;
 
             // Initialising validation non-fluently.
-            validationState = new valerie.knockout.PropertyValidationState(viewModel.houseType, { "required": true });
-            valerie.knockout.PropertyValidationState.setState(viewModel.houseType, validationState);
-
-            // Use the validating binding handlers
-            valerie.knockout.useValidatingBindingHandlers();
+            validationState = new v.PropertyValidationState(viewModel.houseType, { "required": true });
+            v.setValidationState(viewModel.houseType, validationState);
 
             // Apply bindings
             ko.applyBindings(viewModel, document.getElementById("view"));

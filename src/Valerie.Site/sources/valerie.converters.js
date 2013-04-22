@@ -12,6 +12,7 @@ var valerie = valerie || {};
 
     var converters = valerie.converters = valerie.converters || {};
 
+    // + converters.integer
     converters.integer = {
         "formatter": function (value) {
             if (value === undefined || value === null) {
@@ -36,6 +37,7 @@ var valerie = valerie || {};
         }
     };
 
+    // + converters.passThrough
     converters.passThrough = {
         "formatter": function (value) {
             if (value === undefined || value === null) {

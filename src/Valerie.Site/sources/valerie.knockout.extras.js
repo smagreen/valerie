@@ -14,7 +14,7 @@ var valerie = valerie || {};
     var knockout = valerie.knockout = valerie.knockout || {},
         extras = knockout.extras = knockout.extras || {};
 
-    // isolatedBindingHandler factory function
+    // + isolatedBindingHandler factory function
     // - creates a binding handler in which update is called only when a dependency changes and not when another
     //   binding changes
     extras.isolatedBindingHandler = function (initOrUpdateFunction, updateFunction) {
@@ -37,7 +37,7 @@ var valerie = valerie || {};
         };
     };
 
-    // pausableComputed factory function
+    // + pausableComputed factory function
     // - creates a computed whose evaluation can be paused and resumed
     extras.pausableComputed = function (evaluatorFunction, evaluatorFunctionTarget, options) {
         var lastValue,

@@ -12,6 +12,16 @@ var valerie = valerie || {};
 
     var utils = valerie.utils = valerie.utils || {};
 
+    // + utils.asArray
+    utils.asArray = function (valueOrArray) {
+        if (utils.isArray(valueOrArray)) {
+            return valueOrArray;
+        }
+
+        return [valueOrArray];
+    };
+
+    // + utils.asFunction
     utils.asFunction = function (valueOrFunction) {
         if (utils.isFunction(valueOrFunction)) {
             return valueOrFunction;
@@ -20,6 +30,7 @@ var valerie = valerie || {};
         return function () { return valueOrFunction; };
     };
 
+    // + utils.formatString
     utils.formatString = function (format, replacements) {
         if (replacements === undefined || replacements === null) {
             replacements = {};
@@ -27,14 +38,21 @@ var valerie = valerie || {};
 
         return format.replace(/\{(\w+)\}/g, function (match, subMatch) {
             var replacement = replacements[subMatch];
-            return typeof replacement === "string" ? replacement : match;
+
+            if (replacement === undefined || replacement === null) {
+                return match;
+            }
+
+            return replacement.toString();
         });
     };
 
+    // + utils.isArray
     utils.isArray = function (value) {
         return {}.toString.call(value) === "[object Array]";
     };
 
+    // + utils.isFunction
     utils.isFunction = function (value) {
         if (value === undefined || value === null) {
             return false;
@@ -43,14 +61,33 @@ var valerie = valerie || {};
         return (typeof value === "function");
     };
 
+    // + utils.isMissing
+    utils.isMissing = function (value) {
+        if (value === undefined || value === null) {
+            return true;
+        }
+
+        if (value.length === 0) {
+            return true;
+        }
+
+        return false;
+    };
+
+    // + utils.isObject
     utils.isObject = function (value) {
         if (value === null) {
+            return false;
+        }
+        
+        if(utils.isArray(value)) {
             return false;
         }
 
         return typeof value === "object";
     };
 
+    // + utils.mergeOptions
     utils.mergeOptions = function (defaultOptions, options) {
         var mergedOptions = {},
             name;
@@ -76,17 +113,5 @@ var valerie = valerie || {};
         }
 
         return mergedOptions;
-    };
-
-    utils.isMissing = function (value) {
-        if (value === undefined || value === null) {
-            return true;
-        }
-
-        if (value.length === 0) {
-            return true;
-        }
-
-        return false;
     };
 })();

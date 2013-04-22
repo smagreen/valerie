@@ -15,6 +15,16 @@ var valerie = valerie || {};
 
     var utils = valerie.utils = valerie.utils || {};
 
+    // + utils.asArray
+    utils.asArray = function (valueOrArray) {
+        if (utils.isArray(valueOrArray)) {
+            return valueOrArray;
+        }
+
+        return [valueOrArray];
+    };
+
+    // + utils.asFunction
     utils.asFunction = function (valueOrFunction) {
         if (utils.isFunction(valueOrFunction)) {
             return valueOrFunction;
@@ -23,6 +33,7 @@ var valerie = valerie || {};
         return function () { return valueOrFunction; };
     };
 
+    // + utils.formatString
     utils.formatString = function (format, replacements) {
         if (replacements === undefined || replacements === null) {
             replacements = {};
@@ -30,14 +41,21 @@ var valerie = valerie || {};
 
         return format.replace(/\{(\w+)\}/g, function (match, subMatch) {
             var replacement = replacements[subMatch];
-            return typeof replacement === "string" ? replacement : match;
+
+            if (replacement === undefined || replacement === null) {
+                return match;
+            }
+
+            return replacement.toString();
         });
     };
 
+    // + utils.isArray
     utils.isArray = function (value) {
         return {}.toString.call(value) === "[object Array]";
     };
 
+    // + utils.isFunction
     utils.isFunction = function (value) {
         if (value === undefined || value === null) {
             return false;
@@ -46,14 +64,33 @@ var valerie = valerie || {};
         return (typeof value === "function");
     };
 
+    // + utils.isMissing
+    utils.isMissing = function (value) {
+        if (value === undefined || value === null) {
+            return true;
+        }
+
+        if (value.length === 0) {
+            return true;
+        }
+
+        return false;
+    };
+
+    // + utils.isObject
     utils.isObject = function (value) {
         if (value === null) {
+            return false;
+        }
+        
+        if(utils.isArray(value)) {
             return false;
         }
 
         return typeof value === "object";
     };
 
+    // + utils.mergeOptions
     utils.mergeOptions = function (defaultOptions, options) {
         var mergedOptions = {},
             name;
@@ -80,18 +117,6 @@ var valerie = valerie || {};
 
         return mergedOptions;
     };
-
-    utils.isMissing = function (value) {
-        if (value === undefined || value === null) {
-            return true;
-        }
-
-        if (value.length === 0) {
-            return true;
-        }
-
-        return false;
-    };
 })();
 
 ///#source 1 1 ../sources/valerie.converters.js
@@ -109,6 +134,7 @@ var valerie = valerie || {};
 
     var converters = valerie.converters = valerie.converters || {};
 
+    // + converters.integer
     converters.integer = {
         "formatter": function (value) {
             if (value === undefined || value === null) {
@@ -133,6 +159,7 @@ var valerie = valerie || {};
         }
     };
 
+    // + converters.passThrough
     converters.passThrough = {
         "formatter": function (value) {
             if (value === undefined || value === null) {
@@ -185,12 +212,14 @@ if (typeof valerie === "undefined" || !valerie.utils) throw "valerie.utils is re
 
     // ToDo: During (Range for dates and times).
 
+    // + rules.passThrough
     rules.passThrough = {
         "test": function () {
             return rules.successfulTestResult;
         }
     };
 
+    // + rules.Range
     rules.Range = function (minimumValueOrFunction, maximumValueOrFunction, options) {
         if (arguments.length < 2 || arguments.length > 3) {
             throw "2 or 3 arguments expected.";
@@ -202,9 +231,9 @@ if (typeof valerie === "undefined" || !valerie.utils) throw "valerie.utils is re
     };
 
     rules.Range.defaultOptions = {
-        "failureMessageFormatForMinimumOnly": "The value must be no less than {minimum}.",
-        "failureMessageFormatForMaximumOnly": "The value must be no greater than {maximum}.",
-        "failureMessageFormatForRange": "The value must be between {minimum} and {maximum}.",
+        "failureMessageFormatForMinimumOnly": "The value must be no less than {minimum}.", /*resource*/
+        "failureMessageFormatForMaximumOnly": "The value must be no greater than {maximum}.", /*resource*/
+        "failureMessageFormatForRange": "The value must be between {minimum} and {maximum}.", /*resource*/
         "valueFormatter": valerie.converters.passThrough.formatter
     };
 
