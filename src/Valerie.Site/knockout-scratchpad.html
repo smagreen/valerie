@@ -9,6 +9,10 @@
             font-size: 105%;
         }
 
+        section {
+            margin-left: 2em;
+        }
+
         form div {
             margin-top: 1em;
         }
@@ -24,119 +28,148 @@
     <h1>knockout Scratchpad</h1>
     <div id="view">
         <form>
-            <div>
-                <label>
-                    Location                    
-                    <select data-bind="value: location">
-                        <option value="">Please Select...</option>
-                        <option>England</option>
-                        <option>Wales</option>
-                    </select>
-                </label>
-                <span data-bind="validationMessageFor: location"></span>
-            </div>
-            <div>
-                <label>
-                    <input data-bind="checked: houseType" name="houseType" type="radio" value="Terraced" />
-                    Terraced
-                </label>
-                <label>
-                    <input data-bind="checked: houseType" name="houseType" type="radio" value="Semi Detached" />
-                    Semi Detached</label>
-                <label>
-                    <input data-bind="checked: houseType" name="houseType" type="radio" value="Detached" />
-                    Detached</label>
-                <span data-bind="validationMessageFor: houseType"></span>
-            </div>
-            <!-- ToDo: Add checklist array for features. -->
-            <!-- ToDo: Add multi-select array for utilities. -->
-            <div>
-                <label>
-                    House Price
-                    <input data-bind="value: housePrice, enabledWhenApplicable: true" /></label>
-                <span data-bind="validationMessageFor: housePrice"></span>
-            </div>
-            <div>
-                <input type="button" value="Toggle House Price applicability"
-                       data-bind="click: toggleHousePriceApplicability" />
-            </div>
-            <div>
-                <input type="button" value="Small House" data-bind="click: function () { housePrice(125000); }" />
-                <input type="button" value="Large House" data-bind="click: function () { housePrice(250000); }" />
-                <input type="button" value="Big House" data-bind="click: function () { housePrice(500000); }" />
-                <input type="button" value="Too Big a House" data-bind="click: function () { housePrice(750000); }" />
-            </div>
-            <div data-bind="visibleWhenValid: housePrice">
-                <p>
-                    You can borrow between: &pound;<strong data-bind="text: loanAmountMin"></strong> and
-                    &pound;<strong data-bind="text: loanAmountMax"></strong>.
-                </p>
+            <section>
+                <h2>Validation Settings</h2>
+                <div>
+                    <label>
+                        <input type="radio" name="pause" value="1" data-bind="checked: validation().paused" />
+                        Paused
+                    </label>
+                    <input type="button" value="Refresh"
+                        data-bind="click: function () { validation().refresh(); }, enable: validation().paused()" />
+                    <label>
+                        <input type="radio" name="pause" value="0" data-bind="checked: validation().paused" />
+                        Running
+                    </label>
+                </div>
+            </section>
+            <section>
+                <h2>House Details</h2>
+                <div>
+                    <label>
+                        Location                    
+                            <select data-bind="value: houseDetails.location">
+                                <option value="">Please Select...</option>
+                                <option>England</option>
+                                <option>Wales</option>
+                            </select>
+                    </label>
+                    <span data-bind="validationMessageFor: houseDetails.location"></span>
+                </div>
+                <div>
+                    <label>
+                        <input data-bind="checked: houseDetails.houseType" name="houseType" type="radio" value="Terraced" />
+                        Terraced
+                    </label>
+                    <label>
+                        <input data-bind="checked: houseDetails.houseType" name="houseType" type="radio" value="Semi Detached" />
+                        Semi Detached</label>
+                    <label>
+                        <input data-bind="checked: houseDetails.houseType" name="houseType" type="radio" value="Detached" />
+                        Detached</label>
+                    <span data-bind="validationMessageFor: houseDetails.houseType"></span>
+                </div>
+                <!-- ToDo: Add checklist array for features. -->
+                <!-- ToDo: Add multi-select array for utilities. -->
+                <section>
+                    <h3>Validation State</h3>
+                    <ul data-bind="foreach: houseDetails.validation().invalidStates">
+                        <li><span data-bind="text: options.name()"></span>: <span data-bind="text: message"></span></li>
+                    </ul>
+                </section>
+            </section>
+            <section>
+                <h2>Loan Details</h2>
+                <div>
+                    <label>
+                        House Price
+                        <input data-bind="value: housePrice, enableWhenApplicable: true" /></label>
+                    <span data-bind="validationMessageFor: housePrice"></span>
+                </div>
+                <div>
+                    <input type="button" value="Small House" data-bind="click: function () { housePrice(125000); }" />
+                    <input type="button" value="Large House" data-bind="click: function () { housePrice(250000); }" />
+                    <input type="button" value="Big House" data-bind="click: function () { housePrice(500000); }" />
+                    <input type="button" value="Too Big a House" data-bind="click: function () { housePrice(750000); }" />
+                </div>
+                <div data-bind="visibleWhenValid: housePrice">
+                    <p>
+                        You can borrow between: &pound;<strong data-bind="text: loanAmountMin"></strong> and
+                        &pound;<strong data-bind="text: loanAmountMax"></strong>.
+                    </p>
+                </div>
                 <div>
                     <label>
                         Loan Amount
-                        <input data-bind="value: loanAmount" /></label>
+                        <input data-bind="value: loanAmount, enableWhenApplicable: true" name="loanAmount"/></label>
                     <span data-bind="validationMessageFor: loanAmount"></span>
                 </div>
-            </div>
+
+            </section>
+            <section>
+                <h3>Validation State</h3>
+                <ul data-bind="foreach: validation().invalidStates">
+                    <li><span data-bind="text: options.name()"></span>: <span data-bind="text: message"></span></li>
+                </ul>
+            </section>
         </form>
-        <ul data-bind="foreach: validationErrors">
-            <li data-bind="text: result().failureMessage"></li>
-        </ul>
-        <pre data-bind="text: JSON.stringify(ko.toJS($data), null, 2)"></pre>
+        <section>
+            <h2>Model State</h2>
+            <pre data-bind="text: JSON.stringify(ko.toJS($data), null, 2)"></pre>
+        </section>
     </div>
     <!--[if lt IE 8]>
             <script type="text/javascript" src="frameworks/json3.min.js"></script>
         <![endif]-->
     <script type="text/javascript" src="frameworks/knockout-2.2.1.debug.js"></script>
-    <script type="text/javascript" src="bundles/valerie-for-knockout.js"></script>
+    <script type="text/javascript" src="bundles/valerie-for-knockout-gb.js"></script>
     <script type="text/javascript">
-        window.onload = function () {
+        window.onload = function() {
             var v = valerie.knockout;
 
             // Configure valerie
             v.useValidatingBindingHandlers();
 
             var viewModel,
-                validationState,
                 housePrice = ko.observable(150000)
-                    .validation()
+                    .validate()
                     .applicable(ko.observable(true))
-                    .integer()
+                    .money()
                     .required()
                     .between(75000, 500000)
                     .end(),
-                loanAmountMin = ko.computed(function () { return housePrice() / 4; }),
-                loanAmountMax = ko.computed(function () { return (housePrice() * 3) / 4; });
+                loanAmountMin = ko.computed(function() { return housePrice() / 4; }),
+                loanAmountMax = ko.computed(function() { return (housePrice() * 3) / 4; });
 
             viewModel = v.validatableModel({
+                "houseDetails": v.validatableModel({
+                    "houseType": ko.observable()
+                        .validate()
+                        .required()
+                        .end(),
+                    "location": ko.observable()
+                        .validate()
+                        .name("Location")
+                        .required()
+                        .end(),
+                })
+                    .name("House Details")
+                    .validateProperties()
+                    .end(),
                 "housePrice": housePrice,
-                "houseType": ko.observable(),
                 "loanAmount": ko.observable(20000)
-                    .validation()
-                    .integer()
+                    .validate()
+                    .money()
+                    .applicable(housePrice.validation().passed)
                     .required()
                     .between(loanAmountMin, loanAmountMax)
                     .end(),
                 "loanAmountMin": loanAmountMin,
                 "loanAmountMax": loanAmountMax,
-                "location": ko.observable().validation()
-                    .required()
-                    .end(),
-                "toggleHousePriceApplicability": function() {
-                    var applicable = housePrice.validation().options.applicable;
-                    applicable(!applicable());
-                },
-                "validation": {
-                    "housePrice": v.getValidationState(housePrice)
-                }
-            });
-
-            viewModel.validation().validationStates.push(housePrice.validation(), viewModel.loanAmount.validation());
-            viewModel.validationErrors = viewModel.validation().result().data;
-
-            // Initialising validation non-fluently.
-            validationState = new v.PropertyValidationState(viewModel.houseType, { "required": true });
-            v.setValidationState(viewModel.houseType, validationState);
+            })
+                .name("Loan Details")
+                .validateProperties()
+                .end();
 
             // Apply bindings
             ko.applyBindings(viewModel, document.getElementById("view"));

@@ -327,6 +327,54 @@ var valerie = valerie || {};
     };
 })();
 
+///#source 1 1 ../sources/valerie.converters.gb.js
+// valerie.converters.gb
+// - converters for types particular to Great Britain
+// (c) 2013 egrove Ltd.
+// License: MIT (http://www.opensource.org/licenses/mit-license.php)
+
+/*global valerie: true */
+var valerie = valerie || {};
+
+
+(function () {
+    "use strict";
+
+    var converters = valerie.converters = valerie.converters || {};
+
+    // + converters.money
+    converters.money = {
+        "formatter": function (value, format) {
+            if (value === undefined || value === null) {
+                return "";
+            }
+
+            if (format === undefined || format === null) {
+                format = "";
+            }
+
+            // ToDo: Change this very simple implementation.
+            return format + value.toString();
+        },
+        "parser": function (value) {
+            if (value === undefined || value === null) {
+                return undefined;
+            }
+
+            value = value.replace("£", "");
+            
+            // ToDo: Change this very simple, permissive implementation.
+            var parsedValue = parseFloat(value);
+
+            if (isNaN(parsedValue)) {
+                return undefined;
+            }
+
+            return parsedValue;
+        }
+    };
+})();
+
 ///#source 1 1 ../sources/valerie.rules.js
 // valerie.rules
 // - general purpose rules
@@ -769,6 +817,42 @@ if (!valerie.knockout || !valerie.knockout.extras) throw "valerie.knockout.extra
         // Create the validation state, then return it, so it can be modified fluently.
         return knockout.validatableProperty(this, validationOptions);
     };
+})();
+
+///#source 1 1 ../sources/valerie.knockout.gb.js
+// valerie.knockout.gb
+// - additional fluent methods for using converters particular to Great Britain
+// (c) 2013 egrove Ltd.
+// License: MIT (http://www.opensource.org/licenses/mit-license.php)
+
+/// <reference path="valerie.utils.js"/> 
+/// <reference path="valerie.knockout.js"/>
+
+/*global valerie: false */
+if (typeof valerie === "undefined" || !valerie.utils) throw "valerie.utils is required.";
+if (!valerie.knockout) throw "valerie.knockout is required.";
+
+(function () {
+    "use strict";
+
+    var converters = valerie.converters,
+        utils = valerie.utils,
+        moneyDefaultOptions = {
+            "entryFormat": undefined,
+            "valueFormat": "£"
+        };
+
+    valerie.knockout.PropertyValidationState.prototype.money = function (options) {
+        options = utils.mergeOptions(moneyDefaultOptions, options);
+
+        this.options.entryFormat = options.entryFormat;
+        this.options.valueFormat = options.valueFormat;
+        this.options.converter = converters.money;
+
+        return this;
+    };
+
+    valerie.knockout.PropertyValidationState.prototype.money.defaultOptions = moneyDefaultOptions;
 })();
 
 ///#source 1 1 ../sources/valerie.knockout.bindings.js

@@ -55,6 +55,15 @@ var valerie = valerie || {};
         return {}.toString.call(value) === "[object Array]";
     };
 
+    // + utils.isArrayOrObject
+    utils.isArrayOrObject = function(value) {
+        if (value === null) {
+            return false;
+        }
+
+        return typeof value === "object";
+    };
+
     // + utils.isFunction
     utils.isFunction = function (value) {
         if (value === undefined || value === null) {
@@ -148,7 +157,7 @@ var valerie = valerie || {};
                 return undefined;
             }
 
-            // ToDo: Change this very noddy, permissive implementation.
+            // ToDo: Change this very simple, permissive implementation.
             var parsedValue = parseInt(value, 10);
 
             if (isNaN(parsedValue)) {
@@ -173,6 +182,7 @@ var valerie = valerie || {};
         }
     };
 
+    // + converters.string
     converters.string = {
         "formatter": function (value) {
             if (value === undefined || value === null) {
@@ -212,9 +222,13 @@ if (typeof valerie === "undefined" || !valerie.utils) throw "valerie.utils is re
 
     // ToDo: During (Range for dates and times).
 
-    // + rules.passThrough
-    rules.passThrough = {
-        "test": function () {
+    // + rules.PassThrough
+    rules.PassThrough = function() {
+        this.options = {};
+    };
+
+    rules.PassThrough.prototype = {
+        "test": function() {
             return rules.successfulTestResult;
         }
     };
@@ -234,6 +248,7 @@ if (typeof valerie === "undefined" || !valerie.utils) throw "valerie.utils is re
         "failureMessageFormatForMinimumOnly": "The value must be no less than {minimum}.", /*resource*/
         "failureMessageFormatForMaximumOnly": "The value must be no greater than {maximum}.", /*resource*/
         "failureMessageFormatForRange": "The value must be between {minimum} and {maximum}.", /*resource*/
+        "valueFormat": undefined,
         "valueFormatter": valerie.converters.passThrough.formatter
     };
 
@@ -274,9 +289,9 @@ if (typeof valerie === "undefined" || !valerie.utils) throw "valerie.utils is re
 
             failureMessage = utils.formatString(
                 failureMessageFormat, {
-                    "maximum": this.options.valueFormatter(maximum),
-                    "minimum": this.options.valueFormatter(minimum),
-                    "value": this.options.valueFormatter(value)
+                    "maximum": this.options.valueFormatter(maximum, this.options.valueFormat),
+                    "minimum": this.options.valueFormatter(minimum, this.options.valueFormat),
+                    "value": this.options.valueFormatter(value, this.options.valueFormat)
                 });
 
             return {

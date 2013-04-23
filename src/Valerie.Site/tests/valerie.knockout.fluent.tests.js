@@ -9,7 +9,7 @@
             rangeFailureResult = { "failed": true, "failureMessage": "The value must be between 1 and 10." },
             requiredFailureResult = { "failed": true, "failureMessage": "A value is required." };
 
-        o = ko.observable().validation().between(1, 10).end();
+        o = ko.observable().validate().between(1, 10).end();
 
         o(undefined);
         result = o.validation().result();
@@ -44,7 +44,7 @@
         result = o.validation().result();
         deepEqual(result, rangeFailureResult, "validation failed for required: false, value: 11");
 
-        o = ko.observable().validation().required().between(1, 10).end();
+        o = ko.observable().validate().required().between(1, 10).end();
 
         o(undefined);
         result = o.validation().result();

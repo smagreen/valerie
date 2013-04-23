@@ -26,7 +26,7 @@ var valerie = valerie || {};
                 return undefined;
             }
 
-            // ToDo: Change this very noddy, permissive implementation.
+            // ToDo: Change this very simple, permissive implementation.
             var parsedValue = parseInt(value, 10);
 
             if (isNaN(parsedValue)) {
@@ -51,6 +51,7 @@ var valerie = valerie || {};
         }
     };
 
+    // + converters.string
     converters.string = {
         "formatter": function (value) {
             if (value === undefined || value === null) {

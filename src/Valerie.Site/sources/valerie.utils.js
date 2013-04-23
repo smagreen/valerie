@@ -52,6 +52,15 @@ var valerie = valerie || {};
         return {}.toString.call(value) === "[object Array]";
     };
 
+    // + utils.isArrayOrObject
+    utils.isArrayOrObject = function(value) {
+        if (value === null) {
+            return false;
+        }
+
+        return typeof value === "object";
+    };
+
     // + utils.isFunction
     utils.isFunction = function (value) {
         if (value === undefined || value === null) {

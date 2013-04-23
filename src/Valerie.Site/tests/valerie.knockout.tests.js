@@ -1,21 +1,21 @@
 ﻿(function () {
     //#region Validation
 
-    module("valerie.knockout.validation");
+    module("valerie.knockout.validate");
 
-    test("observable extended with validation function", function () {
-        ko.observable().validation();
+    test("observable extended with validate function", function () {
+        ko.observable().validate();
         ok(true);
     });
 
-    test("observable array extended with validation function", function () {
-        ko.observableArray().validation();
+    test("observable array extended with validate function", function () {
+        ko.observableArray().validate();
         ok(true);
     });
 
-    test("computed extended with validation function", function () {
+    test("computed extended with validate function", function () {
         ko.computed(function () {
-        }).validation();
+        }).validate();
 
         ok(true);
     });
@@ -29,7 +29,7 @@
     test("observable is validated against its requiredness", function () {
         var o;
 
-        o = ko.observable().validation().end();
+        o = ko.observable().validate().end();
         o(undefined);
         ok(o.validation().failed() === false, "validation passed for required: false, value: undefined");
 
@@ -46,7 +46,7 @@
         ok(o.validation().failed() === false, "validation passed for required: false, value: 10");
 
 
-        o = ko.observable().validation().required().end();
+        o = ko.observable().validate().required().end();
 
         o(undefined);
         ok(o.validation().failed(), "validation failed for required: true, value: undefined");

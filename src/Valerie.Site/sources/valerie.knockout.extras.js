@@ -38,25 +38,57 @@ var valerie = valerie || {};
     };
 
     // + pausableComputed factory function
-    // - creates a computed whose evaluation can be paused and resumed
-    extras.pausableComputed = function (evaluatorFunction, evaluatorFunctionTarget, options) {
+    // - creates a computed whose evaluation can be paused and unpaused
+    extras.pausableComputed = function (evaluatorFunction, evaluatorFunctionTarget, options,
+        pausedValueOrObservableOrComputed) {
+
         var lastValue,
-            paused = ko.observable(false),
-            computed = ko.computed(function () {
-                if (paused()) {
-                    return lastValue;
+            paused,
+            computed;
+
+        if (pausedValueOrObservableOrComputed === undefined || pausedValueOrObservableOrComputed === null) {
+            paused = ko.observable(false);
+        } else {
+            paused = ko.utils.isSubscribable(pausedValueOrObservableOrComputed) ?
+                pausedValueOrObservableOrComputed :
+                ko.observable(pausedValueOrObservableOrComputed);
+        }
+
+        computed = ko.computed(function () {
+            if (paused()) {
+                return lastValue;
+            }
+
+            return evaluatorFunction.call(evaluatorFunctionTarget);
+        }, evaluatorFunctionTarget, options);
+
+        computed.paused = ko.computed({
+            "read": function () {
+                return paused();
+            },
+            "write": function (value) {
+                value = (value == true);
+
+                if (value === paused()) {
+                    return;
                 }
 
-                return evaluatorFunction.call(evaluatorFunctionTarget);
-            }, evaluatorFunctionTarget, options);
+                if (value) {
+                    lastValue = computed();
+                }
 
-        computed.pause = function () {
-            lastValue = this();
-            paused(true);
-        }.bind(computed);
+                paused(value);
+            }
+        });
 
-        computed.resume = function () {
+        computed.refresh = function () {
+            if (!paused()) {
+                return;
+            }
+
             paused(false);
+            lastValue = computed();
+            paused(true);
         };
 
         return computed;
