@@ -6,7 +6,7 @@
 // License: MIT (http://www.opensource.org/licenses/mit-license.php)
 
 /// <reference path="../frameworks/knockout-2.2.1.debug.js"/>
-/// <reference path="~/sources/valerie.knockout.extras.js"/>
+/// <reference path="valerie.knockout.extras.js"/>
 /// <reference path="valerie.dom.js"/>
 /// <reference path="valerie.knockout.js"/>
 
@@ -37,13 +37,15 @@ if (!valerie.knockout.extras) throw "valerie.knockout.extras is required.";
                 validationState.showState.paused(false);
             },
             textualInputBlurHandler = function (element, observableOrComputed) {
-                var validationState = knockout.getValidationState(observableOrComputed);
+                var validationState = knockout.getValidationState(observableOrComputed),
+                    value;
 
                 if (validationState.boundEntry.result.peek().failed) {
                     return;
                 }
 
-                element.value = validationState.options.converter.formatter(observableOrComputed.peek());
+                value = observableOrComputed.peek();
+                element.value = validationState.options.converter.formatter(value, validationState.options.entryFormat);
             },
             textualInputFocusHandler = function (element, observableOrComputed) {
                 var validationState = knockout.getValidationState(observableOrComputed);
@@ -70,7 +72,7 @@ if (!valerie.knockout.extras) throw "valerie.knockout.extras is required.";
                 parsedValue = options.converter.parser(enteredValue);
                 observableOrComputed(parsedValue);
 
-                if (parsedValue === valerie.invalid) {
+                if (parsedValue === undefined) {
                     validationState.boundEntry.result(new knockout.ValidationResult(true,
                         options.invalidEntryFailureMessage));
 
@@ -166,7 +168,7 @@ if (!valerie.knockout.extras) throw "valerie.knockout.extras is required.";
                     textualInputKeyUpHandler(element, observableOrComputed);
                 });
 
-                // Rather than update the textual input in the "update" method we use a compued to ensure the textual
+                // Rather than update the textual input in the "update" method we use a computed to ensure the textual
                 // input's value is changed only when the observable or computed is changed, not when another binding is
                 // changed.
                 ko.computed({

@@ -1,6 +1,9 @@
 ﻿<!DOCTYPE html>
 <html>
 <head>
+    <!--[if lte IE 8]>
+            <script type="text/javascript" src="frameworks/html5shiv.js"></script>
+        <![endif]-->
     <meta charset="utf-8">
     <title>valerie knockout Scratchpad</title>
     <style type="text/css">
@@ -23,6 +26,7 @@
                 padding: 0.25em;
             }
     </style>
+
 </head>
 <body>
     <h1>knockout Scratchpad</h1>
@@ -71,10 +75,10 @@
                 </div>
                 <!-- ToDo: Add checklist array for features. -->
                 <!-- ToDo: Add multi-select array for utilities. -->
-                <section>
+                <section data-bind="visible: validation().touched()">
                     <h3>Validation State</h3>
                     <ul data-bind="foreach: houseDetails.validation().invalidStates">
-                        <li><span data-bind="text: options.name()"></span>: <span data-bind="text: message"></span></li>
+                        <li><span data-bind="text: options.name()"></span>: <span data-bind="    text: message"></span></li>
                     </ul>
                 </section>
             </section>
@@ -83,7 +87,7 @@
                 <div>
                     <label>
                         House Price
-                        <input data-bind="value: housePrice, enableWhenApplicable: true" /></label>
+                            <input data-bind="value: housePrice, enableWhenApplicable: true" /></label>
                     <span data-bind="validationMessageFor: housePrice"></span>
                 </div>
                 <div>
@@ -95,23 +99,26 @@
                 <div data-bind="visibleWhenValid: housePrice">
                     <p>
                         You can borrow between: &pound;<strong data-bind="text: loanAmountMin"></strong> and
-                        &pound;<strong data-bind="text: loanAmountMax"></strong>.
+                            &pound;<strong data-bind="text: loanAmountMax"></strong>.
                     </p>
                 </div>
                 <div>
                     <label>
                         Loan Amount
-                        <input data-bind="value: loanAmount, enableWhenApplicable: true" name="loanAmount"/></label>
+                            <input data-bind="value: loanAmount, enableWhenApplicable: true" name="loanAmount" /></label>
                     <span data-bind="validationMessageFor: loanAmount"></span>
                 </div>
 
             </section>
-            <section>
+            <section data-bind="visible: validation().touched()">
                 <h3>Validation State</h3>
                 <ul data-bind="foreach: validation().invalidStates">
-                    <li><span data-bind="text: options.name()"></span>: <span data-bind="text: message"></span></li>
+                    <li><span data-bind="text: options.name()"></span>: <span data-bind="    text: message"></span></li>
                 </ul>
             </section>
+            <div>
+                <input type="button" value="Submit" data-bind="click: submit" />
+            </div>
         </form>
         <section>
             <h2>Model State</h2>
@@ -121,10 +128,11 @@
     <!--[if lt IE 8]>
             <script type="text/javascript" src="frameworks/json3.min.js"></script>
         <![endif]-->
+
     <script type="text/javascript" src="frameworks/knockout-2.2.1.debug.js"></script>
     <script type="text/javascript" src="bundles/valerie-for-knockout-gb.js"></script>
     <script type="text/javascript">
-        window.onload = function() {
+        window.onload = function () {
             var v = valerie.knockout;
 
             // Configure valerie
@@ -138,10 +146,11 @@
                     .required()
                     .between(75000, 500000)
                     .end(),
-                loanAmountMin = ko.computed(function() { return housePrice() / 4; }),
-                loanAmountMax = ko.computed(function() { return (housePrice() * 3) / 4; });
+                loanAmountMin = ko.computed(function () { return housePrice() / 4; }),
+                loanAmountMax = ko.computed(function () { return (housePrice() * 3) / 4; });
 
             viewModel = v.validatableModel({
+                "submit": function () { viewModel.validation().touch(); },
                 "houseDetails": v.validatableModel({
                     "houseType": ko.observable()
                         .validate()
@@ -151,10 +160,10 @@
                         .validate()
                         .name("Location")
                         .required()
-                        .end(),
+                        .end()
                 })
                     .name("House Details")
-                    .validateProperties()
+                    .validateMyProperties()
                     .end(),
                 "housePrice": housePrice,
                 "loanAmount": ko.observable(20000)
@@ -165,10 +174,10 @@
                     .between(loanAmountMin, loanAmountMax)
                     .end(),
                 "loanAmountMin": loanAmountMin,
-                "loanAmountMax": loanAmountMax,
+                "loanAmountMax": loanAmountMax
             })
-                .name("Loan Details")
-                .validateProperties()
+                .name("Whole Form")
+                .validateAll()
                 .end();
 
             // Apply bindings
