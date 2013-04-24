@@ -427,7 +427,7 @@ if (!valerie.knockout || !valerie.knockout.extras) throw "valerie.knockout.extra
             "missingTest": utils.isMissing,
             "name": utils.asFunction(),
             "required": utils.asFunction(false),
-            "rule": new rules.PassThrough,
+            "rule": new rules.PassThrough(),
             "valueFormat": undefined
         };
     })();
