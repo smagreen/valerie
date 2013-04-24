@@ -115,8 +115,6 @@ if (!valerie.knockout || !valerie.knockout.extras) throw "valerie.knockout.extra
                         validationStates.push(validationState);
                     }
                 }
-
-                knockout.findValidationStates(value, true, validationStates);
             }
         }
 
