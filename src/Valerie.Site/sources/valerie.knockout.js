@@ -412,6 +412,8 @@ if (!valerie.knockout || !valerie.knockout.extras) throw "valerie.knockout.extra
             },
             "touch": function () {
                 this.touched(true);
+
+                return this;
             }
         };
 
