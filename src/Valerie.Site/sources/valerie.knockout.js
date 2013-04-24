@@ -250,6 +250,8 @@ if (!valerie.knockout || !valerie.knockout.extras) throw "valerie.knockout.extra
                 }
 
                 this.touched(true);
+
+                return this;
             },
             "validateAll": function () {
                 var validationStates = knockout.findValidationStates(this.model, true, true);
