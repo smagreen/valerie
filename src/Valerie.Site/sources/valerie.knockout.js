@@ -161,19 +161,19 @@ if (!valerie.knockout || !valerie.knockout.extras) throw "valerie.knockout.extra
     // - validation state for a model
     // - the model may comprise of simple or complex properties
     (function () {
-        var failedFunction = function() {
+        var failedFunction = function () {
             return this.result().failed;
         },
-            invalidStatesFunction = function() {
+            invalidStatesFunction = function () {
                 return this.result().data;
             },
-            messageFunction = function() {
+            messageFunction = function () {
                 return this.result().failureMessage;
             },
-            passedFunction = function() {
+            passedFunction = function () {
                 return !this.result().failed;
             },
-            resultFunction = function() {
+            resultFunction = function () {
                 var failures = [],
                     index,
                     result,

@@ -550,8 +550,6 @@ if (!valerie.knockout || !valerie.knockout.extras) throw "valerie.knockout.extra
                         validationStates.push(validationState);
                     }
                 }
-
-                knockout.findValidationStates(value, true, validationStates);
             }
         }
 
@@ -598,19 +596,19 @@ if (!valerie.knockout || !valerie.knockout.extras) throw "valerie.knockout.extra
     // - validation state for a model
     // - the model may comprise of simple or complex properties
     (function () {
-        var failedFunction = function() {
+        var failedFunction = function () {
             return this.result().failed;
         },
-            invalidStatesFunction = function() {
+            invalidStatesFunction = function () {
                 return this.result().data;
             },
-            messageFunction = function() {
+            messageFunction = function () {
                 return this.result().failureMessage;
             },
-            passedFunction = function() {
+            passedFunction = function () {
                 return !this.result().failed;
             },
-            resultFunction = function() {
+            resultFunction = function () {
                 var failures = [],
                     index,
                     result,
@@ -687,6 +685,8 @@ if (!valerie.knockout || !valerie.knockout.extras) throw "valerie.knockout.extra
                 }
 
                 this.touched(true);
+
+                return this;
             },
             "validateAll": function () {
                 var validationStates = knockout.findValidationStates(this.model, true, true);
@@ -847,6 +847,8 @@ if (!valerie.knockout || !valerie.knockout.extras) throw "valerie.knockout.extra
             },
             "touch": function () {
                 this.touched(true);
+
+                return this;
             }
         };
 
@@ -860,7 +862,7 @@ if (!valerie.knockout || !valerie.knockout.extras) throw "valerie.knockout.extra
             "missingTest": utils.isMissing,
             "name": utils.asFunction(),
             "required": utils.asFunction(false),
-            "rule": new rules.PassThrough,
+            "rule": new rules.PassThrough(),
             "valueFormat": undefined
         };
     })();
