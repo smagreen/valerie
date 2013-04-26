@@ -23,9 +23,9 @@ if (!valerie.knockout) throw "valerie.knockout is required.";
     valerie.knockout.PropertyValidationState.prototype.money = function (options) {
         options = utils.mergeOptions(moneyDefaultOptions, options);
 
-        this.options.entryFormat = options.entryFormat;
-        this.options.valueFormat = options.valueFormat;
-        this.options.converter = converters.money;
+        this.settings.entryFormat = options.entryFormat;
+        this.settings.valueFormat = options.valueFormat;
+        this.settings.converter = converters.money;
 
         return this;
     };

@@ -224,7 +224,7 @@ if (typeof valerie === "undefined" || !valerie.utils) throw "valerie.utils is re
 
     // + rules.PassThrough
     rules.PassThrough = function() {
-        this.options = {};
+        this.settings = {};
     };
 
     rules.PassThrough.prototype = {
@@ -241,7 +241,7 @@ if (typeof valerie === "undefined" || !valerie.utils) throw "valerie.utils is re
 
         this.minimum = utils.asFunction(minimumValueOrFunction);
         this.maximum = utils.asFunction(maximumValueOrFunction);
-        this.options = utils.mergeOptions(rules.Range.defaultOptions, options);
+        this.settings = utils.mergeOptions(rules.Range.defaultOptions, options);
     };
 
     rules.Range.defaultOptions = {
@@ -255,7 +255,7 @@ if (typeof valerie === "undefined" || !valerie.utils) throw "valerie.utils is re
     rules.Range.prototype = {
         "test": function (value) {
             var failureMessage,
-                failureMessageFormat = this.options.failureMessageFormatForRange,
+                failureMessageFormat = this.settings.failureMessageFormatForRange,
                 maximum = this.maximum(),
                 minimum = this.minimum(),
                 haveMaximum = maximum !== undefined && maximum !== null,
@@ -271,13 +271,13 @@ if (typeof valerie === "undefined" || !valerie.utils) throw "valerie.utils is re
                 if (haveMaximum) {
                     valueInsideRange = value <= maximum;
                 } else {
-                    failureMessageFormat = this.options.failureMessageFormatForMinimumOnly;
+                    failureMessageFormat = this.settings.failureMessageFormatForMinimumOnly;
                 }
 
                 if (haveMinimum) {
                     valueInsideRange = valueInsideRange && value >= minimum;
                 } else {
-                    failureMessageFormat = this.options.failureMessageFormatForMaximumOnly;
+                    failureMessageFormat = this.settings.failureMessageFormatForMaximumOnly;
                 }
             } else {
                 valueInsideRange = false;
@@ -289,9 +289,9 @@ if (typeof valerie === "undefined" || !valerie.utils) throw "valerie.utils is re
 
             failureMessage = utils.formatString(
                 failureMessageFormat, {
-                    "maximum": this.options.valueFormatter(maximum, this.options.valueFormat),
-                    "minimum": this.options.valueFormatter(minimum, this.options.valueFormat),
-                    "value": this.options.valueFormatter(value, this.options.valueFormat)
+                    "maximum": this.settings.valueFormatter(maximum, this.settings.valueFormat),
+                    "minimum": this.settings.valueFormatter(minimum, this.settings.valueFormat),
+                    "value": this.settings.valueFormatter(value, this.settings.valueFormat)
                 });
 
             return {
