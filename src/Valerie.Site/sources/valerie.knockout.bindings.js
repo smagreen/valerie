@@ -247,6 +247,25 @@ if (!valerie.knockout.extras) throw "valerie.knockout.extras is required.";
             }
         });
 
+    // CSS binding handlers
+    ko.bindingHandlers.css.enableWhenApplicable = knockout.extras.isolatedBindingHandler(
+        function (element, valueAccessor, allBindingsAccessor) {
+            var bindings,
+                value = valueAccessor(),
+                validationState;
+
+            if (value === true) {
+                bindings = allBindingsAccessor();
+                value = bindings.value || bindings.checked || bindings.validatedValue || bindings.validatedChecked;
+            }
+
+            validationState = knockout.getValidationState(value);
+
+            if (validationState) {
+                element.disabled = !validationState.options.applicable();
+            }
+        });
+
     // visibility binding handlers
     (function () {
         var visibleDependingOnValidity = function (element, valueAccessor, determineVisibilityFunction) {
@@ -260,15 +279,19 @@ if (!valerie.knockout.extras) throw "valerie.knockout.extras is required.";
             }
         };
 
-        // + visibleWhenInvalid binding handler
-        // - makes the bound element visible if the value is invalid, invisible otherwise
-        ko.bindingHandlers.visibleWhenInvalid = knockout.extras.isolatedBindingHandler(
+        // + cssForValidity
+        // - toggles CSS classes for the bound element depending on the validation status of the model
+        ko.bindingHandlers.cssForValidationStatus = knockout.extras.isolatedBindingHandler(
             function (element, valueAccessor) {
-                visibleDependingOnValidity(element, valueAccessor, function (validationState) {
-                    return validationState.failed();
-                });
+                
             });
 
+        ko.bindingHandlers.cssForValidationStatus.classNames = {
+            "failed": "error",
+            "showStatus": "show-status",
+            "passed": "success"
+        };
+        
         // + visibleWhenValid binding handler
         // - makes the bound element visible if the value is valid, invisible otherwise
         ko.bindingHandlers.visibleWhenValid = knockout.extras.isolatedBindingHandler(

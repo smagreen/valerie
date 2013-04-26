@@ -657,18 +657,9 @@ if (!valerie.knockout || !valerie.knockout.extras) throw "valerie.knockout.extra
             this.refresh = this.result.refresh;
         };
 
-        // Add methods for modifying the state in a fluent manner.
         knockout.ModelValidationState.prototype = {
             "addValidationStates": function (validationStates) {
                 this.validationStates.push.apply(this.validationStates, validationStates);
-            },
-            "end": function () {
-                return this.model;
-            },
-            "name": function (valueOrFunction) {
-                this.options.name = utils.asFunction(valueOrFunction);
-
-                return this;
             },
             "removeValidationStates": function (validationStates) {
                 this.validationStates.removeAll(validationStates);
@@ -685,6 +676,14 @@ if (!valerie.knockout || !valerie.knockout.extras) throw "valerie.knockout.extra
                 }
 
                 this.touched(true);
+            },
+
+            // Add methods for modifying the state in a fluent manner.            
+            "end": function () {
+                return this.model;
+            },
+            "name": function (valueOrFunction) {
+                this.options.name = utils.asFunction(valueOrFunction);
 
                 return this;
             },
@@ -804,8 +803,14 @@ if (!valerie.knockout || !valerie.knockout.extras) throw "valerie.knockout.extra
             this.touched = ko.observable(false);
         };
 
-        // Add methods for modifying state in a fluent manner.
         knockout.PropertyValidationState.prototype = {
+            "touch": function () {
+                this.touched(true);
+
+                return this;
+            },
+
+            // Add methods for modifying state in a fluent manner.            
             "applicable": function (valueOrFunction) {
                 if (valueOrFunction === undefined) {
                     valueOrFunction = true;
@@ -842,11 +847,6 @@ if (!valerie.knockout || !valerie.knockout.extras) throw "valerie.knockout.extra
                 }
 
                 this.options.required = utils.asFunction(valueOrFunction);
-
-                return this;
-            },
-            "touch": function () {
-                this.touched(true);
 
                 return this;
             }
@@ -1126,6 +1126,25 @@ if (!valerie.knockout.extras) throw "valerie.knockout.extras is required.";
             }
         });
 
+    // CSS binding handlers
+    ko.bindingHandlers.css.enableWhenApplicable = knockout.extras.isolatedBindingHandler(
+        function (element, valueAccessor, allBindingsAccessor) {
+            var bindings,
+                value = valueAccessor(),
+                validationState;
+
+            if (value === true) {
+                bindings = allBindingsAccessor();
+                value = bindings.value || bindings.checked || bindings.validatedValue || bindings.validatedChecked;
+            }
+
+            validationState = knockout.getValidationState(value);
+
+            if (validationState) {
+                element.disabled = !validationState.options.applicable();
+            }
+        });
+
     // visibility binding handlers
     (function () {
         var visibleDependingOnValidity = function (element, valueAccessor, determineVisibilityFunction) {
@@ -1139,15 +1158,19 @@ if (!valerie.knockout.extras) throw "valerie.knockout.extras is required.";
             }
         };
 
-        // + visibleWhenInvalid binding handler
-        // - makes the bound element visible if the value is invalid, invisible otherwise
-        ko.bindingHandlers.visibleWhenInvalid = knockout.extras.isolatedBindingHandler(
+        // + cssForValidity
+        // - toggles CSS classes for the bound element depending on the validation status of the model
+        ko.bindingHandlers.cssForValidationStatus = knockout.extras.isolatedBindingHandler(
             function (element, valueAccessor) {
-                visibleDependingOnValidity(element, valueAccessor, function (validationState) {
-                    return validationState.failed();
-                });
+                
             });
 
+        ko.bindingHandlers.cssForValidationStatus.classNames = {
+            "failed": "error",
+            "showStatus": "show-status",
+            "passed": "success"
+        };
+        
         // + visibleWhenValid binding handler
         // - makes the bound element visible if the value is valid, invisible otherwise
         ko.bindingHandlers.visibleWhenValid = knockout.extras.isolatedBindingHandler(

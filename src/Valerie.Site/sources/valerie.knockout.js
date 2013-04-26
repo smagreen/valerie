@@ -222,18 +222,9 @@ if (!valerie.knockout || !valerie.knockout.extras) throw "valerie.knockout.extra
             this.refresh = this.result.refresh;
         };
 
-        // Add methods for modifying the state in a fluent manner.
         knockout.ModelValidationState.prototype = {
             "addValidationStates": function (validationStates) {
                 this.validationStates.push.apply(this.validationStates, validationStates);
-            },
-            "end": function () {
-                return this.model;
-            },
-            "name": function (valueOrFunction) {
-                this.options.name = utils.asFunction(valueOrFunction);
-
-                return this;
             },
             "removeValidationStates": function (validationStates) {
                 this.validationStates.removeAll(validationStates);
@@ -250,6 +241,14 @@ if (!valerie.knockout || !valerie.knockout.extras) throw "valerie.knockout.extra
                 }
 
                 this.touched(true);
+            },
+
+            // Add methods for modifying the state in a fluent manner.            
+            "end": function () {
+                return this.model;
+            },
+            "name": function (valueOrFunction) {
+                this.options.name = utils.asFunction(valueOrFunction);
 
                 return this;
             },
@@ -369,8 +368,14 @@ if (!valerie.knockout || !valerie.knockout.extras) throw "valerie.knockout.extra
             this.touched = ko.observable(false);
         };
 
-        // Add methods for modifying state in a fluent manner.
         knockout.PropertyValidationState.prototype = {
+            "touch": function () {
+                this.touched(true);
+
+                return this;
+            },
+
+            // Add methods for modifying state in a fluent manner.            
             "applicable": function (valueOrFunction) {
                 if (valueOrFunction === undefined) {
                     valueOrFunction = true;
@@ -407,11 +412,6 @@ if (!valerie.knockout || !valerie.knockout.extras) throw "valerie.knockout.extra
                 }
 
                 this.options.required = utils.asFunction(valueOrFunction);
-
-                return this;
-            },
-            "touch": function () {
-                this.touched(true);
 
                 return this;
             }
