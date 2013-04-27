@@ -33,6 +33,7 @@
                 padding: 0.25em 0.5em;
             }
 
+        /* ToDo: Need to do something for IE6. */
         input.error.touched, select.error.touched {
             border-color: #aa3333;
         }
@@ -113,7 +114,7 @@
             <section data-bind="visibleWhenFailuresInSnapshot: true">
                 <h3>Validation Summary</h3>
                 <ul data-bind="foreach: validation().failuresSnapshot()">
-                    <li><span data-bind="text: name"></span>: <span data-bind="text: message"></span></li>
+                    <li><span data-bind="text: name"></span>: <span data-bind="    text: message"></span></li>
                 </ul>
             </section>
             <div>
@@ -131,7 +132,7 @@
     <script type="text/javascript" src="frameworks/knockout-2.2.1.debug.js"></script>
     <script type="text/javascript" src="bundles/valerie-for-knockout-gb.js"></script>
     <script type="text/javascript">
-        window.onload = function () {
+        window.onload = function() {
             var v = valerie.knockout;
 
             // Configure valerie
@@ -141,16 +142,16 @@
                 housePrice = ko.observable(150000)
                     .validate()
                     .applicable(ko.observable(true))
-                    .money()
+                    .pounds()
                     .required()
                     .between(75000, 500000)
                     .end(),
-                loanAmountMin = ko.computed(function () { return housePrice() / 4; }),
-                loanAmountMax = ko.computed(function () { return (housePrice() * 3) / 4; });
+                loanAmountMin = ko.computed(function() { return housePrice() / 4; }),
+                loanAmountMax = ko.computed(function() { return (housePrice() * 3) / 4; });
 
             viewModel = v.validatableModel({
-                "clearErrors": function () { viewModel.validation().touched(false).clearFailuresSnapshot(true); },
-                "submit": function () { viewModel.validation().touched(true).updateFailuresSnapshot(true); },
+                "clearErrors": function() { viewModel.validation().touched(false).clearFailuresSnapshot(true); },
+                "submit": function() { viewModel.validation().touched(true).updateFailuresSnapshot(true); },
                 "houseDetails": v.validatableModel({
                     "houseType": ko.observable()
                         .validate()
@@ -168,7 +169,7 @@
                 "housePrice": housePrice,
                 "loanAmount": ko.observable(20000)
                     .validate()
-                    .money()
+                    .pounds()
                     .applicable(housePrice.validation().passed)
                     .required()
                     .between(loanAmountMin, loanAmountMax)

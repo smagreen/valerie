@@ -10,10 +10,11 @@ var valerie = valerie || {};
 (function () {
     "use strict";
 
-    var converters = valerie.converters = valerie.converters || {};
+    var converters = valerie.converters = valerie.converters || {},
+        helpers = converters.helpers;
 
-    // + converters.money
-    converters.money = {
+    // + converters.pounds
+    converters.pounds = {
         "formatter": function (value, format) {
             if (value === undefined || value === null) {
                 return "";
@@ -23,24 +24,28 @@ var valerie = valerie || {};
                 format = "";
             }
 
-            // ToDo: Change this very simple implementation.
-            return format + value.toString();
+            value = value.toString();
+
+            if (format.indexOf(",") !== -1) {
+                value = helpers.addCommasToNumberString(value);
+            }
+
+            if (format.indexOf("£") !== -1) {
+                value = "£" + value;
+            }
+
+            return value;
         },
         "parser": function (value) {
             if (value === undefined || value === null) {
                 return undefined;
             }
 
-            value = value.replace("£", "");
-            
-            // ToDo: Change this very simple, permissive implementation.
-            var parsedValue = parseFloat(value);
-
-            if (isNaN(parsedValue)) {
-                return undefined;
+            if (value.indexOf("£") === 0) {
+                value = value.substring(1);
             }
 
-            return parsedValue;
+            return converters.integer.parser(value);
         }
     };
 })();

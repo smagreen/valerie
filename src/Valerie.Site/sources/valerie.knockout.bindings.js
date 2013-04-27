@@ -272,6 +272,7 @@
                 var functionToApply = function (validationState) {
                     var classNames = koBindingHandlers.validationCss.classNames;
 
+                    // ToDo: Need a better function for toggling Css classes en-masse.
                     ko.utils.toggleDomNodeCssClass(element, classNames.failed, validationState.failed());
                     ko.utils.toggleDomNodeCssClass(element, classNames.passed, validationState.passed());
                     ko.utils.toggleDomNodeCssClass(element, classNames.touched, validationState.touched());

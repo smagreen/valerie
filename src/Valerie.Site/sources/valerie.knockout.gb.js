@@ -13,20 +13,22 @@
 
     var converters = valerie.converters,
         utils = valerie.utils,
-        moneyDefaultOptions = {
-            "entryFormat": undefined,
-            "valueFormat": "£"
+        constructor = valerie.knockout.PropertyValidationState,
+        prototype = constructor.prototype,
+        poundsDefaultOptions = {
+            "entryFormat": ",",
+            "valueFormat": "£,"
         };
 
-    valerie.knockout.PropertyValidationState.prototype.money = function (options) {
-        options = utils.mergeOptions(moneyDefaultOptions, options);
+    prototype.pounds = function (options) {
+        options = utils.mergeOptions(poundsDefaultOptions, options);
 
         this.settings.entryFormat = options.entryFormat;
         this.settings.valueFormat = options.valueFormat;
-        this.settings.converter = converters.money;
+        this.settings.converter = converters.pounds;
 
         return this;
     };
 
-    valerie.knockout.PropertyValidationState.prototype.money.defaultOptions = moneyDefaultOptions;
+    constructor.pounds = { "defaultOptions": poundsDefaultOptions };
 })();

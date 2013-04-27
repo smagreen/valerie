@@ -16,6 +16,17 @@ var valerie = valerie || {};
 
     var utils = valerie.utils = valerie.utils || {};
 
+    // + utils.addCommasToNumberString
+    utils.addCommasToNumberString = function (numberString) {
+        var wholeAndFractionalParts = numberString.toString().split("."),
+            wholePart = wholeAndFractionalParts[0];
+
+        wholePart = wholePart.replace(/\B(?=(\d{3})+(?!\d))/g, ",");
+        wholeAndFractionalParts[0] = wholePart;
+
+        return wholeAndFractionalParts.join(".");
+    };
+
     // + utils.asArray
     utils.asArray = function (valueOrArray) {
         if (utils.isArray(valueOrArray)) {
@@ -33,7 +44,7 @@ var valerie = valerie || {};
 
         return function () { return valueOrFunction; };
     };
-
+    
     // + utils.formatString
     utils.formatString = function (format, replacements) {
         if (replacements === undefined || replacements === null) {
@@ -143,30 +154,87 @@ var valerie = valerie || {};
 (function () {
     "use strict";
 
-    var converters = valerie.converters = valerie.converters || {};
+    var converters = valerie.converters = valerie.converters || {},
+        helpers = valerie.converters.helpers = valerie.converters.helpers || {},
+        floatTestExpression = new RegExp("^\\d+(\\,\\d{3})*(\\.\\d+)?$"),
+        integerTestExpression = new RegExp("^\\d+(\\,\\d{3})*$");
 
-    // + converters.integer
-    converters.integer = {
-        "formatter": function (value) {
+    // + converters.helpers.addCommasToNumberString
+    helpers.addCommasToNumberString = function (numberString) {
+        var wholeAndFractionalParts = numberString.toString().split("."),
+            wholePart = wholeAndFractionalParts[0];
+
+        wholePart = wholePart.replace(/\B(?=(\d{3})+(?!\d))/g, ",");
+        wholeAndFractionalParts[0] = wholePart;
+
+        return wholeAndFractionalParts.join(".");
+    };
+
+    // + converters.float
+    converters.float = {
+        "formatter": function (value, format) {
             if (value === undefined || value === null) {
                 return "";
             }
+            
+            if (format === undefined || format === null) {
+                format = "";
+            }
 
-            return value.toString();
+            value = value.toString();
+            
+            if (format.indexOf(",") !== -1) {
+                value = helpers.addCommasToNumberString(value);
+            }
+
+            return value;
         },
         "parser": function (value) {
             if (value === undefined || value === null) {
                 return undefined;
             }
 
-            // ToDo: Change this very simple, permissive implementation.
-            var parsedValue = parseInt(value, 10);
-
-            if (isNaN(parsedValue)) {
+            if (!floatTestExpression.test(value)) {
                 return undefined;
             }
 
-            return parsedValue;
+            value = value.replace(",", "");
+
+            return Number(value);
+        }
+    };
+
+    // + converters.integer
+    converters.integer = {
+        "formatter": function(value, format) {
+            if (value === undefined || value === null) {
+                return "";
+            }
+
+            if (format === undefined || format === null) {
+                format = "";
+            }
+
+            value = value.toString();
+
+            if (format.indexOf(",") !== -1) {
+                value = helpers.addCommasToNumberString(value);
+            }
+
+            return value;
+        },
+        "parser": function(value) {
+            if (value === undefined || value === null) {
+                return undefined;
+            }
+
+            if (!integerTestExpression.test(value)) {
+                return undefined;
+            }
+
+            value = value.replace(",", "");
+
+            return Number(value);
         }
     };
 

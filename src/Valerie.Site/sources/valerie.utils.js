@@ -13,6 +13,17 @@ var valerie = valerie || {};
 
     var utils = valerie.utils = valerie.utils || {};
 
+    // + utils.addCommasToNumberString
+    utils.addCommasToNumberString = function (numberString) {
+        var wholeAndFractionalParts = numberString.toString().split("."),
+            wholePart = wholeAndFractionalParts[0];
+
+        wholePart = wholePart.replace(/\B(?=(\d{3})+(?!\d))/g, ",");
+        wholeAndFractionalParts[0] = wholePart;
+
+        return wholeAndFractionalParts.join(".");
+    };
+
     // + utils.asArray
     utils.asArray = function (valueOrArray) {
         if (utils.isArray(valueOrArray)) {
@@ -30,7 +41,7 @@ var valerie = valerie || {};
 
         return function () { return valueOrFunction; };
     };
-
+    
     // + utils.formatString
     utils.formatString = function (format, replacements) {
         if (replacements === undefined || replacements === null) {
