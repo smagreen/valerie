@@ -30,7 +30,7 @@
             form div span {
                 background-color: #aa3333;
                 color: #fff;
-                padding: 0.25em;
+                padding: 0.25em 0.5em;
             }
 
         input.error.touched, select.error.touched {
@@ -46,21 +46,6 @@
     <h1>knockout Scratchpad</h1>
     <div id="view">
         <form>
-            <section>
-                <h2>Validation Settings</h2>
-                <div>
-                    <label>
-                        <input type="radio" name="pause" value="1" data-bind="checked: validation().paused" />
-                        Paused
-                    </label>
-                    <input type="button" value="Refresh"
-                        data-bind="click: function () { validation().refresh(); }, enable: validation().paused()" />
-                    <label>
-                        <input type="radio" name="pause" value="0" data-bind="checked: validation().paused" />
-                        Running
-                    </label>
-                </div>
-            </section>
             <section>
                 <h2>House Details</h2>
                 <div>
@@ -89,12 +74,13 @@
                 </div>
                 <!-- ToDo: Add checklist array for features. -->
                 <!-- ToDo: Add multi-select array for utilities. -->
-                <section data-bind="visibleWhenTouched: houseDetails">
-                    <h3>Validation State</h3>
-                    <ul data-bind="foreach: houseDetails.validation().invalidStates">
-                        <li><span data-bind="text: settings.name()"></span>: <span data-bind="text: message"></span></li>
+                <section data-bind="visibleWhenFailuresInSnapshot: houseDetails">
+                    <h3>Validation Summary</h3>
+                    <ul data-bind="foreach: houseDetails.validation().failuresSnapshot()">
+                        <li><span data-bind="text: name"></span>: <span data-bind="    text: message"></span></li>
                     </ul>
                 </section>
+
             </section>
             <section>
                 <h2>Loan Details</h2>
@@ -124,9 +110,9 @@
                 </div>
 
             </section>
-            <section data-bind="visibleWhenFailuresInSummary: true">
-                <h3>Validation State</h3>
-                <ul data-bind="foreach: validation().failureSummary()">
+            <section data-bind="visibleWhenFailuresInSnapshot: true">
+                <h3>Validation Summary</h3>
+                <ul data-bind="foreach: validation().failuresSnapshot()">
                     <li><span data-bind="text: name"></span>: <span data-bind="text: message"></span></li>
                 </ul>
             </section>
@@ -163,8 +149,8 @@
                 loanAmountMax = ko.computed(function () { return (housePrice() * 3) / 4; });
 
             viewModel = v.validatableModel({
-                "clearErrors": function () { viewModel.validation().touched(false).clearFailureSummary(); },
-                "submit": function () { viewModel.validation().touched(true).updateFailureSummary(); },
+                "clearErrors": function () { viewModel.validation().touched(false).clearFailuresSnapshot(true); },
+                "submit": function () { viewModel.validation().touched(true).updateFailuresSnapshot(true); },
                 "houseDetails": v.validatableModel({
                     "houseType": ko.observable()
                         .validate()

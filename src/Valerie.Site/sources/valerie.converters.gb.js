@@ -4,8 +4,8 @@
 // License: MIT (http://www.opensource.org/licenses/mit-license.php)
 
 /*global valerie: true */
-var valerie = valerie || {};
 
+var valerie = valerie || {};
 
 (function () {
     "use strict";

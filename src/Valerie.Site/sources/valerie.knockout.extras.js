@@ -5,7 +5,7 @@
 // License: MIT (http://www.opensource.org/licenses/mit-license.php)
 
 /*global ko: false, valerie: true */
-if (typeof ko === "undefined") throw "KnockoutJS is required.";
+
 var valerie = valerie || {};
 
 (function () {
@@ -67,7 +67,9 @@ var valerie = valerie || {};
                 return paused();
             },
             "write": function (value) {
-                value = (value == true);
+                if (value) {
+                    value = true;
+                }
 
                 if (value === paused()) {
                     return;

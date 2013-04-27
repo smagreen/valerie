@@ -7,7 +7,6 @@
 /// <reference path="valerie.utils.js"/>
 
 /*global valerie: false */
-if (typeof valerie === "undefined" || !valerie.utils) throw "valerie.utils is required.";
 
 (function () {
     "use strict";

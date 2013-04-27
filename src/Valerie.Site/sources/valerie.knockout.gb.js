@@ -7,8 +7,6 @@
 /// <reference path="valerie.knockout.js"/>
 
 /*global valerie: false */
-if (typeof valerie === "undefined" || !valerie.utils) throw "valerie.utils is required.";
-if (!valerie.knockout) throw "valerie.knockout is required.";
 
 (function () {
     "use strict";

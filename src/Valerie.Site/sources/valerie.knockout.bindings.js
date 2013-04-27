@@ -6,31 +6,32 @@
 // License: MIT (http://www.opensource.org/licenses/mit-license.php)
 
 /// <reference path="../frameworks/knockout-2.2.1.debug.js"/>
-/// <reference path="valerie.knockout.extras.js"/>
+/// <reference path="valerie.utils.js"/>
 /// <reference path="valerie.dom.js"/>
+/// <reference path="valerie.knockout.extras.js"/>
 /// <reference path="valerie.knockout.js"/>
 
 /*global ko: false, valerie: false */
-if (typeof ko === "undefined") throw "KnockoutJS is required.";
-if (typeof valerie === "undefined" || !valerie.dom) throw "valerie.dom is required.";
-if (!valerie.knockout) throw "valerie.knockout is required.";
-if (!valerie.knockout.extras) throw "valerie.knockout.extras is required.";
 
 (function () {
     "use strict";
 
-    var dom = valerie.dom,
-        utils = valerie.utils,
-        knockout = valerie.knockout;
+    var utils = valerie.utils,
+        knockout = valerie.knockout,
+        koBindingHandlers = ko.bindingHandlers,
+        koRegisterEventHandler = ko.utils.registerEventHandler,
+        setElementVisibility = valerie.dom.setElementVisibility,
+        getValidationState = knockout.getValidationState,
+        isolatedBindingHandler = valerie.knockout.extras.isolatedBindingHandler;
 
     // Define validatedChecked and validatedValue binding handlers.
     (function () {
-        var checkedBindingHandler = ko.bindingHandlers.checked,
+        var checkedBindingHandler = koBindingHandlers.checked,
             validatedCheckedBindingHandler,
-            valueBindingHandler = ko.bindingHandlers.value,
+            valueBindingHandler = koBindingHandlers.value,
             validatedValueBindingHandler,
             blurHandler = function (element, observableOrComputed) {
-                var validationState = knockout.getValidationState(observableOrComputed);
+                var validationState = getValidationState(observableOrComputed);
 
                 validationState.touched(true);
                 validationState.boundEntry.focused(false);
@@ -38,7 +39,7 @@ if (!valerie.knockout.extras) throw "valerie.knockout.extras is required.";
                 validationState.showMessage.paused(false);
             },
             textualInputBlurHandler = function (element, observableOrComputed) {
-                var validationState = knockout.getValidationState(observableOrComputed),
+                var validationState = getValidationState(observableOrComputed),
                     value;
 
                 if (validationState.boundEntry.result.peek().failed) {
@@ -49,7 +50,7 @@ if (!valerie.knockout.extras) throw "valerie.knockout.extras is required.";
                 element.value = validationState.settings.converter.formatter(value, validationState.settings.entryFormat);
             },
             textualInputFocusHandler = function (element, observableOrComputed) {
-                var validationState = knockout.getValidationState(observableOrComputed);
+                var validationState = getValidationState(observableOrComputed);
 
                 validationState.boundEntry.focused(true);
                 validationState.message.paused(true);
@@ -58,7 +59,7 @@ if (!valerie.knockout.extras) throw "valerie.knockout.extras is required.";
             textualInputKeyUpHandler = function (element, observableOrComputed) {
                 var enteredValue = ko.utils.stringTrim(element.value),
                     parsedValue,
-                    validationState = knockout.getValidationState(observableOrComputed),
+                    validationState = getValidationState(observableOrComputed),
                     settings = validationState.settings;
 
                 if (enteredValue.length === 0 && settings.required()) {
@@ -99,16 +100,16 @@ if (!valerie.knockout.extras) throw "valerie.knockout.extras is required.";
         // + validatedChecked binding handler
         // - functions in the same way as the "checked" binding handler
         // - registers a blur event handler so validation messages for missing selections can be displayed
-        validatedCheckedBindingHandler = ko.bindingHandlers.validatedChecked = {
+        validatedCheckedBindingHandler = koBindingHandlers.validatedChecked = {
             "init": function (element, valueAccessor, allBindingsAccessor, viewModel, bindingContext) {
                 var observableOrComputed = valueAccessor(),
-                    validationState = knockout.getValidationState(observableOrComputed);
+                    validationState = getValidationState(observableOrComputed);
 
                 checkedBindingHandler.init(element, valueAccessor, allBindingsAccessor, viewModel,
                     bindingContext);
 
                 if (validationState) {
-                    ko.utils.registerEventHandler(element, "blur", function () {
+                    koRegisterEventHandler(element, "blur", function () {
                         blurHandler(element, observableOrComputed);
                     });
 
@@ -124,12 +125,12 @@ if (!valerie.knockout.extras) throw "valerie.knockout.extras is required.";
         // - with the exception of textual inputs, functions in the same way as the "value" binding handler
         // - registers a blur event handler so validation messages for completed entries or selections can be displayed
         // - registers a blur event handler to reformat parsed textual entries
-        validatedValueBindingHandler = ko.bindingHandlers.validatedValue = {
+        validatedValueBindingHandler = koBindingHandlers.validatedValue = {
             "init": function (element, valueAccessor, allBindingsAccessor, viewModel, bindingContext) {
                 var observableOrComputed = valueAccessor(),
                     tagName = ko.utils.tagNameLower(element),
                     textualInput,
-                    validationState = knockout.getValidationState(observableOrComputed);
+                    validationState = getValidationState(observableOrComputed);
 
                 if (!validationState) {
                     valueBindingHandler.init(element, valueAccessor, allBindingsAccessor, viewModel,
@@ -142,7 +143,7 @@ if (!valerie.knockout.extras) throw "valerie.knockout.extras is required.";
                     validationState.settings.name = utils.asFunction(element.name);
                 }
 
-                ko.utils.registerEventHandler(element, "blur", function () {
+                koRegisterEventHandler(element, "blur", function () {
                     blurHandler(element, observableOrComputed);
                 });
 
@@ -157,15 +158,15 @@ if (!valerie.knockout.extras) throw "valerie.knockout.extras is required.";
 
                 validationState.boundEntry.textualInput = true;
 
-                ko.utils.registerEventHandler(element, "blur", function () {
+                koRegisterEventHandler(element, "blur", function () {
                     textualInputBlurHandler(element, observableOrComputed);
                 });
 
-                ko.utils.registerEventHandler(element, "focus", function () {
+                koRegisterEventHandler(element, "focus", function () {
                     textualInputFocusHandler(element, observableOrComputed);
                 });
 
-                ko.utils.registerEventHandler(element, "keyup", function () {
+                koRegisterEventHandler(element, "keyup", function () {
                     textualInputKeyUpHandler(element, observableOrComputed);
                 });
 
@@ -181,7 +182,7 @@ if (!valerie.knockout.extras) throw "valerie.knockout.extras is required.";
             },
             "update": function (element, valueAccessor, allBindingsAccessor, viewModel, bindingContext) {
                 var observableOrComputed = valueAccessor(),
-                    validationState = knockout.getValidationState(observableOrComputed);
+                    validationState = getValidationState(observableOrComputed);
 
                 if (validationState && validationState.boundEntry.textualInput) {
                     return;
@@ -209,10 +210,10 @@ if (!valerie.knockout.extras) throw "valerie.knockout.extras is required.";
         // + useValidatingBindingHandlers
         // - replaces the original "checked" and "value" binding handlers with validating equivalents
         knockout.useValidatingBindingHandlers = function () {
-            ko.bindingHandlers.checked = validatedCheckedBindingHandler;
-            ko.bindingHandlers.value = validatedValueBindingHandler;
-            ko.bindingHandlers.koChecked = checkedBindingHandler;
-            ko.bindingHandlers.koValue = valueBindingHandler;
+            koBindingHandlers.checked = validatedCheckedBindingHandler;
+            koBindingHandlers.value = validatedValueBindingHandler;
+            koBindingHandlers.koChecked = checkedBindingHandler;
+            koBindingHandlers.koValue = valueBindingHandler;
 
             // Allow configuration changes to be made fluently.
             return knockout;
@@ -221,8 +222,8 @@ if (!valerie.knockout.extras) throw "valerie.knockout.extras is required.";
         // + useOriginalBindingHandlers
         // - restores the original "checked" and "value" binding handlers
         knockout.useOriginalBindingHandlers = function () {
-            ko.bindingHandlers.checked = checkedBindingHandler;
-            ko.bindingHandlers.value = valueBindingHandler;
+            koBindingHandlers.checked = checkedBindingHandler;
+            koBindingHandlers.value = valueBindingHandler;
 
             // Allow configuration changes to be made fluently.
             return knockout;
@@ -243,7 +244,7 @@ if (!valerie.knockout.extras) throw "valerie.knockout.extras is required.";
                         viewModel;
                 }
 
-                validationState = knockout.getValidationState(value);
+                validationState = getValidationState(value);
 
                 if (validationState) {
                     functionToApply(validationState);
@@ -251,7 +252,7 @@ if (!valerie.knockout.extras) throw "valerie.knockout.extras is required.";
             };
 
         // + enabledWhenApplicable binding handler
-        ko.bindingHandlers.enableWhenApplicable = knockout.extras.isolatedBindingHandler(
+        koBindingHandlers.enableWhenApplicable = isolatedBindingHandler(
             function (element, valueAccessor, allBindingsAccessor, viewModel) {
                 var functionToApply = function (validationState) {
                     element.disabled = !validationState.settings.applicable();
@@ -265,11 +266,11 @@ if (!valerie.knockout.extras) throw "valerie.knockout.extras is required.";
         //   - error: if validation failed
         //   - passed: if validation passed
         //   - touched: if the bound element has been touched
-        // - the names of the classes used are held in the ko.bindingHandlers.validationCss.classNames object
-        ko.bindingHandlers.validationCss = knockout.extras.isolatedBindingHandler(
+        // - the names of the classes used are held in the bindingHandlers.validationCss.classNames object
+        koBindingHandlers.validationCss = isolatedBindingHandler(
             function (element, valueAccessor, allBindingsAccessor, viewModel) {
                 var functionToApply = function (validationState) {
-                    var classNames = ko.bindingHandlers.validationCss.classNames;
+                    var classNames = koBindingHandlers.validationCss.classNames;
 
                     ko.utils.toggleDomNodeCssClass(element, classNames.failed, validationState.failed());
                     ko.utils.toggleDomNodeCssClass(element, classNames.passed, validationState.passed());
@@ -279,7 +280,7 @@ if (!valerie.knockout.extras) throw "valerie.knockout.extras is required.";
                 applyForValidationState(functionToApply, element, valueAccessor, allBindingsAccessor, viewModel);
             });
 
-        ko.bindingHandlers.validationCss.classNames = {
+        koBindingHandlers.validationCss.classNames = {
             "failed": "error",
             "passed": "success",
             "touched": "touched"
@@ -288,10 +289,10 @@ if (!valerie.knockout.extras) throw "valerie.knockout.extras is required.";
         // + validationMessageFor binding handler
         // - makes the bound element visible if the value is invalid
         // - sets the text of the bound element to be the validation message
-        ko.bindingHandlers.validationMessageFor = knockout.extras.isolatedBindingHandler(
+        koBindingHandlers.validationMessageFor = isolatedBindingHandler(
             function (element, valueAccessor, allBindingsAccessor, viewModel) {
                 var functionToApply = function (validationState) {
-                    valerie.dom.setElementVisibility(element, validationState.showMessage());
+                    setElementVisibility(element, validationState.showMessage());
                     ko.utils.setTextContent(element, validationState.message());
                 };
 
@@ -300,21 +301,21 @@ if (!valerie.knockout.extras) throw "valerie.knockout.extras is required.";
 
         // + invisibleWhenTouched binding handler
         // - makes the bound element invisible if the value has been touched, visible otherwise
-        ko.bindingHandlers.visibleWhenTouched = knockout.extras.isolatedBindingHandler(
+        koBindingHandlers.visibleWhenTouched = isolatedBindingHandler(
             function (element, valueAccessor, allBindingsAccessor, viewModel) {
                 var functionToApply = function (validationState) {
-                    dom.setElementVisibility(element, !validationState.touched());
+                    setElementVisibility(element, !validationState.touched());
                 };
 
                 applyForValidationState(functionToApply, element, valueAccessor, allBindingsAccessor, viewModel);
             });
 
-        // + visibleWhenFailuresInSummary binding handler
-        // - makes the bound element visible if there are failures in the failure summary
-        ko.bindingHandlers.visibleWhenFailuresInSummary = knockout.extras.isolatedBindingHandler(
+        // + visibleWhenFailuresInSnapshot binding handler
+        // - makes the bound element visible if there are failures in the failures snapshot
+        koBindingHandlers.visibleWhenFailuresInSnapshot = isolatedBindingHandler(
             function (element, valueAccessor, allBindingsAccessor, viewModel) {
                 var functionToApply = function (validationState) {
-                    dom.setElementVisibility(element, validationState.failureSummary().length > 0);
+                    setElementVisibility(element, validationState.failuresSnapshot().length > 0);
                 };
 
                 applyForValidationState(functionToApply, element, valueAccessor, allBindingsAccessor, viewModel);
@@ -322,10 +323,10 @@ if (!valerie.knockout.extras) throw "valerie.knockout.extras is required.";
 
         // + visibleWhenTouched binding handler
         // - makes the bound element visible if the value has been touched, invisible otherwise
-        ko.bindingHandlers.visibleWhenTouched = knockout.extras.isolatedBindingHandler(
+        koBindingHandlers.visibleWhenTouched = isolatedBindingHandler(
             function (element, valueAccessor, allBindingsAccessor, viewModel) {
                 var functionToApply = function (validationState) {
-                    dom.setElementVisibility(element, validationState.touched());
+                    setElementVisibility(element, validationState.touched());
                 };
 
                 applyForValidationState(functionToApply, element, valueAccessor, allBindingsAccessor, viewModel);
@@ -333,10 +334,10 @@ if (!valerie.knockout.extras) throw "valerie.knockout.extras is required.";
 
         // + visibleWhenValid binding handler
         // - makes the bound element visible if the value is valid, invisible otherwise
-        ko.bindingHandlers.visibleWhenValid = knockout.extras.isolatedBindingHandler(
+        koBindingHandlers.visibleWhenValid = isolatedBindingHandler(
             function (element, valueAccessor, allBindingsAccessor, viewModel) {
                 var functionToApply = function (validationState) {
-                    dom.setElementVisibility(element, validationState.passed());
+                    setElementVisibility(element, validationState.passed());
                 };
 
                 applyForValidationState(functionToApply, element, valueAccessor, allBindingsAccessor, viewModel);
