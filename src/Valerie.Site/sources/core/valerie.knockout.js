@@ -3,7 +3,7 @@
 // (c) 2013 egrove Ltd.
 // License: MIT (http://www.opensource.org/licenses/mit-license.php)
 
-/// <reference path="../frameworks/knockout-2.2.1.debug.js"/>
+/// <reference path="../../frameworks/knockout-2.2.1.debug.js"/>
 /// <reference path="valerie.validationResult.js"/>
 /// <reference path="valerie.passThrough.js"/>
 /// <reference path="valerie.utils.js"/> 
@@ -360,8 +360,8 @@
 
         definition.defaultOptions = {
             "applicable": utils.asFunction(true),
-            "failureMessageFormat": "There are validation errors." /*resource*/,
-            "name": utils.asFunction("(no-name-set)"),
+            "failureMessageFormat": "",
+            "name": utils.asFunction("(?)"),
             "paused": undefined
         };
     })();
@@ -506,8 +506,8 @@
             "applicable": utils.asFunction(true),
             "converter": valerie.converters.passThrough,
             "entryFormat": undefined,
-            "invalidEntryFailureMessage": "The value entered is invalid.", /*resource*/
-            "missingFailureMessage": "A value is required.", /*resource*/
+            "invalidEntryFailureMessage": "",
+            "missingFailureMessage": "",
             "missingTest": utils.isMissing,
             "name": utils.asFunction(),
             "required": utils.asFunction(false),

@@ -24,3 +24,4 @@ var valerie = valerie || {};
         element.style.display = (newVisibility) ? "" : "none";
     };
 })();
+

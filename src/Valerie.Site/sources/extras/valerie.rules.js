@@ -4,9 +4,9 @@
 // (c) 2013 egrove Ltd.
 // License: MIT (http://www.opensource.org/licenses/mit-license.php)
 
-/// <reference path="valerie.validationResult.js"/>
-/// <reference path="valerie.passThrough.js"/>
-/// <reference path="valerie.utils.js"/>
+/// <reference path="../core/valerie.validationResult.js"/>
+/// <reference path="../core/valerie.passThrough.js"/>
+/// <reference path="../core/valerie.utils.js"/>
 
 /*global valerie: false */
 
@@ -15,7 +15,7 @@
 
     // ReSharper disable InconsistentNaming
     var ValidationResult = valerie.ValidationResult,
-// ReSharper restore InconsistentNaming
+        // ReSharper restore InconsistentNaming
         rules = valerie.rules = valerie.rules || {},
         utils = valerie.utils,
         formatting = valerie.formatting;
@@ -34,9 +34,9 @@
     };
 
     rules.Range.defaultOptions = {
-        "failureMessageFormatForMinimumOnly": "The value must be no less than {minimum}.", /*resource*/
-        "failureMessageFormatForMaximumOnly": "The value must be no greater than {maximum}.", /*resource*/
-        "failureMessageFormatForRange": "The value must be between {minimum} and {maximum}.", /*resource*/
+        "failureMessageFormatForMinimumOnly": "",
+        "failureMessageFormatForMaximumOnly": "",
+        "failureMessageFormatForRange": "",
         "valueFormat": undefined,
         "valueFormatter": valerie.converters.passThrough.formatter
     };
@@ -90,4 +90,3 @@
         }
     };
 })();
-

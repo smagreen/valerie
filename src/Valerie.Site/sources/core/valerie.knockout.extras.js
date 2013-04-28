@@ -4,6 +4,8 @@
 // (c) 2013 egrove Ltd.
 // License: MIT (http://www.opensource.org/licenses/mit-license.php)
 
+/// <reference path="../../frameworks/knockout-2.2.1.debug.js"/>
+
 /*global ko: false, valerie: true */
 
 var valerie = valerie || {};

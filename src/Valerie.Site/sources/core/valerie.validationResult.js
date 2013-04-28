@@ -9,7 +9,6 @@
 var valerie = valerie || {};
 
 (function () {
-
     "use strict";
 
     // + ValidationResult

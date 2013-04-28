@@ -28,7 +28,13 @@ var valerie = valerie || {};
                 return undefined;
             }
 
-            return Number(value);
+            value = Number(value);
+
+            if (isNaN(value)) {
+                return undefined;
+            }
+
+            return value;
         }
     };
 

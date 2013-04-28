@@ -1,4 +1,5 @@
-﻿///#source 1 1 ../bundles/valerie-for-knockout-core.js
+﻿///#source 1 1 ../bundles/valerie-for-knockout.js
+///#source 1 1 ../bundles/valerie-for-knockout-core.js
 ///#source 1 1 ../sources/core/valerie.validationResult.js
 // valerie.validationResult
 // - defines the ValidationResult constructor function
@@ -1412,4 +1413,23 @@ var valerie = valerie || {};
     };
 })();
 
+
+
+///#source 1 1 ../sources/resources/en-gb.js
+(function () {
+    var knockout = valerie.knockout,
+        rules = valerie.rules,
+        defaultOptions;
+
+    knockout.ModelValidationState.defaultOptions.failureMessageFormat = "There are validation errors.";
+
+    defaultOptions = knockout.PropertyValidationState.defaultOptions;
+    defaultOptions.invalidEntryFailureMessage = "The value entered is invalid";
+    defaultOptions.missingFailureMessage = "A value id required";
+
+    defaultOptions = rules.Range.defaultOptions;
+    defaultOptions.failureMessageFormatForMinimumOnly = "The value must be no less than {minimum}.";
+    defaultOptions.failureMessageFormatForMaximumOnly = "The value must be no greater than {maximum}.";
+    defaultOptions.failureMessageFormatForRange = "The value must be between {minimum} and {maximum}.";
+})();
 

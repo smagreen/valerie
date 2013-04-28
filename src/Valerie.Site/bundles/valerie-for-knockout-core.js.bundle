@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="utf-8"?>
+<bundle minify="true"
+		runOnBuild="true"
+		output="valerie-for-knockout-core.js">
+  <!--The order of the <file> elements determines the order of them when bundled.-->
+  <file>../sources/core/valerie.validationResult.js</file>
+  <file>../sources/core/valerie.utils.js</file>
+  <file>../sources/core/valerie.formatting.js</file>
+  <file>../sources/core/valerie.passThrough.js</file>
+  <file>../sources/core/valerie.knockout.extras.js</file>
+  <file>../sources/core/valerie.dom.js</file>
+  <file>../sources/core/valerie.knockout.js</file>
+  <file>../sources/core/valerie.knockout.bindings.js</file>
+</bundle>

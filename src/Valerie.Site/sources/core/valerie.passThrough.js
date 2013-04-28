@@ -4,38 +4,43 @@
 // (c) 2013 egrove Ltd.
 // License: MIT (http://www.opensource.org/licenses/mit-license.php)
 
+/// <reference path="valerie.validationResult.js"/>
+
 /*global valerie: true */
 
 var valerie = valerie || {};
 
-(function() {
+(function () {
     "use strict";
 
-    var converters = valerie.converters = valerie.converters || {},
+    // ReSharper disable InconsistentNaming
+    var ValidationResult = valerie.ValidationResult,
+        // ReSharper restore InconsistentNaming
+        converters = valerie.converters = valerie.converters || {},
         rules = valerie.rules = valerie.rules || {};
 
     // + converters.passThrough
     converters.passThrough = {
-        "formatter": function(value) {
+        "formatter": function (value) {
             if (value === undefined || value === null) {
                 return "";
             }
 
             return value.toString();
         },
-        "parser": function(value) {
+        "parser": function (value) {
             return value;
         }
     };
 
     // + rules.PassThrough
-    rules.PassThrough = function() {
+    rules.PassThrough = function () {
         this.settings = {};
     };
 
     rules.PassThrough.prototype = {
-        "test": function() {
-            return rules.successfulTestResult;
+        "test": function () {
+            return ValidationResult.success;
         }
     };
 })();

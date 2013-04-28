@@ -8,29 +8,18 @@
 
 var valerie = valerie || {};
 
-(function() {
+(function () {
     "use strict";
 
     var formatting = valerie.formatting = valerie.formatting || {};
 
-    // + formatting.addThousandsSeparator
-    formatting.addThousandsSeparator = function(numberString, thousandsSeparator, decimalSeparator) {
-        var wholeAndFractionalParts = numberString.toString().split(decimalSeparator),
-            wholePart = wholeAndFractionalParts[0];
-
-        wholePart = wholePart.replace(/\B(?=(\d{3})+(?!\d))/g, thousandsSeparator);
-        wholeAndFractionalParts[0] = wholePart;
-
-        return wholeAndFractionalParts.join(decimalSeparator);
-    };
-
     // + format.replacePlaceholders
-    formatting.replacePlaceholders = function(format, replacements) {
+    formatting.replacePlaceholders = function (format, replacements) {
         if (replacements === undefined || replacements === null) {
             replacements = {};
         }
 
-        return format.replace(/\{(\w+)\}/g, function(match, subMatch) {
+        return format.replace(/\{(\w+)\}/g, function (match, subMatch) {
             var replacement = replacements[subMatch];
 
             if (replacement === undefined || replacement === null) {

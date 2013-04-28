@@ -1,6 +1,28 @@
-﻿///#source 1 1 ../bundles/valerie-for-knockout.license.js
-"valerie for knockout (c) 2013 egrove Ltd. License: MIT (http://www.opensource.org/licenses/mit-license.php)";
-///#source 1 1 ../sources/valerie.utils.js
+﻿///#source 1 1 ../sources/core/valerie.validationResult.js
+// valerie.validationResult
+// - defines the ValidationResult constructor function
+// - used by other parts of the valerie library
+// (c) 2013 egrove Ltd.
+// License: MIT (http://www.opensource.org/licenses/mit-license.php)
+
+/*global valerie: true */
+
+var valerie = valerie || {};
+
+(function () {
+    "use strict";
+
+    // + ValidationResult
+    // - the result of a validation test
+    valerie.ValidationResult = function (failed, failureMessage) {
+        this.failed = failed;
+        this.failureMessage = failureMessage;
+    };
+
+    valerie.ValidationResult.success = new valerie.ValidationResult(false, "");
+})();
+
+///#source 1 1 ../sources/core/valerie.utils.js
 // valerie.utils
 // - general purpose utilities
 // - used by other parts of the valerie library
@@ -112,12 +134,96 @@ var valerie = valerie || {};
     };
 })();
 
-///#source 1 1 ../sources/valerie.knockout.extras.js
+///#source 1 1 ../sources/core/valerie.formatting.js
+// valerie.formatting
+// - general purpose formatting functions
+// - used by other parts of the valerie library
+// (c) 2013 egrove Ltd.
+// License: MIT (http://www.opensource.org/licenses/mit-license.php)
+
+/*global valerie: true */
+
+var valerie = valerie || {};
+
+(function () {
+    "use strict";
+
+    var formatting = valerie.formatting = valerie.formatting || {};
+
+    // + format.replacePlaceholders
+    formatting.replacePlaceholders = function (format, replacements) {
+        if (replacements === undefined || replacements === null) {
+            replacements = {};
+        }
+
+        return format.replace(/\{(\w+)\}/g, function (match, subMatch) {
+            var replacement = replacements[subMatch];
+
+            if (replacement === undefined || replacement === null) {
+                return match;
+            }
+
+            return replacement.toString();
+        });
+    };
+})();
+
+///#source 1 1 ../sources/core/valerie.passThrough.js
+// valerie.passThrough
+// - the pass through converter and rule
+// - used by other parts of the valerie library
+// (c) 2013 egrove Ltd.
+// License: MIT (http://www.opensource.org/licenses/mit-license.php)
+
+/// <reference path="valerie.validationResult.js"/>
+
+/*global valerie: true */
+
+var valerie = valerie || {};
+
+(function () {
+    "use strict";
+
+    // ReSharper disable InconsistentNaming
+    var ValidationResult = valerie.ValidationResult,
+        // ReSharper restore InconsistentNaming
+        converters = valerie.converters = valerie.converters || {},
+        rules = valerie.rules = valerie.rules || {};
+
+    // + converters.passThrough
+    converters.passThrough = {
+        "formatter": function (value) {
+            if (value === undefined || value === null) {
+                return "";
+            }
+
+            return value.toString();
+        },
+        "parser": function (value) {
+            return value;
+        }
+    };
+
+    // + rules.PassThrough
+    rules.PassThrough = function () {
+        this.settings = {};
+    };
+
+    rules.PassThrough.prototype = {
+        "test": function () {
+            return ValidationResult.success;
+        }
+    };
+})();
+
+///#source 1 1 ../sources/core/valerie.knockout.extras.js
 // valerie.knockout.extras
 // - extra functionality for KnockoutJS
 // - used by other parts of the valerie library
 // (c) 2013 egrove Ltd.
 // License: MIT (http://www.opensource.org/licenses/mit-license.php)
+
+/// <reference path="../../frameworks/knockout-2.2.1.debug.js"/>
 
 /*global ko: false, valerie: true */
 
@@ -212,7 +318,7 @@ var valerie = valerie || {};
     };
 })();
 
-///#source 1 1 ../sources/valerie.dom.js
+///#source 1 1 ../sources/core/valerie.dom.js
 // valerie.dom
 // - utilities for working with the document object model
 // - used by other parts of the valerie library
@@ -240,163 +346,14 @@ var valerie = valerie || {};
     };
 })();
 
-///#source 1 1 ../sources/valerie.converters.js
-// valerie.converters
-// - general purpose converters
-// - used by other parts of the valerie library
-// (c) 2013 egrove Ltd.
-// License: MIT (http://www.opensource.org/licenses/mit-license.php)
 
-/*global valerie: true */
-
-var valerie = valerie || {};
-
-(function () {
-    "use strict";
-
-    var converters = valerie.converters = valerie.converters || {};
-
-    // + converters.number
-    converters.number = {
-        "formatter": function (value) {
-
-            if (value === undefined || value === null) {
-                return "";
-            }
-
-            return value.toString();
-        },
-        "parser": function (value) {
-            if (value === undefined || value === null) {
-                return undefined;
-            }
-
-            return Number(value);
-        }
-    };
-
-    // + converters.string
-    converters.string = {
-        "formatter": function (value) {
-            if (value === undefined || value === null) {
-                return "";
-            }
-
-            return value;
-        },
-
-        "parser": function (value) {
-            if (value === undefined || value === null) {
-                return undefined;
-            }
-
-            return value;
-        }
-    };
-})();
-
-///#source 1 1 ../sources/valerie.rules.js
-// valerie.rules
-// - general purpose rules
-// - used by other parts of the valerie library
-// (c) 2013 egrove Ltd.
-// License: MIT (http://www.opensource.org/licenses/mit-license.php)
-
-/// <reference path="valerie.validationResult.js"/>
-/// <reference path="valerie.passThrough.js"/>
-/// <reference path="valerie.utils.js"/>
-
-/*global valerie: false */
-
-(function () {
-    "use strict";
-
-    // ReSharper disable InconsistentNaming
-    var ValidationResult = valerie.ValidationResult,
-// ReSharper restore InconsistentNaming
-        rules = valerie.rules = valerie.rules || {},
-        utils = valerie.utils,
-        formatting = valerie.formatting;
-
-    // ToDo: During (Range for dates and times).
-
-    // + rules.Range
-    rules.Range = function (minimumValueOrFunction, maximumValueOrFunction, options) {
-        if (arguments.length < 2 || arguments.length > 3) {
-            throw "2 or 3 arguments expected.";
-        }
-
-        this.minimum = utils.asFunction(minimumValueOrFunction);
-        this.maximum = utils.asFunction(maximumValueOrFunction);
-        this.settings = utils.mergeOptions(rules.Range.defaultOptions, options);
-    };
-
-    rules.Range.defaultOptions = {
-        "failureMessageFormatForMinimumOnly": "The value must be no less than {minimum}.", /*resource*/
-        "failureMessageFormatForMaximumOnly": "The value must be no greater than {maximum}.", /*resource*/
-        "failureMessageFormatForRange": "The value must be between {minimum} and {maximum}.", /*resource*/
-        "valueFormat": undefined,
-        "valueFormatter": valerie.converters.passThrough.formatter
-    };
-
-    rules.Range.prototype = {
-        "test": function (value) {
-            var failureMessage,
-                failureMessageFormat = this.settings.failureMessageFormatForRange,
-                maximum = this.maximum(),
-                minimum = this.minimum(),
-                haveMaximum = maximum !== undefined && maximum !== null,
-                haveMinimum = minimum !== undefined && minimum !== null,
-                haveValue = value !== undefined && value !== null,
-                valueInsideRange = true;
-
-            if (!haveMaximum && !haveMinimum) {
-                return ValidationResult.success;
-            }
-
-            if (haveValue) {
-                if (haveMaximum) {
-                    valueInsideRange = value <= maximum;
-                } else {
-                    failureMessageFormat = this.settings.failureMessageFormatForMinimumOnly;
-                }
-
-                if (haveMinimum) {
-                    valueInsideRange = valueInsideRange && value >= minimum;
-                } else {
-                    failureMessageFormat = this.settings.failureMessageFormatForMaximumOnly;
-                }
-            } else {
-                valueInsideRange = false;
-            }
-
-            if (valueInsideRange) {
-                return ValidationResult.success;
-            }
-
-            failureMessage = formatting.replacePlaceholders(
-                failureMessageFormat, {
-                    "maximum": this.settings.valueFormatter(maximum, this.settings.valueFormat),
-                    "minimum": this.settings.valueFormatter(minimum, this.settings.valueFormat),
-                    "value": this.settings.valueFormatter(value, this.settings.valueFormat)
-                });
-
-            return {
-                "failed": true,
-                "failureMessage": failureMessage
-            };
-        }
-    };
-})();
-
-
-///#source 1 1 ../sources/valerie.knockout.js
+///#source 1 1 ../sources/core/valerie.knockout.js
 // valerie.knockout
 // - the class and functions that validate a view-model constructed using knockout observables and computeds
 // (c) 2013 egrove Ltd.
 // License: MIT (http://www.opensource.org/licenses/mit-license.php)
 
-/// <reference path="../frameworks/knockout-2.2.1.debug.js"/>
+/// <reference path="../../frameworks/knockout-2.2.1.debug.js"/>
 /// <reference path="valerie.validationResult.js"/>
 /// <reference path="valerie.passThrough.js"/>
 /// <reference path="valerie.utils.js"/> 
@@ -753,8 +710,8 @@ var valerie = valerie || {};
 
         definition.defaultOptions = {
             "applicable": utils.asFunction(true),
-            "failureMessageFormat": "There are validation errors." /*resource*/,
-            "name": utils.asFunction("(no-name-set)"),
+            "failureMessageFormat": "",
+            "name": utils.asFunction("(?)"),
             "paused": undefined
         };
     })();
@@ -899,8 +856,8 @@ var valerie = valerie || {};
             "applicable": utils.asFunction(true),
             "converter": valerie.converters.passThrough,
             "entryFormat": undefined,
-            "invalidEntryFailureMessage": "The value entered is invalid.", /*resource*/
-            "missingFailureMessage": "A value is required.", /*resource*/
+            "invalidEntryFailureMessage": "",
+            "missingFailureMessage": "",
             "missingTest": utils.isMissing,
             "name": utils.asFunction(),
             "required": utils.asFunction(false),
@@ -910,7 +867,7 @@ var valerie = valerie || {};
     })();
 })();
 
-///#source 1 1 ../sources/valerie.knockout.bindings.js
+///#source 1 1 ../sources/core/valerie.knockout.bindings.js
 // valerie.knockout.bindings
 // - knockout bindings for:
 //   - validating user entries
@@ -918,7 +875,7 @@ var valerie = valerie || {};
 // (c) 2013 egrove Ltd.
 // License: MIT (http://www.opensource.org/licenses/mit-license.php)
 
-/// <reference path="../frameworks/knockout-2.2.1.debug.js"/>
+/// <reference path="../../frameworks/knockout-2.2.1.debug.js"/>
 /// <reference path="valerie.validationResult.js"/>
 /// <reference path="valerie.utils.js"/>
 /// <reference path="valerie.dom.js"/>
