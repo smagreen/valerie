@@ -4,7 +4,10 @@
 		output="valerie.js">
   <!--The order of the <file> elements determines the order of them when bundled.-->
   <file>../bundles/valerie.license.js</file>
+  <file>../sources/valerie.validationResult.js</file>
   <file>../sources/valerie.utils.js</file>
+  <file>../sources/valerie.formatting.js</file>
+  <file>../sources/valerie.passThrough.js</file>
   <file>../sources/valerie.converters.js</file>
   <file>../sources/valerie.rules.js</file>
 </bundle>

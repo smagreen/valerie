@@ -4,9 +4,10 @@
 // License: MIT (http://www.opensource.org/licenses/mit-license.php)
 
 /// <reference path="../frameworks/knockout-2.2.1.debug.js"/>
+/// <reference path="valerie.validationResult.js"/>
+/// <reference path="valerie.passThrough.js"/>
 /// <reference path="valerie.utils.js"/> 
-/// <reference path="valerie.converters.js"/>
-/// <reference path="valerie.rules.js"/>
+/// <reference path="valerie.formatting.js"/> 
 /// <reference path="valerie.extras.js"/>
 
 /*global ko: false, valerie: false */
@@ -14,51 +15,18 @@
 (function () {
     "use strict";
 
-    var utils = valerie.utils,
-        converters = valerie.converters,
-        rules = valerie.rules,
-        knockout = valerie.knockout,
-        extras = knockout.extras,
+    // ReSharper disable InconsistentNaming
+    var ValidationResult = valerie.ValidationResult,
+        // ReSharper restore InconsistentNaming
         koObservable = ko.observable,
         koComputed = ko.computed,
+        utils = valerie.utils,
+        formatting = valerie.formatting,
+        knockout = valerie.knockout,
+        extras = knockout.extras,
         deferEvaluation = { "deferEvaluation": true },
         getValidationStateMethodName = "validation",
         definition;
-
-    // + getValidationState
-    // - gets the validation state from a model, observable or computed
-    // - for use when developing bindings
-    knockout.getValidationState = function (modelOrObservableOrComputed) {
-        if (modelOrObservableOrComputed === undefined || modelOrObservableOrComputed === null) {
-            return undefined;
-        }
-
-        if (!modelOrObservableOrComputed.hasOwnProperty(getValidationStateMethodName)) {
-            return undefined;
-        }
-
-        return modelOrObservableOrComputed[getValidationStateMethodName]();
-    };
-
-    // + hasValidationState
-    // - determines if the given model, observable or computed has a validation state
-    // - for use when developing bindings
-    knockout.hasValidationState = function (modelOrObservableOrComputed) {
-        if (modelOrObservableOrComputed === undefined || modelOrObservableOrComputed === null) {
-            return false;
-        }
-
-        return modelOrObservableOrComputed.hasOwnProperty(getValidationStateMethodName);
-    };
-
-    // + setValidationState
-    // - sets the validation state on the model, observable or computed
-    // - for use when configuring validation in a non-fluent manner
-    knockout.setValidationState = function (modelOrObservableOrComputed, state) {
-        modelOrObservableOrComputed[getValidationStateMethodName] = function () {
-            return state;
-        };
-    };
 
     // + findValidationStates
     // - finds and returns the validation states of:
@@ -120,6 +88,41 @@
         return validationStates;
     };
 
+    // + getValidationState
+    // - gets the validation state from a model, observable or computed
+    // - for use when developing bindings
+    knockout.getValidationState = function (modelOrObservableOrComputed) {
+        if (modelOrObservableOrComputed === undefined || modelOrObservableOrComputed === null) {
+            return undefined;
+        }
+
+        if (!modelOrObservableOrComputed.hasOwnProperty(getValidationStateMethodName)) {
+            return undefined;
+        }
+
+        return modelOrObservableOrComputed[getValidationStateMethodName]();
+    };
+
+    // + hasValidationState
+    // - determines if the given model, observable or computed has a validation state
+    // - for use when developing bindings
+    knockout.hasValidationState = function (modelOrObservableOrComputed) {
+        if (modelOrObservableOrComputed === undefined || modelOrObservableOrComputed === null) {
+            return false;
+        }
+
+        return modelOrObservableOrComputed.hasOwnProperty(getValidationStateMethodName);
+    };
+
+    // + setValidationState
+    // - sets the validation state on the model, observable or computed
+    // - for use when configuring validation in a non-fluent manner
+    knockout.setValidationState = function (modelOrObservableOrComputed, state) {
+        modelOrObservableOrComputed[getValidationStateMethodName] = function () {
+            return state;
+        };
+    };
+
     // + validatableModel
     // - makes the model passed in validatable
     knockout.validatableModel = function (model, options) {
@@ -146,14 +149,13 @@
         return validationState;
     };
 
-    // + ValidationResult
-    // - the result of a validation test
-    definition = knockout.ValidationResult = function (failed, failureMessage) {
-        this.failed = failed;
-        this.failureMessage = failureMessage;
-    };
+    // + validate extension function
+    // - creates and returns the validation state for an observable or computed
+    koObservable.fn.validate = koComputed.fn.validate = function (validationOptions) {
 
-    definition.success = new knockout.ValidationResult(false, "", []);
+        // Create the validation state, then return it, so it can be modified fluently.
+        return knockout.validatableProperty(this, validationOptions);
+    };
 
     // + ModelValidationState
     // - validation state for a model
@@ -190,17 +192,13 @@
                 return !this.result().failed;
             },
             resultFunction = function () {
-                var invalidStates = this.invalidStates(),
-                    message;
+                var invalidStates = this.invalidStates();
 
                 if (invalidStates.length === 0) {
-                    return knockout.ValidationResult.success;
+                    return ValidationResult.success;
                 }
 
-                message = utils.formatString(this.settings.failureMessageFormat,
-                    { "failureCount": invalidStates.length });
-
-                return new knockout.ValidationResult(true, message);
+                return new ValidationResult(true, this.settings.failureMessageFormat);
             },
             touchedReadFunction = function () {
                 var index,
@@ -249,8 +247,18 @@
         };
 
         definition.prototype = {
+            // Validation state methods support a fluent interface.
             "addValidationStates": function (validationStates) {
                 this.validationStates.push.apply(this.validationStates, validationStates);
+
+                return this;
+            },
+            "applicable": function (valueOrFunction) {
+                if (valueOrFunction === undefined) {
+                    valueOrFunction = true;
+                }
+
+                this.settings.applicable = utils.asFunction(valueOrFunction);
 
                 return this;
             },
@@ -274,6 +282,14 @@
                 }
 
                 return this;
+            },
+            "name": function (valueOrFunction) {
+                this.settings.name = utils.asFunction(valueOrFunction);
+
+                return this;
+            },
+            "end": function () {
+                return this.model;
             },
             "removeValidationStates": function (validationStates) {
                 this.validationStates.removeAll(validationStates);
@@ -316,16 +332,6 @@
 
                 return this;
             },
-
-            // Methods used when creating the validation state.
-            "end": function () {
-                return this.model;
-            },
-            "name": function (valueOrFunction) {
-                this.settings.name = utils.asFunction(valueOrFunction);
-
-                return this;
-            },
             "validateAll": function () {
                 var validationStates = knockout.findValidationStates(this.model, true, true);
                 this.addValidationStates(validationStates);
@@ -354,7 +360,7 @@
 
         definition.defaultOptions = {
             "applicable": utils.asFunction(true),
-            "failureMessageFormat": "There are {failureCount} validation errors." /*resource*/,
+            "failureMessageFormat": "There are validation errors." /*resource*/,
             "name": utils.asFunction("(no-name-set)"),
             "paused": undefined
         };
@@ -383,6 +389,20 @@
 
                 return this.settings.rule.test(value);
             },
+            // Functions for computeds.
+            failedFunction = function () {
+                return this.result().failed;
+            },
+            messageFunction = function () {
+                var message = this.result().failureMessage;
+
+                message = formatting.replacePlaceholders(message, { "name": this.settings.name() });
+
+                return message;
+            },
+            passedFunction = function () {
+                return !this.result().failed;
+            },
             resultFunction = function () {
                 var missingResult,
                     result;
@@ -410,20 +430,7 @@
                     return result;
                 }
 
-                return knockout.ValidationResult.success;
-            },
-            failedFunction = function () {
-                return this.result().failed;
-            },
-            messageFunction = function () {
-                var message = this.result().failureMessage;
-
-                message = utils.formatString(message, { "name": this.settings.name() });
-
-                return message;
-            },
-            passedFunction = function () {
-                return !this.result().failed;
+                return ValidationResult.success;
             },
             showMessageFunction = function () {
                 if (!this.settings.applicable()) {
@@ -434,7 +441,6 @@
             };
 
         // Constructor Function
-        // - settings can be modified using a fluent interface
         definition = knockout.PropertyValidationState = function (observableOrComputed, options) {
             options = utils.mergeOptions(knockout.PropertyValidationState.defaultOptions, options);
             options.applicable = utils.asFunction(options.applicable);
@@ -443,7 +449,7 @@
 
             this.boundEntry = {
                 "focused": koObservable(false),
-                "result": koObservable(knockout.ValidationResult.success),
+                "result": koObservable(ValidationResult.success),
                 "textualInput": false
             };
 
@@ -458,7 +464,7 @@
         };
 
         definition.prototype = {
-            // Methods used when creating the validation state.
+            // Validation state methods support a fluent interface.
             "applicable": function (valueOrFunction) {
                 if (valueOrFunction === undefined) {
                     valueOrFunction = true;
@@ -468,34 +474,11 @@
 
                 return this;
             },
-            "between": function (minimumValueOrFunction, maximumValueOrFunction) {
-                this.settings.rule = new rules.Range(minimumValueOrFunction, maximumValueOrFunction);
-
-                return this;
-            },
             "end": function () {
                 this.settings.rule.settings.valueFormat = this.settings.valueFormat;
                 this.settings.rule.settings.valueFormatter = this.settings.converter.formatter;
 
                 return this.observableOrComputed;
-            },
-            "float": function (options) {
-                options = utils.mergeOptions(knockout.PropertyValidationState.float.defaultOptions, options);
-
-                this.settings.entryFormat = options.entryFormat;
-                this.settings.valueFormat = options.valueFormat;
-                this.settings.converter = converters.float;
-
-                return this;
-            },
-            "integer": function (options) {
-                options = utils.mergeOptions(knockout.PropertyValidationState.integer.defaultOptions, options);
-
-                this.settings.entryFormat = options.entryFormat;
-                this.settings.valueFormat = options.valueFormat;
-                this.settings.converter = converters.integer;
-
-                return this;
             },
             "name": function (valueOrFunction) {
                 this.settings.name = utils.asFunction(valueOrFunction);
@@ -521,37 +504,15 @@
         // Define default options.
         definition.defaultOptions = {
             "applicable": utils.asFunction(true),
-            "converter": converters.passThrough,
+            "converter": valerie.converters.passThrough,
             "entryFormat": undefined,
             "invalidEntryFailureMessage": "The value entered is invalid.", /*resource*/
             "missingFailureMessage": "A value is required.", /*resource*/
             "missingTest": utils.isMissing,
             "name": utils.asFunction(),
             "required": utils.asFunction(false),
-            "rule": new rules.PassThrough(),
+            "rule": new valerie.rules.PassThrough(),
             "valueFormat": undefined
         };
-
-        definition.float = {
-            "defaultOptions": {
-                "entryFormat": ",",
-                "valueFormat": ","
-            }
-        };
-
-        definition.integer = {
-            "defaultOptions": {
-                "entryFormat": ",",
-                "valueFormat": ","
-            }
-        };
     })();
-
-    // + validate extension function
-    // - creates and returns the validation state for an observable or computed
-    koObservable.fn.validate = koComputed.fn.validate = function (validationOptions) {
-
-        // Create the validation state, then return it, so it can be modified fluently.
-        return knockout.validatableProperty(this, validationOptions);
-    };
 })();

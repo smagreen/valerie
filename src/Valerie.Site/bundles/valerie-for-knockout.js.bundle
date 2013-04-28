@@ -4,11 +4,15 @@
 		output="valerie-for-knockout.js">
   <!--The order of the <file> elements determines the order of them when bundled.-->
   <file>../bundles/valerie-for-knockout.license.js</file>
+  <file>../sources/valerie.validationResult.js</file>
   <file>../sources/valerie.utils.js</file>
-  <file>../sources/valerie.knockout.extras.js</file>
-  <file>../sources/valerie.dom.js</file>
+  <file>../sources/valerie.formatting.js</file>
+  <file>../sources/valerie.passThrough.js</file>
   <file>../sources/valerie.converters.js</file>
   <file>../sources/valerie.rules.js</file>
+  <file>../sources/valerie.knockout.extras.js</file>
+  <file>../sources/valerie.dom.js</file>
   <file>../sources/valerie.knockout.js</file>
   <file>../sources/valerie.knockout.bindings.js</file>
+  <file>../sources/valerie.knockout.fluent.js</file>
 </bundle>

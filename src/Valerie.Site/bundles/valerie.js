@@ -1,5 +1,30 @@
 ﻿///#source 1 1 ../bundles/valerie.license.js
 "valerie (c) 2013 egrove Ltd. License: MIT (http://www.opensource.org/licenses/mit-license.php)";
+///#source 1 1 ../sources/valerie.validationResult.js
+// valerie.validationResult
+// - defines the ValidationResult constructor function
+// - used by other parts of the valerie library
+// (c) 2013 egrove Ltd.
+// License: MIT (http://www.opensource.org/licenses/mit-license.php)
+
+/*global valerie: true */
+
+var valerie = valerie || {};
+
+(function () {
+
+    "use strict";
+
+    // + ValidationResult
+    // - the result of a validation test
+    valerie.ValidationResult = function (failed, failureMessage) {
+        this.failed = failed;
+        this.failureMessage = failureMessage;
+    };
+
+    valerie.ValidationResult.success = new valerie.ValidationResult(false, "");
+})();
+
 ///#source 1 1 ../sources/valerie.utils.js
 // valerie.utils
 // - general purpose utilities
@@ -15,17 +40,6 @@ var valerie = valerie || {};
     "use strict";
 
     var utils = valerie.utils = valerie.utils || {};
-
-    // + utils.addCommasToNumberString
-    utils.addCommasToNumberString = function (numberString) {
-        var wholeAndFractionalParts = numberString.toString().split("."),
-            wholePart = wholeAndFractionalParts[0];
-
-        wholePart = wholePart.replace(/\B(?=(\d{3})+(?!\d))/g, ",");
-        wholeAndFractionalParts[0] = wholePart;
-
-        return wholeAndFractionalParts.join(".");
-    };
 
     // + utils.asArray
     utils.asArray = function (valueOrArray) {
@@ -45,23 +59,6 @@ var valerie = valerie || {};
         return function () { return valueOrFunction; };
     };
     
-    // + utils.formatString
-    utils.formatString = function (format, replacements) {
-        if (replacements === undefined || replacements === null) {
-            replacements = {};
-        }
-
-        return format.replace(/\{(\w+)\}/g, function (match, subMatch) {
-            var replacement = replacements[subMatch];
-
-            if (replacement === undefined || replacement === null) {
-                return match;
-            }
-
-            return replacement.toString();
-        });
-    };
-
     // + utils.isArray
     utils.isArray = function (value) {
         return {}.toString.call(value) === "[object Array]";
@@ -140,6 +137,94 @@ var valerie = valerie || {};
     };
 })();
 
+///#source 1 1 ../sources/valerie.formatting.js
+// valerie.formatting
+// - general purpose formatting functions
+// - used by other parts of the valerie library
+// (c) 2013 egrove Ltd.
+// License: MIT (http://www.opensource.org/licenses/mit-license.php)
+
+/*global valerie: true */
+
+var valerie = valerie || {};
+
+(function() {
+    "use strict";
+
+    var formatting = valerie.formatting = valerie.formatting || {};
+
+    // + formatting.addThousandsSeparator
+    formatting.addThousandsSeparator = function(numberString, thousandsSeparator, decimalSeparator) {
+        var wholeAndFractionalParts = numberString.toString().split(decimalSeparator),
+            wholePart = wholeAndFractionalParts[0];
+
+        wholePart = wholePart.replace(/\B(?=(\d{3})+(?!\d))/g, thousandsSeparator);
+        wholeAndFractionalParts[0] = wholePart;
+
+        return wholeAndFractionalParts.join(decimalSeparator);
+    };
+
+    // + format.replacePlaceholders
+    formatting.replacePlaceholders = function(format, replacements) {
+        if (replacements === undefined || replacements === null) {
+            replacements = {};
+        }
+
+        return format.replace(/\{(\w+)\}/g, function(match, subMatch) {
+            var replacement = replacements[subMatch];
+
+            if (replacement === undefined || replacement === null) {
+                return match;
+            }
+
+            return replacement.toString();
+        });
+    };
+})();
+
+///#source 1 1 ../sources/valerie.passThrough.js
+// valerie.passThrough
+// - the pass through converter and rule
+// - used by other parts of the valerie library
+// (c) 2013 egrove Ltd.
+// License: MIT (http://www.opensource.org/licenses/mit-license.php)
+
+/*global valerie: true */
+
+var valerie = valerie || {};
+
+(function() {
+    "use strict";
+
+    var converters = valerie.converters = valerie.converters || {},
+        rules = valerie.rules = valerie.rules || {};
+
+    // + converters.passThrough
+    converters.passThrough = {
+        "formatter": function(value) {
+            if (value === undefined || value === null) {
+                return "";
+            }
+
+            return value.toString();
+        },
+        "parser": function(value) {
+            return value;
+        }
+    };
+
+    // + rules.PassThrough
+    rules.PassThrough = function() {
+        this.settings = {};
+    };
+
+    rules.PassThrough.prototype = {
+        "test": function() {
+            return rules.successfulTestResult;
+        }
+    };
+})();
+
 ///#source 1 1 ../sources/valerie.converters.js
 // valerie.converters
 // - general purpose converters
@@ -154,93 +239,12 @@ var valerie = valerie || {};
 (function () {
     "use strict";
 
-    var converters = valerie.converters = valerie.converters || {},
-        helpers = valerie.converters.helpers = valerie.converters.helpers || {},
-        floatTestExpression = new RegExp("^\\d+(\\,\\d{3})*(\\.\\d+)?$"),
-        integerTestExpression = new RegExp("^\\d+(\\,\\d{3})*$");
+    var converters = valerie.converters = valerie.converters || {};
 
-    // + converters.helpers.addCommasToNumberString
-    helpers.addCommasToNumberString = function (numberString) {
-        var wholeAndFractionalParts = numberString.toString().split("."),
-            wholePart = wholeAndFractionalParts[0];
-
-        wholePart = wholePart.replace(/\B(?=(\d{3})+(?!\d))/g, ",");
-        wholeAndFractionalParts[0] = wholePart;
-
-        return wholeAndFractionalParts.join(".");
-    };
-
-    // + converters.float
-    converters.float = {
-        "formatter": function (value, format) {
-            if (value === undefined || value === null) {
-                return "";
-            }
-            
-            if (format === undefined || format === null) {
-                format = "";
-            }
-
-            value = value.toString();
-            
-            if (format.indexOf(",") !== -1) {
-                value = helpers.addCommasToNumberString(value);
-            }
-
-            return value;
-        },
-        "parser": function (value) {
-            if (value === undefined || value === null) {
-                return undefined;
-            }
-
-            if (!floatTestExpression.test(value)) {
-                return undefined;
-            }
-
-            value = value.replace(",", "");
-
-            return Number(value);
-        }
-    };
-
-    // + converters.integer
-    converters.integer = {
-        "formatter": function(value, format) {
-            if (value === undefined || value === null) {
-                return "";
-            }
-
-            if (format === undefined || format === null) {
-                format = "";
-            }
-
-            value = value.toString();
-
-            if (format.indexOf(",") !== -1) {
-                value = helpers.addCommasToNumberString(value);
-            }
-
-            return value;
-        },
-        "parser": function(value) {
-            if (value === undefined || value === null) {
-                return undefined;
-            }
-
-            if (!integerTestExpression.test(value)) {
-                return undefined;
-            }
-
-            value = value.replace(",", "");
-
-            return Number(value);
-        }
-    };
-
-    // + converters.passThrough
-    converters.passThrough = {
+    // + converters.number
+    converters.number = {
         "formatter": function (value) {
+
             if (value === undefined || value === null) {
                 return "";
             }
@@ -248,7 +252,11 @@ var valerie = valerie || {};
             return value.toString();
         },
         "parser": function (value) {
-            return value;
+            if (value === undefined || value === null) {
+                return undefined;
+            }
+
+            return Number(value);
         }
     };
 
@@ -279,6 +287,8 @@ var valerie = valerie || {};
 // (c) 2013 egrove Ltd.
 // License: MIT (http://www.opensource.org/licenses/mit-license.php)
 
+/// <reference path="valerie.validationResult.js"/>
+/// <reference path="valerie.passThrough.js"/>
 /// <reference path="valerie.utils.js"/>
 
 /*global valerie: false */
@@ -286,21 +296,14 @@ var valerie = valerie || {};
 (function () {
     "use strict";
 
-    var rules = valerie.rules = valerie.rules || {},
-        utils = valerie.utils;
+    // ReSharper disable InconsistentNaming
+    var ValidationResult = valerie.ValidationResult,
+// ReSharper restore InconsistentNaming
+        rules = valerie.rules = valerie.rules || {},
+        utils = valerie.utils,
+        formatting = valerie.formatting;
 
     // ToDo: During (Range for dates and times).
-
-    // + rules.PassThrough
-    rules.PassThrough = function() {
-        this.settings = {};
-    };
-
-    rules.PassThrough.prototype = {
-        "test": function() {
-            return rules.successfulTestResult;
-        }
-    };
 
     // + rules.Range
     rules.Range = function (minimumValueOrFunction, maximumValueOrFunction, options) {
@@ -333,7 +336,7 @@ var valerie = valerie || {};
                 valueInsideRange = true;
 
             if (!haveMaximum && !haveMinimum) {
-                return rules.successfulTestResult;
+                return ValidationResult.success;
             }
 
             if (haveValue) {
@@ -353,10 +356,10 @@ var valerie = valerie || {};
             }
 
             if (valueInsideRange) {
-                return rules.successfulTestResult;
+                return ValidationResult.success;
             }
 
-            failureMessage = utils.formatString(
+            failureMessage = formatting.replacePlaceholders(
                 failureMessageFormat, {
                     "maximum": this.settings.valueFormatter(maximum, this.settings.valueFormat),
                     "minimum": this.settings.valueFormatter(minimum, this.settings.valueFormat),
@@ -369,10 +372,6 @@ var valerie = valerie || {};
             };
         }
     };
-
-    rules.successfulTestResult = {
-        "failed": false,
-        "failureMessage": ""
-    };
 })();
+
 

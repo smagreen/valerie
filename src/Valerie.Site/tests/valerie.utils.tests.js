@@ -3,33 +3,33 @@
 
     //#region formatString
 
-    module("valerie.utils.formatString");
+    module("valerie.formatting.replacePlaceholders");
 
     test("without replacements the result is the format string", function () {
-        strictEqual(utils.formatString("{0} {1} {2}"), "{0} {1} {2}", "replacements not specified");
+        strictEqual(formatting.replacePlaceholders("{0} {1} {2}"), "{0} {1} {2}", "replacements not specified");
 
-        strictEqual(utils.formatString("{0} {1} {2}", undefined), "{0} {1} {2}", "replacements is undefined");
+        strictEqual(formatting.replacePlaceholders("{0} {1} {2}", undefined), "{0} {1} {2}", "replacements is undefined");
 
-        strictEqual(utils.formatString("{0} {1} {2}", null), "{0} {1} {2}", "replacements is null");
+        strictEqual(formatting.replacePlaceholders("{0} {1} {2}", null), "{0} {1} {2}", "replacements is null");
 
-        strictEqual(utils.formatString("{0} {1} {2}", {}), "{0} {1} {2}", "replacements is empty object literal");
+        strictEqual(formatting.replacePlaceholders("{0} {1} {2}", {}), "{0} {1} {2}", "replacements is empty object literal");
 
-        strictEqual(utils.formatString("{0} {1} {2}", []), "{0} {1} {2}", "replacements is empty array literal");
+        strictEqual(formatting.replacePlaceholders("{0} {1} {2}", []), "{0} {1} {2}", "replacements is empty array literal");
     });
 
     test("replacements are made in the format string", function () {
-        strictEqual(utils.formatString("{0} {1} {2}", ["alpha", "beta", "gamma"]), "alpha beta gamma",
+        strictEqual(formatting.replacePlaceholders("{0} {1} {2}", ["alpha", "beta", "gamma"]), "alpha beta gamma",
             "array literal works");
 
-        strictEqual(utils.formatString("{0} {1} {z}", { 0: "alpha", "1": "beta", z: "gamma" }), "alpha beta gamma",
+        strictEqual(formatting.replacePlaceholders("{0} {1} {z}", { 0: "alpha", "1": "beta", z: "gamma" }), "alpha beta gamma",
             "object literal works");
     });
 
     test("replacements can be missing", function () {
-        strictEqual(utils.formatString("{0} {1} {z}", ["alpha", "beta"]), "alpha beta {z}",
+        strictEqual(formatting.replacePlaceholders("{0} {1} {z}", ["alpha", "beta"]), "alpha beta {z}",
             "replacements is array literal");
 
-        strictEqual(utils.formatString("{0} {1} {z}", { "z": "gamma" }), "{0} {1} gamma",
+        strictEqual(formatting.replacePlaceholders("{0} {1} {z}", { "z": "gamma" }), "{0} {1} gamma",
             "replacements is object literal");
     });
 

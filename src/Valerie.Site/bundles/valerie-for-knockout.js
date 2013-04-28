@@ -1,5 +1,30 @@
 ﻿///#source 1 1 ../bundles/valerie-for-knockout.license.js
 "valerie for knockout (c) 2013 egrove Ltd. License: MIT (http://www.opensource.org/licenses/mit-license.php)";
+///#source 1 1 ../sources/valerie.validationResult.js
+// valerie.validationResult
+// - defines the ValidationResult constructor function
+// - used by other parts of the valerie library
+// (c) 2013 egrove Ltd.
+// License: MIT (http://www.opensource.org/licenses/mit-license.php)
+
+/*global valerie: true */
+
+var valerie = valerie || {};
+
+(function () {
+
+    "use strict";
+
+    // + ValidationResult
+    // - the result of a validation test
+    valerie.ValidationResult = function (failed, failureMessage) {
+        this.failed = failed;
+        this.failureMessage = failureMessage;
+    };
+
+    valerie.ValidationResult.success = new valerie.ValidationResult(false, "");
+})();
+
 ///#source 1 1 ../sources/valerie.utils.js
 // valerie.utils
 // - general purpose utilities
@@ -15,17 +40,6 @@ var valerie = valerie || {};
     "use strict";
 
     var utils = valerie.utils = valerie.utils || {};
-
-    // + utils.addCommasToNumberString
-    utils.addCommasToNumberString = function (numberString) {
-        var wholeAndFractionalParts = numberString.toString().split("."),
-            wholePart = wholeAndFractionalParts[0];
-
-        wholePart = wholePart.replace(/\B(?=(\d{3})+(?!\d))/g, ",");
-        wholeAndFractionalParts[0] = wholePart;
-
-        return wholeAndFractionalParts.join(".");
-    };
 
     // + utils.asArray
     utils.asArray = function (valueOrArray) {
@@ -45,23 +59,6 @@ var valerie = valerie || {};
         return function () { return valueOrFunction; };
     };
     
-    // + utils.formatString
-    utils.formatString = function (format, replacements) {
-        if (replacements === undefined || replacements === null) {
-            replacements = {};
-        }
-
-        return format.replace(/\{(\w+)\}/g, function (match, subMatch) {
-            var replacement = replacements[subMatch];
-
-            if (replacement === undefined || replacement === null) {
-                return match;
-            }
-
-            return replacement.toString();
-        });
-    };
-
     // + utils.isArray
     utils.isArray = function (value) {
         return {}.toString.call(value) === "[object Array]";
@@ -139,6 +136,244 @@ var valerie = valerie || {};
         return mergedOptions;
     };
 })();
+
+///#source 1 1 ../sources/valerie.formatting.js
+// valerie.formatting
+// - general purpose formatting functions
+// - used by other parts of the valerie library
+// (c) 2013 egrove Ltd.
+// License: MIT (http://www.opensource.org/licenses/mit-license.php)
+
+/*global valerie: true */
+
+var valerie = valerie || {};
+
+(function() {
+    "use strict";
+
+    var formatting = valerie.formatting = valerie.formatting || {};
+
+    // + formatting.addThousandsSeparator
+    formatting.addThousandsSeparator = function(numberString, thousandsSeparator, decimalSeparator) {
+        var wholeAndFractionalParts = numberString.toString().split(decimalSeparator),
+            wholePart = wholeAndFractionalParts[0];
+
+        wholePart = wholePart.replace(/\B(?=(\d{3})+(?!\d))/g, thousandsSeparator);
+        wholeAndFractionalParts[0] = wholePart;
+
+        return wholeAndFractionalParts.join(decimalSeparator);
+    };
+
+    // + format.replacePlaceholders
+    formatting.replacePlaceholders = function(format, replacements) {
+        if (replacements === undefined || replacements === null) {
+            replacements = {};
+        }
+
+        return format.replace(/\{(\w+)\}/g, function(match, subMatch) {
+            var replacement = replacements[subMatch];
+
+            if (replacement === undefined || replacement === null) {
+                return match;
+            }
+
+            return replacement.toString();
+        });
+    };
+})();
+
+///#source 1 1 ../sources/valerie.passThrough.js
+// valerie.passThrough
+// - the pass through converter and rule
+// - used by other parts of the valerie library
+// (c) 2013 egrove Ltd.
+// License: MIT (http://www.opensource.org/licenses/mit-license.php)
+
+/*global valerie: true */
+
+var valerie = valerie || {};
+
+(function() {
+    "use strict";
+
+    var converters = valerie.converters = valerie.converters || {},
+        rules = valerie.rules = valerie.rules || {};
+
+    // + converters.passThrough
+    converters.passThrough = {
+        "formatter": function(value) {
+            if (value === undefined || value === null) {
+                return "";
+            }
+
+            return value.toString();
+        },
+        "parser": function(value) {
+            return value;
+        }
+    };
+
+    // + rules.PassThrough
+    rules.PassThrough = function() {
+        this.settings = {};
+    };
+
+    rules.PassThrough.prototype = {
+        "test": function() {
+            return rules.successfulTestResult;
+        }
+    };
+})();
+
+///#source 1 1 ../sources/valerie.converters.js
+// valerie.converters
+// - general purpose converters
+// - used by other parts of the valerie library
+// (c) 2013 egrove Ltd.
+// License: MIT (http://www.opensource.org/licenses/mit-license.php)
+
+/*global valerie: true */
+
+var valerie = valerie || {};
+
+(function () {
+    "use strict";
+
+    var converters = valerie.converters = valerie.converters || {};
+
+    // + converters.number
+    converters.number = {
+        "formatter": function (value) {
+
+            if (value === undefined || value === null) {
+                return "";
+            }
+
+            return value.toString();
+        },
+        "parser": function (value) {
+            if (value === undefined || value === null) {
+                return undefined;
+            }
+
+            return Number(value);
+        }
+    };
+
+    // + converters.string
+    converters.string = {
+        "formatter": function (value) {
+            if (value === undefined || value === null) {
+                return "";
+            }
+
+            return value;
+        },
+
+        "parser": function (value) {
+            if (value === undefined || value === null) {
+                return undefined;
+            }
+
+            return value;
+        }
+    };
+})();
+
+///#source 1 1 ../sources/valerie.rules.js
+// valerie.rules
+// - general purpose rules
+// - used by other parts of the valerie library
+// (c) 2013 egrove Ltd.
+// License: MIT (http://www.opensource.org/licenses/mit-license.php)
+
+/// <reference path="valerie.validationResult.js"/>
+/// <reference path="valerie.passThrough.js"/>
+/// <reference path="valerie.utils.js"/>
+
+/*global valerie: false */
+
+(function () {
+    "use strict";
+
+    // ReSharper disable InconsistentNaming
+    var ValidationResult = valerie.ValidationResult,
+// ReSharper restore InconsistentNaming
+        rules = valerie.rules = valerie.rules || {},
+        utils = valerie.utils,
+        formatting = valerie.formatting;
+
+    // ToDo: During (Range for dates and times).
+
+    // + rules.Range
+    rules.Range = function (minimumValueOrFunction, maximumValueOrFunction, options) {
+        if (arguments.length < 2 || arguments.length > 3) {
+            throw "2 or 3 arguments expected.";
+        }
+
+        this.minimum = utils.asFunction(minimumValueOrFunction);
+        this.maximum = utils.asFunction(maximumValueOrFunction);
+        this.settings = utils.mergeOptions(rules.Range.defaultOptions, options);
+    };
+
+    rules.Range.defaultOptions = {
+        "failureMessageFormatForMinimumOnly": "The value must be no less than {minimum}.", /*resource*/
+        "failureMessageFormatForMaximumOnly": "The value must be no greater than {maximum}.", /*resource*/
+        "failureMessageFormatForRange": "The value must be between {minimum} and {maximum}.", /*resource*/
+        "valueFormat": undefined,
+        "valueFormatter": valerie.converters.passThrough.formatter
+    };
+
+    rules.Range.prototype = {
+        "test": function (value) {
+            var failureMessage,
+                failureMessageFormat = this.settings.failureMessageFormatForRange,
+                maximum = this.maximum(),
+                minimum = this.minimum(),
+                haveMaximum = maximum !== undefined && maximum !== null,
+                haveMinimum = minimum !== undefined && minimum !== null,
+                haveValue = value !== undefined && value !== null,
+                valueInsideRange = true;
+
+            if (!haveMaximum && !haveMinimum) {
+                return ValidationResult.success;
+            }
+
+            if (haveValue) {
+                if (haveMaximum) {
+                    valueInsideRange = value <= maximum;
+                } else {
+                    failureMessageFormat = this.settings.failureMessageFormatForMinimumOnly;
+                }
+
+                if (haveMinimum) {
+                    valueInsideRange = valueInsideRange && value >= minimum;
+                } else {
+                    failureMessageFormat = this.settings.failureMessageFormatForMaximumOnly;
+                }
+            } else {
+                valueInsideRange = false;
+            }
+
+            if (valueInsideRange) {
+                return ValidationResult.success;
+            }
+
+            failureMessage = formatting.replacePlaceholders(
+                failureMessageFormat, {
+                    "maximum": this.settings.valueFormatter(maximum, this.settings.valueFormat),
+                    "minimum": this.settings.valueFormatter(minimum, this.settings.valueFormat),
+                    "value": this.settings.valueFormatter(value, this.settings.valueFormat)
+                });
+
+            return {
+                "failed": true,
+                "failureMessage": failureMessage
+            };
+        }
+    };
+})();
+
 
 ///#source 1 1 ../sources/valerie.knockout.extras.js
 // valerie.knockout.extras
@@ -268,242 +503,6 @@ var valerie = valerie || {};
     };
 })();
 
-///#source 1 1 ../sources/valerie.converters.js
-// valerie.converters
-// - general purpose converters
-// - used by other parts of the valerie library
-// (c) 2013 egrove Ltd.
-// License: MIT (http://www.opensource.org/licenses/mit-license.php)
-
-/*global valerie: true */
-
-var valerie = valerie || {};
-
-(function () {
-    "use strict";
-
-    var converters = valerie.converters = valerie.converters || {},
-        helpers = valerie.converters.helpers = valerie.converters.helpers || {},
-        floatTestExpression = new RegExp("^\\d+(\\,\\d{3})*(\\.\\d+)?$"),
-        integerTestExpression = new RegExp("^\\d+(\\,\\d{3})*$");
-
-    // + converters.helpers.addCommasToNumberString
-    helpers.addCommasToNumberString = function (numberString) {
-        var wholeAndFractionalParts = numberString.toString().split("."),
-            wholePart = wholeAndFractionalParts[0];
-
-        wholePart = wholePart.replace(/\B(?=(\d{3})+(?!\d))/g, ",");
-        wholeAndFractionalParts[0] = wholePart;
-
-        return wholeAndFractionalParts.join(".");
-    };
-
-    // + converters.float
-    converters.float = {
-        "formatter": function (value, format) {
-            if (value === undefined || value === null) {
-                return "";
-            }
-            
-            if (format === undefined || format === null) {
-                format = "";
-            }
-
-            value = value.toString();
-            
-            if (format.indexOf(",") !== -1) {
-                value = helpers.addCommasToNumberString(value);
-            }
-
-            return value;
-        },
-        "parser": function (value) {
-            if (value === undefined || value === null) {
-                return undefined;
-            }
-
-            if (!floatTestExpression.test(value)) {
-                return undefined;
-            }
-
-            value = value.replace(",", "");
-
-            return Number(value);
-        }
-    };
-
-    // + converters.integer
-    converters.integer = {
-        "formatter": function(value, format) {
-            if (value === undefined || value === null) {
-                return "";
-            }
-
-            if (format === undefined || format === null) {
-                format = "";
-            }
-
-            value = value.toString();
-
-            if (format.indexOf(",") !== -1) {
-                value = helpers.addCommasToNumberString(value);
-            }
-
-            return value;
-        },
-        "parser": function(value) {
-            if (value === undefined || value === null) {
-                return undefined;
-            }
-
-            if (!integerTestExpression.test(value)) {
-                return undefined;
-            }
-
-            value = value.replace(",", "");
-
-            return Number(value);
-        }
-    };
-
-    // + converters.passThrough
-    converters.passThrough = {
-        "formatter": function (value) {
-            if (value === undefined || value === null) {
-                return "";
-            }
-
-            return value.toString();
-        },
-        "parser": function (value) {
-            return value;
-        }
-    };
-
-    // + converters.string
-    converters.string = {
-        "formatter": function (value) {
-            if (value === undefined || value === null) {
-                return "";
-            }
-
-            return value;
-        },
-
-        "parser": function (value) {
-            if (value === undefined || value === null) {
-                return undefined;
-            }
-
-            return value;
-        }
-    };
-})();
-
-///#source 1 1 ../sources/valerie.rules.js
-// valerie.rules
-// - general purpose rules
-// - used by other parts of the valerie library
-// (c) 2013 egrove Ltd.
-// License: MIT (http://www.opensource.org/licenses/mit-license.php)
-
-/// <reference path="valerie.utils.js"/>
-
-/*global valerie: false */
-
-(function () {
-    "use strict";
-
-    var rules = valerie.rules = valerie.rules || {},
-        utils = valerie.utils;
-
-    // ToDo: During (Range for dates and times).
-
-    // + rules.PassThrough
-    rules.PassThrough = function() {
-        this.settings = {};
-    };
-
-    rules.PassThrough.prototype = {
-        "test": function() {
-            return rules.successfulTestResult;
-        }
-    };
-
-    // + rules.Range
-    rules.Range = function (minimumValueOrFunction, maximumValueOrFunction, options) {
-        if (arguments.length < 2 || arguments.length > 3) {
-            throw "2 or 3 arguments expected.";
-        }
-
-        this.minimum = utils.asFunction(minimumValueOrFunction);
-        this.maximum = utils.asFunction(maximumValueOrFunction);
-        this.settings = utils.mergeOptions(rules.Range.defaultOptions, options);
-    };
-
-    rules.Range.defaultOptions = {
-        "failureMessageFormatForMinimumOnly": "The value must be no less than {minimum}.", /*resource*/
-        "failureMessageFormatForMaximumOnly": "The value must be no greater than {maximum}.", /*resource*/
-        "failureMessageFormatForRange": "The value must be between {minimum} and {maximum}.", /*resource*/
-        "valueFormat": undefined,
-        "valueFormatter": valerie.converters.passThrough.formatter
-    };
-
-    rules.Range.prototype = {
-        "test": function (value) {
-            var failureMessage,
-                failureMessageFormat = this.settings.failureMessageFormatForRange,
-                maximum = this.maximum(),
-                minimum = this.minimum(),
-                haveMaximum = maximum !== undefined && maximum !== null,
-                haveMinimum = minimum !== undefined && minimum !== null,
-                haveValue = value !== undefined && value !== null,
-                valueInsideRange = true;
-
-            if (!haveMaximum && !haveMinimum) {
-                return rules.successfulTestResult;
-            }
-
-            if (haveValue) {
-                if (haveMaximum) {
-                    valueInsideRange = value <= maximum;
-                } else {
-                    failureMessageFormat = this.settings.failureMessageFormatForMinimumOnly;
-                }
-
-                if (haveMinimum) {
-                    valueInsideRange = valueInsideRange && value >= minimum;
-                } else {
-                    failureMessageFormat = this.settings.failureMessageFormatForMaximumOnly;
-                }
-            } else {
-                valueInsideRange = false;
-            }
-
-            if (valueInsideRange) {
-                return rules.successfulTestResult;
-            }
-
-            failureMessage = utils.formatString(
-                failureMessageFormat, {
-                    "maximum": this.settings.valueFormatter(maximum, this.settings.valueFormat),
-                    "minimum": this.settings.valueFormatter(minimum, this.settings.valueFormat),
-                    "value": this.settings.valueFormatter(value, this.settings.valueFormat)
-                });
-
-            return {
-                "failed": true,
-                "failureMessage": failureMessage
-            };
-        }
-    };
-
-    rules.successfulTestResult = {
-        "failed": false,
-        "failureMessage": ""
-    };
-})();
-
 ///#source 1 1 ../sources/valerie.knockout.js
 // valerie.knockout
 // - the class and functions that validate a view-model constructed using knockout observables and computeds
@@ -511,9 +510,10 @@ var valerie = valerie || {};
 // License: MIT (http://www.opensource.org/licenses/mit-license.php)
 
 /// <reference path="../frameworks/knockout-2.2.1.debug.js"/>
+/// <reference path="valerie.validationResult.js"/>
+/// <reference path="valerie.passThrough.js"/>
 /// <reference path="valerie.utils.js"/> 
-/// <reference path="valerie.converters.js"/>
-/// <reference path="valerie.rules.js"/>
+/// <reference path="valerie.formatting.js"/> 
 /// <reference path="valerie.extras.js"/>
 
 /*global ko: false, valerie: false */
@@ -521,51 +521,18 @@ var valerie = valerie || {};
 (function () {
     "use strict";
 
-    var utils = valerie.utils,
-        converters = valerie.converters,
-        rules = valerie.rules,
-        knockout = valerie.knockout,
-        extras = knockout.extras,
+    // ReSharper disable InconsistentNaming
+    var ValidationResult = valerie.ValidationResult,
+        // ReSharper restore InconsistentNaming
         koObservable = ko.observable,
         koComputed = ko.computed,
+        utils = valerie.utils,
+        formatting = valerie.formatting,
+        knockout = valerie.knockout,
+        extras = knockout.extras,
         deferEvaluation = { "deferEvaluation": true },
         getValidationStateMethodName = "validation",
         definition;
-
-    // + getValidationState
-    // - gets the validation state from a model, observable or computed
-    // - for use when developing bindings
-    knockout.getValidationState = function (modelOrObservableOrComputed) {
-        if (modelOrObservableOrComputed === undefined || modelOrObservableOrComputed === null) {
-            return undefined;
-        }
-
-        if (!modelOrObservableOrComputed.hasOwnProperty(getValidationStateMethodName)) {
-            return undefined;
-        }
-
-        return modelOrObservableOrComputed[getValidationStateMethodName]();
-    };
-
-    // + hasValidationState
-    // - determines if the given model, observable or computed has a validation state
-    // - for use when developing bindings
-    knockout.hasValidationState = function (modelOrObservableOrComputed) {
-        if (modelOrObservableOrComputed === undefined || modelOrObservableOrComputed === null) {
-            return false;
-        }
-
-        return modelOrObservableOrComputed.hasOwnProperty(getValidationStateMethodName);
-    };
-
-    // + setValidationState
-    // - sets the validation state on the model, observable or computed
-    // - for use when configuring validation in a non-fluent manner
-    knockout.setValidationState = function (modelOrObservableOrComputed, state) {
-        modelOrObservableOrComputed[getValidationStateMethodName] = function () {
-            return state;
-        };
-    };
 
     // + findValidationStates
     // - finds and returns the validation states of:
@@ -627,6 +594,41 @@ var valerie = valerie || {};
         return validationStates;
     };
 
+    // + getValidationState
+    // - gets the validation state from a model, observable or computed
+    // - for use when developing bindings
+    knockout.getValidationState = function (modelOrObservableOrComputed) {
+        if (modelOrObservableOrComputed === undefined || modelOrObservableOrComputed === null) {
+            return undefined;
+        }
+
+        if (!modelOrObservableOrComputed.hasOwnProperty(getValidationStateMethodName)) {
+            return undefined;
+        }
+
+        return modelOrObservableOrComputed[getValidationStateMethodName]();
+    };
+
+    // + hasValidationState
+    // - determines if the given model, observable or computed has a validation state
+    // - for use when developing bindings
+    knockout.hasValidationState = function (modelOrObservableOrComputed) {
+        if (modelOrObservableOrComputed === undefined || modelOrObservableOrComputed === null) {
+            return false;
+        }
+
+        return modelOrObservableOrComputed.hasOwnProperty(getValidationStateMethodName);
+    };
+
+    // + setValidationState
+    // - sets the validation state on the model, observable or computed
+    // - for use when configuring validation in a non-fluent manner
+    knockout.setValidationState = function (modelOrObservableOrComputed, state) {
+        modelOrObservableOrComputed[getValidationStateMethodName] = function () {
+            return state;
+        };
+    };
+
     // + validatableModel
     // - makes the model passed in validatable
     knockout.validatableModel = function (model, options) {
@@ -653,14 +655,13 @@ var valerie = valerie || {};
         return validationState;
     };
 
-    // + ValidationResult
-    // - the result of a validation test
-    definition = knockout.ValidationResult = function (failed, failureMessage) {
-        this.failed = failed;
-        this.failureMessage = failureMessage;
-    };
+    // + validate extension function
+    // - creates and returns the validation state for an observable or computed
+    koObservable.fn.validate = koComputed.fn.validate = function (validationOptions) {
 
-    definition.success = new knockout.ValidationResult(false, "", []);
+        // Create the validation state, then return it, so it can be modified fluently.
+        return knockout.validatableProperty(this, validationOptions);
+    };
 
     // + ModelValidationState
     // - validation state for a model
@@ -697,17 +698,13 @@ var valerie = valerie || {};
                 return !this.result().failed;
             },
             resultFunction = function () {
-                var invalidStates = this.invalidStates(),
-                    message;
+                var invalidStates = this.invalidStates();
 
                 if (invalidStates.length === 0) {
-                    return knockout.ValidationResult.success;
+                    return ValidationResult.success;
                 }
 
-                message = utils.formatString(this.settings.failureMessageFormat,
-                    { "failureCount": invalidStates.length });
-
-                return new knockout.ValidationResult(true, message);
+                return new ValidationResult(true, this.settings.failureMessageFormat);
             },
             touchedReadFunction = function () {
                 var index,
@@ -756,8 +753,18 @@ var valerie = valerie || {};
         };
 
         definition.prototype = {
+            // Validation state methods support a fluent interface.
             "addValidationStates": function (validationStates) {
                 this.validationStates.push.apply(this.validationStates, validationStates);
+
+                return this;
+            },
+            "applicable": function (valueOrFunction) {
+                if (valueOrFunction === undefined) {
+                    valueOrFunction = true;
+                }
+
+                this.settings.applicable = utils.asFunction(valueOrFunction);
 
                 return this;
             },
@@ -781,6 +788,14 @@ var valerie = valerie || {};
                 }
 
                 return this;
+            },
+            "name": function (valueOrFunction) {
+                this.settings.name = utils.asFunction(valueOrFunction);
+
+                return this;
+            },
+            "end": function () {
+                return this.model;
             },
             "removeValidationStates": function (validationStates) {
                 this.validationStates.removeAll(validationStates);
@@ -823,16 +838,6 @@ var valerie = valerie || {};
 
                 return this;
             },
-
-            // Methods used when creating the validation state.
-            "end": function () {
-                return this.model;
-            },
-            "name": function (valueOrFunction) {
-                this.settings.name = utils.asFunction(valueOrFunction);
-
-                return this;
-            },
             "validateAll": function () {
                 var validationStates = knockout.findValidationStates(this.model, true, true);
                 this.addValidationStates(validationStates);
@@ -861,7 +866,7 @@ var valerie = valerie || {};
 
         definition.defaultOptions = {
             "applicable": utils.asFunction(true),
-            "failureMessageFormat": "There are {failureCount} validation errors." /*resource*/,
+            "failureMessageFormat": "There are validation errors." /*resource*/,
             "name": utils.asFunction("(no-name-set)"),
             "paused": undefined
         };
@@ -890,6 +895,20 @@ var valerie = valerie || {};
 
                 return this.settings.rule.test(value);
             },
+            // Functions for computeds.
+            failedFunction = function () {
+                return this.result().failed;
+            },
+            messageFunction = function () {
+                var message = this.result().failureMessage;
+
+                message = formatting.replacePlaceholders(message, { "name": this.settings.name() });
+
+                return message;
+            },
+            passedFunction = function () {
+                return !this.result().failed;
+            },
             resultFunction = function () {
                 var missingResult,
                     result;
@@ -917,20 +936,7 @@ var valerie = valerie || {};
                     return result;
                 }
 
-                return knockout.ValidationResult.success;
-            },
-            failedFunction = function () {
-                return this.result().failed;
-            },
-            messageFunction = function () {
-                var message = this.result().failureMessage;
-
-                message = utils.formatString(message, { "name": this.settings.name() });
-
-                return message;
-            },
-            passedFunction = function () {
-                return !this.result().failed;
+                return ValidationResult.success;
             },
             showMessageFunction = function () {
                 if (!this.settings.applicable()) {
@@ -941,7 +947,6 @@ var valerie = valerie || {};
             };
 
         // Constructor Function
-        // - settings can be modified using a fluent interface
         definition = knockout.PropertyValidationState = function (observableOrComputed, options) {
             options = utils.mergeOptions(knockout.PropertyValidationState.defaultOptions, options);
             options.applicable = utils.asFunction(options.applicable);
@@ -950,7 +955,7 @@ var valerie = valerie || {};
 
             this.boundEntry = {
                 "focused": koObservable(false),
-                "result": koObservable(knockout.ValidationResult.success),
+                "result": koObservable(ValidationResult.success),
                 "textualInput": false
             };
 
@@ -965,7 +970,7 @@ var valerie = valerie || {};
         };
 
         definition.prototype = {
-            // Methods used when creating the validation state.
+            // Validation state methods support a fluent interface.
             "applicable": function (valueOrFunction) {
                 if (valueOrFunction === undefined) {
                     valueOrFunction = true;
@@ -975,34 +980,11 @@ var valerie = valerie || {};
 
                 return this;
             },
-            "between": function (minimumValueOrFunction, maximumValueOrFunction) {
-                this.settings.rule = new rules.Range(minimumValueOrFunction, maximumValueOrFunction);
-
-                return this;
-            },
             "end": function () {
                 this.settings.rule.settings.valueFormat = this.settings.valueFormat;
                 this.settings.rule.settings.valueFormatter = this.settings.converter.formatter;
 
                 return this.observableOrComputed;
-            },
-            "float": function (options) {
-                options = utils.mergeOptions(knockout.PropertyValidationState.float.defaultOptions, options);
-
-                this.settings.entryFormat = options.entryFormat;
-                this.settings.valueFormat = options.valueFormat;
-                this.settings.converter = converters.float;
-
-                return this;
-            },
-            "integer": function (options) {
-                options = utils.mergeOptions(knockout.PropertyValidationState.integer.defaultOptions, options);
-
-                this.settings.entryFormat = options.entryFormat;
-                this.settings.valueFormat = options.valueFormat;
-                this.settings.converter = converters.integer;
-
-                return this;
             },
             "name": function (valueOrFunction) {
                 this.settings.name = utils.asFunction(valueOrFunction);
@@ -1028,39 +1010,17 @@ var valerie = valerie || {};
         // Define default options.
         definition.defaultOptions = {
             "applicable": utils.asFunction(true),
-            "converter": converters.passThrough,
+            "converter": valerie.converters.passThrough,
             "entryFormat": undefined,
             "invalidEntryFailureMessage": "The value entered is invalid.", /*resource*/
             "missingFailureMessage": "A value is required.", /*resource*/
             "missingTest": utils.isMissing,
             "name": utils.asFunction(),
             "required": utils.asFunction(false),
-            "rule": new rules.PassThrough(),
+            "rule": new valerie.rules.PassThrough(),
             "valueFormat": undefined
         };
-
-        definition.float = {
-            "defaultOptions": {
-                "entryFormat": ",",
-                "valueFormat": ","
-            }
-        };
-
-        definition.integer = {
-            "defaultOptions": {
-                "entryFormat": ",",
-                "valueFormat": ","
-            }
-        };
     })();
-
-    // + validate extension function
-    // - creates and returns the validation state for an observable or computed
-    koObservable.fn.validate = koComputed.fn.validate = function (validationOptions) {
-
-        // Create the validation state, then return it, so it can be modified fluently.
-        return knockout.validatableProperty(this, validationOptions);
-    };
 })();
 
 ///#source 1 1 ../sources/valerie.knockout.bindings.js
@@ -1072,6 +1032,7 @@ var valerie = valerie || {};
 // License: MIT (http://www.opensource.org/licenses/mit-license.php)
 
 /// <reference path="../frameworks/knockout-2.2.1.debug.js"/>
+/// <reference path="valerie.validationResult.js"/>
 /// <reference path="valerie.utils.js"/>
 /// <reference path="valerie.dom.js"/>
 /// <reference path="valerie.knockout.extras.js"/>
@@ -1082,7 +1043,10 @@ var valerie = valerie || {};
 (function () {
     "use strict";
 
-    var utils = valerie.utils,
+    // ReSharper disable InconsistentNaming
+    var ValidationResult = valerie.ValidationResult,
+        // ReSharper restore InconsistentNaming
+        utils = valerie.utils,
         knockout = valerie.knockout,
         koBindingHandlers = ko.bindingHandlers,
         koRegisterEventHandler = ko.utils.registerEventHandler,
@@ -1093,8 +1057,8 @@ var valerie = valerie || {};
     // Define validatedChecked and validatedValue binding handlers.
     (function () {
         var checkedBindingHandler = koBindingHandlers.checked,
-            validatedCheckedBindingHandler,
             valueBindingHandler = koBindingHandlers.value,
+            validatedCheckedBindingHandler,
             validatedValueBindingHandler,
             blurHandler = function (element, observableOrComputed) {
                 var validationState = getValidationState(observableOrComputed);
@@ -1113,7 +1077,8 @@ var valerie = valerie || {};
                 }
 
                 value = observableOrComputed.peek();
-                element.value = validationState.settings.converter.formatter(value, validationState.settings.entryFormat);
+                element.value = validationState.settings.converter.formatter(value,
+                    validationState.settings.entryFormat);
             },
             textualInputFocusHandler = function (element, observableOrComputed) {
                 var validationState = getValidationState(observableOrComputed);
@@ -1131,8 +1096,7 @@ var valerie = valerie || {};
                 if (enteredValue.length === 0 && settings.required()) {
                     observableOrComputed(undefined);
 
-                    validationState.boundEntry.result(new knockout.ValidationResult(true,
-                        settings.missingFailureMessage));
+                    validationState.boundEntry.result(new ValidationResult(true, settings.missingFailureMessage));
 
                     return;
                 }
@@ -1141,13 +1105,12 @@ var valerie = valerie || {};
                 observableOrComputed(parsedValue);
 
                 if (parsedValue === undefined) {
-                    validationState.boundEntry.result(new knockout.ValidationResult(true,
-                        settings.invalidEntryFailureMessage));
+                    validationState.boundEntry.result(new ValidationResult(true, settings.invalidEntryFailureMessage));
 
                     return;
                 }
 
-                validationState.boundEntry.result(knockout.ValidationResult.success);
+                validationState.boundEntry.result(ValidationResult.success);
             },
             textualInputUpdateFunction = function (observableOrComputed, validationState, element) {
                 // Get the value so this function becomes dependent on the observable or computed.
@@ -1158,9 +1121,10 @@ var valerie = valerie || {};
                     return;
                 }
 
-                validationState.boundEntry.result(knockout.ValidationResult.success);
+                validationState.boundEntry.result(ValidationResult.success);
 
-                element.value = validationState.settings.converter.formatter(value, validationState.settings.entryFormat);
+                element.value = validationState.settings.converter.formatter(value,
+                    validationState.settings.entryFormat);
             };
 
         // + validatedChecked binding handler
@@ -1179,6 +1143,7 @@ var valerie = valerie || {};
                         blurHandler(element, observableOrComputed);
                     });
 
+                    // Use the name of the bound element if a property name has not been specified.
                     if (validationState.settings.name() === undefined) {
                         validationState.settings.name = utils.asFunction(element.name);
                     }
@@ -1410,5 +1375,40 @@ var valerie = valerie || {};
                 applyForValidationState(functionToApply, element, valueAccessor, allBindingsAccessor, viewModel);
             });
     })();
+})();
+
+///#source 1 1 ../sources/valerie.knockout.fluent.js
+// valerie.knockout.fluent
+// - additional functions for the PropertyValidationState prototype for specifying converts and rules in a fluent manner
+// (c) 2013 egrove Ltd.
+// License: MIT (http://www.opensource.org/licenses/mit-license.php)
+
+/// <reference path="../frameworks/knockout-2.2.1.debug.js"/>
+/// <reference path="valerie.converters.js"/>
+/// <reference path="valerie.rules.js"/>
+/// <reference path="valerie.knockout.js"/>
+
+/*global ko: false, valerie: false */
+
+(function() {
+    "use strict";
+
+    var prototype = valerie.knockout.PropertyValidationState.prototype,
+        converters = valerie.converters,
+        rules = valerie.rules;
+
+    // + between
+    prototype.between = function(minimumValueOrFunction, maximumValueOrFunction, options) {
+        this.settings.rule = new rules.Range(minimumValueOrFunction, maximumValueOrFunction, options);
+
+        return this;
+    };
+
+    // + number
+    prototype.number = function() {
+        this.settings.converter = converters.number;
+
+        return this;
+    };
 })();
 

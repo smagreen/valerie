@@ -6,6 +6,7 @@
 // License: MIT (http://www.opensource.org/licenses/mit-license.php)
 
 /// <reference path="../frameworks/knockout-2.2.1.debug.js"/>
+/// <reference path="valerie.validationResult.js"/>
 /// <reference path="valerie.utils.js"/>
 /// <reference path="valerie.dom.js"/>
 /// <reference path="valerie.knockout.extras.js"/>
@@ -16,7 +17,10 @@
 (function () {
     "use strict";
 
-    var utils = valerie.utils,
+    // ReSharper disable InconsistentNaming
+    var ValidationResult = valerie.ValidationResult,
+        // ReSharper restore InconsistentNaming
+        utils = valerie.utils,
         knockout = valerie.knockout,
         koBindingHandlers = ko.bindingHandlers,
         koRegisterEventHandler = ko.utils.registerEventHandler,
@@ -27,8 +31,8 @@
     // Define validatedChecked and validatedValue binding handlers.
     (function () {
         var checkedBindingHandler = koBindingHandlers.checked,
-            validatedCheckedBindingHandler,
             valueBindingHandler = koBindingHandlers.value,
+            validatedCheckedBindingHandler,
             validatedValueBindingHandler,
             blurHandler = function (element, observableOrComputed) {
                 var validationState = getValidationState(observableOrComputed);
@@ -47,7 +51,8 @@
                 }
 
                 value = observableOrComputed.peek();
-                element.value = validationState.settings.converter.formatter(value, validationState.settings.entryFormat);
+                element.value = validationState.settings.converter.formatter(value,
+                    validationState.settings.entryFormat);
             },
             textualInputFocusHandler = function (element, observableOrComputed) {
                 var validationState = getValidationState(observableOrComputed);
@@ -65,8 +70,7 @@
                 if (enteredValue.length === 0 && settings.required()) {
                     observableOrComputed(undefined);
 
-                    validationState.boundEntry.result(new knockout.ValidationResult(true,
-                        settings.missingFailureMessage));
+                    validationState.boundEntry.result(new ValidationResult(true, settings.missingFailureMessage));
 
                     return;
                 }
@@ -75,13 +79,12 @@
                 observableOrComputed(parsedValue);
 
                 if (parsedValue === undefined) {
-                    validationState.boundEntry.result(new knockout.ValidationResult(true,
-                        settings.invalidEntryFailureMessage));
+                    validationState.boundEntry.result(new ValidationResult(true, settings.invalidEntryFailureMessage));
 
                     return;
                 }
 
-                validationState.boundEntry.result(knockout.ValidationResult.success);
+                validationState.boundEntry.result(ValidationResult.success);
             },
             textualInputUpdateFunction = function (observableOrComputed, validationState, element) {
                 // Get the value so this function becomes dependent on the observable or computed.
@@ -92,9 +95,10 @@
                     return;
                 }
 
-                validationState.boundEntry.result(knockout.ValidationResult.success);
+                validationState.boundEntry.result(ValidationResult.success);
 
-                element.value = validationState.settings.converter.formatter(value, validationState.settings.entryFormat);
+                element.value = validationState.settings.converter.formatter(value,
+                    validationState.settings.entryFormat);
             };
 
         // + validatedChecked binding handler
@@ -113,6 +117,7 @@
                         blurHandler(element, observableOrComputed);
                     });
 
+                    // Use the name of the bound element if a property name has not been specified.
                     if (validationState.settings.name() === undefined) {
                         validationState.settings.name = utils.asFunction(element.name);
                     }

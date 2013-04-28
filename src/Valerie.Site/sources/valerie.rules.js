@@ -4,6 +4,8 @@
 // (c) 2013 egrove Ltd.
 // License: MIT (http://www.opensource.org/licenses/mit-license.php)
 
+/// <reference path="valerie.validationResult.js"/>
+/// <reference path="valerie.passThrough.js"/>
 /// <reference path="valerie.utils.js"/>
 
 /*global valerie: false */
@@ -11,21 +13,14 @@
 (function () {
     "use strict";
 
-    var rules = valerie.rules = valerie.rules || {},
-        utils = valerie.utils;
+    // ReSharper disable InconsistentNaming
+    var ValidationResult = valerie.ValidationResult,
+// ReSharper restore InconsistentNaming
+        rules = valerie.rules = valerie.rules || {},
+        utils = valerie.utils,
+        formatting = valerie.formatting;
 
     // ToDo: During (Range for dates and times).
-
-    // + rules.PassThrough
-    rules.PassThrough = function() {
-        this.settings = {};
-    };
-
-    rules.PassThrough.prototype = {
-        "test": function() {
-            return rules.successfulTestResult;
-        }
-    };
 
     // + rules.Range
     rules.Range = function (minimumValueOrFunction, maximumValueOrFunction, options) {
@@ -58,7 +53,7 @@
                 valueInsideRange = true;
 
             if (!haveMaximum && !haveMinimum) {
-                return rules.successfulTestResult;
+                return ValidationResult.success;
             }
 
             if (haveValue) {
@@ -78,10 +73,10 @@
             }
 
             if (valueInsideRange) {
-                return rules.successfulTestResult;
+                return ValidationResult.success;
             }
 
-            failureMessage = utils.formatString(
+            failureMessage = formatting.replacePlaceholders(
                 failureMessageFormat, {
                     "maximum": this.settings.valueFormatter(maximum, this.settings.valueFormat),
                     "minimum": this.settings.valueFormatter(minimum, this.settings.valueFormat),
@@ -94,9 +89,5 @@
             };
         }
     };
-
-    rules.successfulTestResult = {
-        "failed": false,
-        "failureMessage": ""
-    };
 })();
+
