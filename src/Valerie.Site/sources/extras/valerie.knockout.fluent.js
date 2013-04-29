@@ -23,6 +23,20 @@
         return this;
     };
 
+    // + maximumOf
+    prototype.maximumOf = function (maximumValueOrFunction, options) {
+        this.settings.rule = new rules.Range(undefined, maximumValueOrFunction, options);
+
+        return this;
+    };
+
+    // + minimumOf
+    prototype.minimumOf = function (minimumValueOrFunction, options) {
+        this.settings.rule = new rules.Range(minimumValueOrFunction, undefined, options);
+
+        return this;
+    };
+    
     // + number
     prototype.number = function () {
         this.settings.converter = converters.number;
