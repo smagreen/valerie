@@ -11,7 +11,43 @@ var valerie = valerie || {};
 (function () {
     "use strict";
 
-    var dom = valerie.dom = valerie.dom || {};
+    var dom = valerie.dom = valerie.dom || {},
+        classNamesSeparatorExpression = /\s+/g;
+
+    // + dom.classNamesStringToDictionary
+    dom.classNamesStringToDictionary = function (classNames) {
+        var array,
+            dictionary = {},
+            index;
+
+        if (classNames === undefined || classNames === null) {
+            return dictionary;
+        }
+
+        array = classNames.split(classNamesSeparatorExpression);
+
+        for (index = 0; index < array.length; index++) {
+            dictionary[array[index]] = true;
+        }
+
+        return dictionary;
+    };
+
+    // + dom.classNamesDictionaryToString
+    dom.classNamesDictionaryToString = function (dictionary) {
+        var name,
+            array = [];
+        
+        for (name in dictionary) {
+            if (dictionary.hasOwnProperty(name)) {
+                if (dictionary[name]) {
+                    array.push(name);
+                }
+            }
+        }
+
+        return array.join(" ");
+    };
 
     // + setElementVisibility
     // - sets the visibility of the given DOM element
@@ -24,4 +60,3 @@ var valerie = valerie || {};
         element.style.display = (newVisibility) ? "" : "none";
     };
 })();
-

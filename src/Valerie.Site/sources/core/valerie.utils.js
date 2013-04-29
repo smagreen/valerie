@@ -30,14 +30,9 @@ var valerie = valerie || {};
 
         return function () { return valueOrFunction; };
     };
-    
-    // + utils.isArray
-    utils.isArray = function (value) {
-        return {}.toString.call(value) === "[object Array]";
-    };
 
     // + utils.isArrayOrObject
-    utils.isArrayOrObject = function(value) {
+    utils.isArrayOrObject = function (value) {
         if (value === null) {
             return false;
         }
@@ -72,8 +67,8 @@ var valerie = valerie || {};
         if (value === null) {
             return false;
         }
-        
-        if(utils.isArray(value)) {
+
+        if (utils.isArray(value)) {
             return false;
         }
 

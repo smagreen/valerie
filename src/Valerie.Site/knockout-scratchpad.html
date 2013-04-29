@@ -1,7 +1,10 @@
 ﻿<!DOCTYPE html>
 <html>
 <head>
-    <!--[if lte IE 8]><script type="text/javascript" src="frameworks/html5shiv.js"></script><![endif]-->
+    <!--[if lte IE 8]>
+            <script type="text/javascript" src="frameworks/html5shiv.js"></script>
+        <![endif]-->
+
     <meta charset="utf-8">
     <title>valerie knockout Scratchpad</title>
     <style type="text/css">
@@ -33,12 +36,19 @@
                 padding: 0.25em 0.5em;
             }
 
-        /* ToDo: Need to do something for IE6. */
         input.error.touched, select.error.touched {
             border-color: #aa3333;
         }
 
         input.success.touched, select.success.touched {
+            border-color: #33aa33;
+        }
+
+        input.error-and-touched, select.error-and-touched {
+            border-color: #aa3333;
+        }
+
+        input.success-and-touched, select.success-and-touched {
             border-color: #33aa33;
         }
     </style>
@@ -129,6 +139,16 @@
     <!--[if lt IE 8]><script type="text/javascript" src="frameworks/json3.min.js"></script><![endif]-->
     <script type="text/javascript" src="frameworks/knockout-2.2.1.debug.js"></script>
     <script type="text/javascript" src="bundles/valerie-for-knockout-en-gb.js"></script>
+
+    <!--[if lt IE 8]>
+            <script type="text/javascript">
+                ko.bindingHandlers.validationCss.classNames = {
+                    "failedAndTouched": "error-and-touched",
+                    "passedAndTouched": "success-and-touched"
+                };
+            </script>
+        <![endif]-->
+
     <script type="text/javascript">
         window.onload = function () {
             var v = valerie.knockout;

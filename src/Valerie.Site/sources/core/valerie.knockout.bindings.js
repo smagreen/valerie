@@ -21,10 +21,11 @@
     var ValidationResult = valerie.ValidationResult,
         // ReSharper restore InconsistentNaming
         utils = valerie.utils,
+        dom = valerie.dom,
         knockout = valerie.knockout,
         koBindingHandlers = ko.bindingHandlers,
         koRegisterEventHandler = ko.utils.registerEventHandler,
-        setElementVisibility = valerie.dom.setElementVisibility,
+        setElementVisibility = dom.setElementVisibility,
         getValidationState = knockout.getValidationState,
         isolatedBindingHandler = valerie.knockout.extras.isolatedBindingHandler;
 
@@ -273,23 +274,33 @@
         //   - touched: if the bound element has been touched
         // - the names of the classes used are held in the bindingHandlers.validationCss.classNames object
         koBindingHandlers.validationCss = isolatedBindingHandler(
-            function (element, valueAccessor, allBindingsAccessor, viewModel) {
-                var functionToApply = function (validationState) {
-                    var classNames = koBindingHandlers.validationCss.classNames;
+            function(element, valueAccessor, allBindingsAccessor, viewModel) {
+                var functionToApply = function(validationState) {
+                    var classNames = koBindingHandlers.validationCss.classNames,
+                        elementClassNames = element.className,
+                        dictionary = dom.classNamesStringToDictionary(elementClassNames);
+                  
+                    dictionary[classNames.failed] = validationState.failed();
+                    dictionary[classNames.passed] = validationState.passed();
+                    dictionary[classNames.touched] = validationState.touched();
+                    
+                    // Add composite classes for browsers which don't support multi-class selectors.
+                    dictionary[classNames.failedAndTouched] = validationState.failed() && validationState.touched();
+                    dictionary[classNames.passedAndTouched] = validationState.passed() && validationState.touched();
 
-                    // ToDo: Need a better function for toggling Css classes en-masse.
-                    ko.utils.toggleDomNodeCssClass(element, classNames.failed, validationState.failed());
-                    ko.utils.toggleDomNodeCssClass(element, classNames.passed, validationState.passed());
-                    ko.utils.toggleDomNodeCssClass(element, classNames.touched, validationState.touched());
+                    elementClassNames = dom.classNamesDictionaryToString(dictionary);
+                    element.className = elementClassNames;
                 };
-
+                
                 applyForValidationState(functionToApply, element, valueAccessor, allBindingsAccessor, viewModel);
             });
 
         koBindingHandlers.validationCss.classNames = {
             "failed": "error",
             "passed": "success",
-            "touched": "touched"
+            "touched": "touched",
+            "failedAndTouched": "",
+            "passedAndTouched": ""
         };
 
         // + validationMessageFor binding handler

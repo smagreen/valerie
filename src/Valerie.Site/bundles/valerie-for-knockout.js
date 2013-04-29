@@ -55,14 +55,9 @@ var valerie = valerie || {};
 
         return function () { return valueOrFunction; };
     };
-    
-    // + utils.isArray
-    utils.isArray = function (value) {
-        return {}.toString.call(value) === "[object Array]";
-    };
 
     // + utils.isArrayOrObject
-    utils.isArrayOrObject = function(value) {
+    utils.isArrayOrObject = function (value) {
         if (value === null) {
             return false;
         }
@@ -97,8 +92,8 @@ var valerie = valerie || {};
         if (value === null) {
             return false;
         }
-        
-        if(utils.isArray(value)) {
+
+        if (utils.isArray(value)) {
             return false;
         }
 
@@ -332,7 +327,43 @@ var valerie = valerie || {};
 (function () {
     "use strict";
 
-    var dom = valerie.dom = valerie.dom || {};
+    var dom = valerie.dom = valerie.dom || {},
+        classNamesSeparatorExpression = /\s+/g;
+
+    // + dom.classNamesStringToDictionary
+    dom.classNamesStringToDictionary = function (classNames) {
+        var array,
+            dictionary = {},
+            index;
+
+        if (classNames === undefined || classNames === null) {
+            return dictionary;
+        }
+
+        array = classNames.split(classNamesSeparatorExpression);
+
+        for (index = 0; index < array.length; index++) {
+            dictionary[array[index]] = true;
+        }
+
+        return dictionary;
+    };
+
+    // + dom.classNamesDictionaryToString
+    dom.classNamesDictionaryToString = function (dictionary) {
+        var name,
+            array = [];
+        
+        for (name in dictionary) {
+            if (dictionary.hasOwnProperty(name)) {
+                if (dictionary[name]) {
+                    array.push(name);
+                }
+            }
+        }
+
+        return array.join(" ");
+    };
 
     // + setElementVisibility
     // - sets the visibility of the given DOM element
@@ -345,7 +376,6 @@ var valerie = valerie || {};
         element.style.display = (newVisibility) ? "" : "none";
     };
 })();
-
 
 ///#source 1 1 ../sources/core/valerie.knockout.js
 // valerie.knockout
@@ -891,10 +921,11 @@ var valerie = valerie || {};
     var ValidationResult = valerie.ValidationResult,
         // ReSharper restore InconsistentNaming
         utils = valerie.utils,
+        dom = valerie.dom,
         knockout = valerie.knockout,
         koBindingHandlers = ko.bindingHandlers,
         koRegisterEventHandler = ko.utils.registerEventHandler,
-        setElementVisibility = valerie.dom.setElementVisibility,
+        setElementVisibility = dom.setElementVisibility,
         getValidationState = knockout.getValidationState,
         isolatedBindingHandler = valerie.knockout.extras.isolatedBindingHandler;
 
@@ -1143,23 +1174,33 @@ var valerie = valerie || {};
         //   - touched: if the bound element has been touched
         // - the names of the classes used are held in the bindingHandlers.validationCss.classNames object
         koBindingHandlers.validationCss = isolatedBindingHandler(
-            function (element, valueAccessor, allBindingsAccessor, viewModel) {
-                var functionToApply = function (validationState) {
-                    var classNames = koBindingHandlers.validationCss.classNames;
+            function(element, valueAccessor, allBindingsAccessor, viewModel) {
+                var functionToApply = function(validationState) {
+                    var classNames = koBindingHandlers.validationCss.classNames,
+                        elementClassNames = element.className,
+                        dictionary = dom.classNamesStringToDictionary(elementClassNames);
+                  
+                    dictionary[classNames.failed] = validationState.failed();
+                    dictionary[classNames.passed] = validationState.passed();
+                    dictionary[classNames.touched] = validationState.touched();
+                    
+                    // Add composite class
+                    dictionary[classNames.failedAndTouched] = validationState.failed() && validationState.touched();
+                    dictionary[classNames.passedAndTouched] = validationState.passed() && validationState.touched();
 
-                    // ToDo: Need a better function for toggling Css classes en-masse.
-                    ko.utils.toggleDomNodeCssClass(element, classNames.failed, validationState.failed());
-                    ko.utils.toggleDomNodeCssClass(element, classNames.passed, validationState.passed());
-                    ko.utils.toggleDomNodeCssClass(element, classNames.touched, validationState.touched());
+                    elementClassNames = dom.classNamesDictionaryToString(dictionary);
+                    element.className = elementClassNames;
                 };
-
+                
                 applyForValidationState(functionToApply, element, valueAccessor, allBindingsAccessor, viewModel);
             });
 
         koBindingHandlers.validationCss.classNames = {
             "failed": "error",
             "passed": "success",
-            "touched": "touched"
+            "touched": "touched",
+            "failedAndTouched": "",
+            "passedAndTouched": ""
         };
 
         // + validationMessageFor binding handler
