@@ -75,9 +75,9 @@
                 </div>
                 <!-- ToDo: Add checklist array for features. -->
                 <!-- ToDo: Add multi-select array for utilities. -->
-                <section data-bind="visibleWhenFailuresInSnapshot: houseDetails">
+                <section data-bind="invisibleWhenSummaryEmpty: houseDetails">
                     <h3>Validation Summary</h3>
-                    <ul data-bind="foreach: houseDetails.validation().failuresSnapshot()">
+                    <ul data-bind="foreach: houseDetails.validation().summary()">
                         <li><span data-bind="text: name"></span>: <span data-bind="    text: message"></span></li>
                     </ul>
                 </section>
@@ -109,9 +109,9 @@
                     <span data-bind="validationMessageFor: loanAmount"></span>
                 </div>
             </section>
-            <section data-bind="visibleWhenFailuresInSnapshot: true">
+            <section data-bind="invisibleWhenSummaryEmpty: true">
                 <h3>Validation Summary</h3>
-                <ul data-bind="foreach: validation().failuresSnapshot()">
+                <ul data-bind="foreach: validation().summary()">
                     <li><span data-bind="text: name"></span>: <span data-bind="    text: message"></span></li>
                 </ul>
             </section>
@@ -148,8 +148,8 @@
                 loanAmountMax = ko.computed(function () { return (housePrice() * 3) / 4; });
 
             viewModel = v.validatableModel({
-                "clearErrors": function () { viewModel.validation().touched(false).clearFailuresSnapshot(true); },
-                "submit": function () { viewModel.validation().touched(true).updateFailuresSnapshot(true); },
+                "clearErrors": function () { viewModel.validation().touched(false).clearSummary(true); },
+                "submit": function () { viewModel.validation().touched(true).updateSummary(true); },
                 "houseDetails": v.validatableModel({
                     "houseType": ko.observable()
                         .validate()

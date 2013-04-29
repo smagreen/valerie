@@ -1,6 +1,4 @@
-﻿///#source 1 1 ../bundles/valerie-for-knockout.js
-///#source 1 1 ../bundles/valerie-for-knockout-core.js
-///#source 1 1 ../sources/core/valerie.validationResult.js
+﻿///#source 1 1 ../sources/core/valerie.validationResult.js
 // valerie.validationResult
 // - defines the ValidationResult constructor function
 // - used by other parts of the valerie library
@@ -579,13 +577,13 @@ var valerie = valerie || {};
             options.name = utils.asFunction(options.name);
 
             this.failed = koComputed(failedFunction, this, deferEvaluation);
-            this.failuresSnapshot = koObservable([]);
             this.invalidStates = koComputed(invalidStatesFunction, this, deferEvaluation);
             this.message = koComputed(messageFunction, this, deferEvaluation);
             this.model = model;
             this.settings = options;
             this.passed = koComputed(passedFunction, this, deferEvaluation);
             this.result = extras.pausableComputed(resultFunction, this, deferEvaluation, options.paused);
+            this.summary = koObservable([]);
             this.touched = koComputed({
                 "read": touchedReadFunction,
                 "write": touchedWriteFunction,
@@ -614,21 +612,21 @@ var valerie = valerie || {};
 
                 return this;
             },
-            "clearFailuresSnapshot": function (clearSubSnapshots) {
+            "clearSummary": function (clearSubModelSummaries) {
                 var states,
                     state,
                     index;
 
-                this.failuresSnapshot([]);
+                this.summary([]);
 
-                if (clearSubSnapshots) {
+                if (clearSubModelSummaries) {
                     states = this.validationStates();
 
                     for (index = 0; index < states.length; index++) {
                         state = states[index];
 
-                        if (state.clearFailuresSnapshot) {
-                            state.clearFailuresSnapshot();
+                        if (state.clearSummary) {
+                            state.clearSummary();
                         }
                     }
                 }
@@ -653,7 +651,7 @@ var valerie = valerie || {};
 
                 return this;
             },
-            "updateFailuresSnapshot": function (updateSubSnapshots) {
+            "updateSummary": function (updateSubModelSummaries) {
                 var states = this.invalidStates(),
                     state,
                     index,
@@ -668,16 +666,16 @@ var valerie = valerie || {};
                     });
                 }
 
-                this.failuresSnapshot(failures);
+                this.summary(failures);
 
-                if (updateSubSnapshots) {
+                if (updateSubModelSummaries) {
                     states = this.validationStates();
 
                     for (index = 0; index < states.length; index++) {
                         state = states[index];
 
-                        if (state.updateFailuresSnapshot) {
-                            state.updateFailuresSnapshot();
+                        if (state.updateSummary) {
+                            state.updateSummary();
                         }
                     }
                 }
@@ -1177,23 +1175,23 @@ var valerie = valerie || {};
                 applyForValidationState(functionToApply, element, valueAccessor, allBindingsAccessor, viewModel);
             });
 
+        // + invisibleWhenSummaryEmpty binding handler
+        // - makes the bound element invisible if the validation summary is empty, visible otherwise
+        koBindingHandlers.invisibleWhenSummaryEmpty = isolatedBindingHandler(
+            function (element, valueAccessor, allBindingsAccessor, viewModel) {
+                var functionToApply = function (validationState) {
+                    setElementVisibility(element, validationState.summary().length > 0);
+                };
+
+                applyForValidationState(functionToApply, element, valueAccessor, allBindingsAccessor, viewModel);
+            });
+
         // + invisibleWhenTouched binding handler
         // - makes the bound element invisible if the value has been touched, visible otherwise
         koBindingHandlers.visibleWhenTouched = isolatedBindingHandler(
             function (element, valueAccessor, allBindingsAccessor, viewModel) {
                 var functionToApply = function (validationState) {
                     setElementVisibility(element, !validationState.touched());
-                };
-
-                applyForValidationState(functionToApply, element, valueAccessor, allBindingsAccessor, viewModel);
-            });
-
-        // + visibleWhenFailuresInSnapshot binding handler
-        // - makes the bound element visible if there are failures in the failures snapshot
-        koBindingHandlers.visibleWhenFailuresInSnapshot = isolatedBindingHandler(
-            function (element, valueAccessor, allBindingsAccessor, viewModel) {
-                var functionToApply = function (validationState) {
-                    setElementVisibility(element, validationState.failuresSnapshot().length > 0);
                 };
 
                 applyForValidationState(functionToApply, element, valueAccessor, allBindingsAccessor, viewModel);
@@ -1222,7 +1220,6 @@ var valerie = valerie || {};
             });
     })();
 })();
-
 
 ///#source 1 1 ../sources/extras/valerie.converters.js
 // valerie.converters
@@ -1414,8 +1411,7 @@ var valerie = valerie || {};
 })();
 
 
-
-///#source 1 1 ../sources/resources/en-gb.js
+///#source 1 1 ../sources/locales/en-gb/strings.js
 (function () {
     var knockout = valerie.knockout,
         rules = valerie.rules,
@@ -1425,7 +1421,7 @@ var valerie = valerie || {};
 
     defaultOptions = knockout.PropertyValidationState.defaultOptions;
     defaultOptions.invalidEntryFailureMessage = "The value entered is invalid";
-    defaultOptions.missingFailureMessage = "A value id required";
+    defaultOptions.missingFailureMessage = "A value is required.";
 
     defaultOptions = rules.Range.defaultOptions;
     defaultOptions.failureMessageFormatForMinimumOnly = "The value must be no less than {minimum}.";

@@ -7,7 +7,7 @@
 
     defaultOptions = knockout.PropertyValidationState.defaultOptions;
     defaultOptions.invalidEntryFailureMessage = "The value entered is invalid";
-    defaultOptions.missingFailureMessage = "A value is required";
+    defaultOptions.missingFailureMessage = "A value is required.";
 
     defaultOptions = rules.Range.defaultOptions;
     defaultOptions.failureMessageFormatForMinimumOnly = "The value must be no less than {minimum}.";
