@@ -75,6 +75,11 @@ var valerie = valerie || {};
         return typeof value === "object";
     };
 
+    // + utils.isString
+    utils.isString = function (value) {
+        return toString.call(value) === "[object String]";
+    };
+    
     // + utils.mergeOptions
     utils.mergeOptions = function (defaultOptions, options) {
         var mergedOptions = {},

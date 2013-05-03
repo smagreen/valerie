@@ -911,6 +911,7 @@ var valerie = valerie || {};
 /// <reference path="valerie.dom.js"/>
 /// <reference path="valerie.knockout.extras.js"/>
 /// <reference path="valerie.knockout.js"/>
+/// <reference path="valerie.passThrough.js"/>
 
 /*global ko: false, valerie: false */
 
@@ -923,6 +924,7 @@ var valerie = valerie || {};
         utils = valerie.utils,
         dom = valerie.dom,
         knockout = valerie.knockout,
+        converters = valerie.converters,
         koBindingHandlers = ko.bindingHandlers,
         koRegisterEventHandler = ko.utils.registerEventHandler,
         setElementVisibility = dom.setElementVisibility,
@@ -1139,12 +1141,11 @@ var valerie = valerie || {};
     (function () {
         var applyForValidationState =
             function (functionToApply, element, valueAccessor, allBindingsAccessor, viewModel) {
-                var bindings,
+                var bindings = allBindingsAccessor(),
                     value = valueAccessor(),
                     validationState;
 
                 if (value === true) {
-                    bindings = allBindingsAccessor();
                     value = bindings.value || bindings.checked ||
                         bindings.validatedValue || bindings.validatedChecked ||
                         viewModel;
@@ -1153,7 +1154,7 @@ var valerie = valerie || {};
                 validationState = getValidationState(value);
 
                 if (validationState) {
-                    functionToApply(validationState);
+                    functionToApply(validationState, value, bindings);
                 }
             };
 
@@ -1167,22 +1168,61 @@ var valerie = valerie || {};
                 applyForValidationState(functionToApply, element, valueAccessor, allBindingsAccessor, viewModel);
             });
 
+        // + formattedValue binding handler
+        koBindingHandlers.formattedValue = isolatedBindingHandler(
+            function(element, valueAccessor, allBindingsAccessor, viewModel) {
+                var bindings = allBindingsAccessor(),
+                    value = valueAccessor(),
+                    validationState,
+                    formatter = converters.passThrough.formatter,
+                    valueFormat = undefined;
+
+                value = ko.unwrapObservable(value);
+
+                if (value === true) {
+                    value = bindings.value || bindings.checked ||
+                        bindings.validatedValue || bindings.validatedChecked ||
+                        viewModel;
+                }
+
+                validationState = getValidationState(value);
+
+                if (validationState) {
+                    formatter = validationState.settings.converter.formatter;
+                    valueFormat = validationState.settings.valueFormat;
+                }
+
+                formatter = bindings.formatter || formatter;
+                if (valueFormat === undefined || valueFormat === null) {
+                    valueFormat = bindings.valueFormat;
+                }
+
+                ko.utils.setTextContent(element, formatter(value, valueFormat));
+            });
+
         // + validationCss binding handler
         // - sets CSS classes on the bound element depending on the validation status of the value:
         //   - error: if validation failed
         //   - passed: if validation passed
         //   - touched: if the bound element has been touched
         // - the names of the classes used are held in the bindingHandlers.validationCss.classNames object
+        // - for browser that don't support multiple class selectors, single class names can be specified for:
+        //   - when validation failed and the bound element has been touched
+        //   - when validation passed and the bound element has been touched
         koBindingHandlers.validationCss = isolatedBindingHandler(
             function(element, valueAccessor, allBindingsAccessor, viewModel) {
                 var functionToApply = function(validationState) {
                     var classNames = koBindingHandlers.validationCss.classNames,
                         elementClassNames = element.className,
                         dictionary = dom.classNamesStringToDictionary(elementClassNames);
-
+                  
                     dictionary[classNames.failed] = validationState.failed();
                     dictionary[classNames.passed] = validationState.passed();
                     dictionary[classNames.touched] = validationState.touched();
+                    
+                    // Add composite classes for browsers which don't support multi-class selectors.
+                    dictionary[classNames.failedAndTouched] = validationState.failed() && validationState.touched();
+                    dictionary[classNames.passedAndTouched] = validationState.passed() && validationState.touched();
 
                     elementClassNames = dom.classNamesDictionaryToString(dictionary);
                     element.className = elementClassNames;
@@ -1194,7 +1234,9 @@ var valerie = valerie || {};
         koBindingHandlers.validationCss.classNames = {
             "failed": "error",
             "passed": "success",
-            "touched": "touched"
+            "touched": "touched",
+            "failedAndTouched": "",
+            "passedAndTouched": ""
         };
 
         // + validationMessageFor binding handler

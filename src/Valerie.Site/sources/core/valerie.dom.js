@@ -37,7 +37,7 @@ var valerie = valerie || {};
     dom.classNamesDictionaryToString = function (dictionary) {
         var name,
             array = [];
-        
+
         for (name in dictionary) {
             if (dictionary.hasOwnProperty(name)) {
                 if (dictionary[name]) {

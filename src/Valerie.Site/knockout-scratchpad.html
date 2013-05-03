@@ -108,8 +108,8 @@
                 </div>
                 <div data-bind="visibleWhenValid: housePrice">
                     <p>
-                        You can borrow between: &pound;<strong data-bind="text: loanAmountMin"></strong> and
-                            &pound;<strong data-bind="text: loanAmountMax"></strong>.
+                        You can borrow between: <strong data-bind="formattedValue: loanAmountMin"></strong> and
+                            <strong data-bind="formattedValue: loanAmountMax"></strong>.
                     </p>
                 </div>
                 <div>
@@ -122,7 +122,7 @@
             <section data-bind="invisibleWhenSummaryEmpty: true">
                 <h3>Validation Summary</h3>
                 <ul data-bind="foreach: validation().summary()">
-                    <li><span data-bind="text: name"></span>: <span data-bind="    text: message"></span></li>
+                    <li><span data-bind="text: name"></span>: <span data-bind="text: message"></span></li>
                 </ul>
             </section>
             <div>
@@ -162,7 +162,7 @@
                     .applicable(ko.observable(true))
                     .number()
                     .required()
-                    .between(75000, 500000)
+                    .range(75000, 500000)
                     .end(),
                 loanAmountMin = ko.computed(function () { return housePrice() / 4; }),
                 loanAmountMax = ko.computed(function () { return (housePrice() * 3) / 4; });
@@ -190,7 +190,7 @@
                     .number()
                     .applicable(housePrice.validation().passed)
                     .required()
-                    .between(loanAmountMin, loanAmountMax)
+                    .range(loanAmountMin, loanAmountMax)
                     .end(),
                 "loanAmountMin": loanAmountMin,
                 "loanAmountMax": loanAmountMax

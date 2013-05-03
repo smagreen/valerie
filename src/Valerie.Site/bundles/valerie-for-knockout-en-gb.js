@@ -911,6 +911,7 @@ var valerie = valerie || {};
 /// <reference path="valerie.dom.js"/>
 /// <reference path="valerie.knockout.extras.js"/>
 /// <reference path="valerie.knockout.js"/>
+/// <reference path="valerie.passThrough.js"/>
 
 /*global ko: false, valerie: false */
 
@@ -923,6 +924,7 @@ var valerie = valerie || {};
         utils = valerie.utils,
         dom = valerie.dom,
         knockout = valerie.knockout,
+        converters = valerie.converters,
         koBindingHandlers = ko.bindingHandlers,
         koRegisterEventHandler = ko.utils.registerEventHandler,
         setElementVisibility = dom.setElementVisibility,
@@ -1139,12 +1141,11 @@ var valerie = valerie || {};
     (function () {
         var applyForValidationState =
             function (functionToApply, element, valueAccessor, allBindingsAccessor, viewModel) {
-                var bindings,
+                var bindings = allBindingsAccessor(),
                     value = valueAccessor(),
                     validationState;
 
                 if (value === true) {
-                    bindings = allBindingsAccessor();
                     value = bindings.value || bindings.checked ||
                         bindings.validatedValue || bindings.validatedChecked ||
                         viewModel;
@@ -1153,7 +1154,7 @@ var valerie = valerie || {};
                 validationState = getValidationState(value);
 
                 if (validationState) {
-                    functionToApply(validationState);
+                    functionToApply(validationState, value, bindings);
                 }
             };
 
@@ -1167,12 +1168,40 @@ var valerie = valerie || {};
                 applyForValidationState(functionToApply, element, valueAccessor, allBindingsAccessor, viewModel);
             });
 
+        // + formattedValue binding handler
+        koBindingHandlers.formattedValue = isolatedBindingHandler(
+            function(element, valueAccessor, allBindingsAccessor) {
+                var bindings = allBindingsAccessor(),
+                    observableOrComputedOrValue = valueAccessor(),
+                    value = ko.utils.unwrapObservable(observableOrComputedOrValue),
+                    validationState,
+                    formatter = converters.passThrough.formatter,
+                    valueFormat = undefined;
+
+                validationState = getValidationState(observableOrComputedOrValue);
+
+                if (validationState) {
+                    formatter = validationState.settings.converter.formatter;
+                    valueFormat = validationState.settings.valueFormat;
+                }
+
+                formatter = bindings.formatter || formatter;
+                if (valueFormat === undefined || valueFormat === null) {
+                    valueFormat = bindings.valueFormat;
+                }
+
+                ko.utils.setTextContent(element, formatter(value, valueFormat));
+            });
+
         // + validationCss binding handler
         // - sets CSS classes on the bound element depending on the validation status of the value:
         //   - error: if validation failed
         //   - passed: if validation passed
         //   - touched: if the bound element has been touched
         // - the names of the classes used are held in the bindingHandlers.validationCss.classNames object
+        // - for browser that don't support multiple class selectors, single class names can be specified for:
+        //   - when validation failed and the bound element has been touched
+        //   - when validation passed and the bound element has been touched
         koBindingHandlers.validationCss = isolatedBindingHandler(
             function(element, valueAccessor, allBindingsAccessor, viewModel) {
                 var functionToApply = function(validationState) {
@@ -1184,7 +1213,7 @@ var valerie = valerie || {};
                     dictionary[classNames.passed] = validationState.passed();
                     dictionary[classNames.touched] = validationState.touched();
                     
-                    // Add composite class
+                    // Add composite classes for browsers which don't support multi-class selectors.
                     dictionary[classNames.failedAndTouched] = validationState.failed() && validationState.touched();
                     dictionary[classNames.passedAndTouched] = validationState.passed() && validationState.touched();
 
@@ -1348,10 +1377,169 @@ var valerie = valerie || {};
 
     // ToDo: During (Range for dates and times).
 
+    // + rules.ArrayLength
+    rules.ArrayLength = function (minimumValueOrFunction, maximumValueOrFunction, options) {
+        if (arguments.length < 2) {
+            throw "At least 2 arguments are expected.";
+        }
+
+        options = utils.mergeOptions(rules.ArrayLength.defaultOptions, options);
+
+        return new rules.Length(minimumValueOrFunction, maximumValueOrFunction, options);
+    };
+
+    rules.ArrayLength.defaultOptions = {
+        "failureMessageFormat": "",
+        "failureMessageFormatForMinimumOnly": "",
+        "failureMessageFormatForMaximumOnly": "",
+        "valueFormat": undefined,
+        "valueFormatter": valerie.converters.passThrough.formatter
+    };
+
+    // + rules.During
+    rules.During = function (minimumValueOrFunction, maximumValueOrFunction, options) {
+        if (arguments.length < 2) {
+            throw "At least 2 arguments are expected.";
+        }
+
+        options = utils.mergeOptions(rules.During.defaultOptions, options);
+
+        return new rules.Range(minimumValueOrFunction, maximumValueOrFunction, options);
+    };
+
+    rules.During.defaultOptions = {
+        "failureMessageFormat": "",
+        "failureMessageFormatForMinimumOnly": "",
+        "failureMessageFormatForMaximumOnly": "",
+        "valueFormat": undefined,
+        "valueFormatter": valerie.converters.passThrough.formatter
+    };
+
+    // + rules.Length
+    rules.Length = function (minimumValueOrFunction, maximumValueOrFunction, options) {
+        if (arguments.length < 2) {
+            throw "At least 2 arguments are expected.";
+        }
+
+        options = utils.mergeOptions(rules.Length.defaultOptions, options);
+
+        var rangeRule = new rules.Range(minimumValueOrFunction, maximumValueOrFunction, options);
+
+        this.test = function (value) {
+            var length = undefined;
+
+            if (value !== undefined && value !== null && value.hasOwnProperty("length")) {
+                length = value.length;
+            }
+
+            return rangeRule.test(length);
+        };
+    };
+
+    rules.Length.defaultOptions = {
+        "failureMessageFormat": "",
+        "failureMessageFormatForMinimumOnly": "",
+        "failureMessageFormatForMaximumOnly": "",
+        "valueFormat": undefined,
+        "valueFormatter": valerie.converters.passThrough.formatter
+    };
+
+    // + rules.Matches
+    rules.Matches = function (permittedValueOrFunction, options) {
+        options = utils.mergeOptions(rules.Matches.defaultOptions, options);
+
+        return new rules.OneOf([permittedValueOrFunction], options);
+    };
+
+    rules.Matches.defaultOptions = {
+        "failureMessageFormat": "",
+        "valueFormat": undefined,
+        "valueFormatter": valerie.converters.passThrough.formatter
+    };
+
+    // + rules.NoneOf
+    rules.NoneOf = function (forbiddenValuesOrFunction, options) {
+        this.forbiddenValues = utils.asFunction(forbiddenValuesOrFunction);
+        this.settings = utils.mergeOptions(rules.NoneOf.defaultOptions, options);
+    };
+
+    rules.NoneOf.defaultOptions = {
+        "failureMessageFormat": "",
+        "valueFormat": undefined,
+        "valueFormatter": valerie.converters.passThrough.formatter
+    };
+
+    rules.NoneOf.prototype = {
+        "test": function(value) {
+            var failureMessage,
+                index,
+                values = forbiddenValues();
+
+            for (index = 0; index < values.length; index++) {
+                if (value === values[index]) {
+                    failureMessage = formatting.replacePlaceholders(
+                        failureMessageFormat, {
+                            "value": this.settings.valueFormatter(value, this.settings.valueFormat)
+                        });
+
+                    return new ValidationResult(true, failureMessage);
+                }
+            }
+
+            return ValidationResult.success;
+        }
+    };
+
+    // + rules.Not
+    rules.Not = function (forbiddenValueOrFunction, options) {
+        options = utils.mergeOptions(rules.Not.defaultOptions, options);
+
+        return new rules.NoneOf([forbiddenValueOrFunction], options);
+    };
+
+    rules.Not.defaultOptions = {
+        "failureMessageFormat": "",
+        "valueFormat": undefined,
+        "valueFormatter": valerie.converters.passThrough.formatter
+    };
+
+    // + rules.OneOf
+    rules.OneOf = function(permittedValuesOrFunction, options) {
+        this.permittedValues = utils.asFunction(permittedValuesOrFunction);
+        this.settings = utils.mergeOptions(rules.OneOf.defaultOptions, options);
+    };
+
+    rules.OneOf.defaultOptions = {
+        "failureMessageFormat": "",
+        "valueFormat": undefined,
+        "valueFormatter": valerie.converters.passThrough.formatter
+    };
+
+    rules.OneOf.prototype = {
+        "test": function(value) {
+            var failureMessage,
+                index,
+                values = permittedValues();
+
+            for (index = 0; index < values.length; index++) {
+                if (value === values[index]) {
+                    return ValidationResult.success;
+                }
+            }
+
+            failureMessage = formatting.replacePlaceholders(
+                failureMessageFormat, {
+                    "value": this.settings.valueFormatter(value, this.settings.valueFormat)
+                });
+
+            return new ValidationResult(true, failureMessage);
+        }
+    };
+    
     // + rules.Range
     rules.Range = function (minimumValueOrFunction, maximumValueOrFunction, options) {
         if (arguments.length < 2 || arguments.length > 3) {
-            throw "2 or 3 arguments expected.";
+            throw "At least 2 arguments are expected.";
         }
 
         this.minimum = utils.asFunction(minimumValueOrFunction);
@@ -1360,9 +1548,9 @@ var valerie = valerie || {};
     };
 
     rules.Range.defaultOptions = {
+        "failureMessageFormat": "",
         "failureMessageFormatForMinimumOnly": "",
         "failureMessageFormatForMaximumOnly": "",
-        "failureMessageFormatForRange": "",
         "valueFormat": undefined,
         "valueFormatter": valerie.converters.passThrough.formatter
     };
@@ -1370,7 +1558,7 @@ var valerie = valerie || {};
     rules.Range.prototype = {
         "test": function (value) {
             var failureMessage,
-                failureMessageFormat = this.settings.failureMessageFormatForRange,
+                failureMessageFormat = this.settings.failureMessageFormat,
                 maximum = this.maximum(),
                 minimum = this.minimum(),
                 haveMaximum = maximum !== undefined && maximum !== null,
@@ -1409,17 +1597,33 @@ var valerie = valerie || {};
                     "value": this.settings.valueFormatter(value, this.settings.valueFormat)
                 });
 
-            return {
-                "failed": true,
-                "failureMessage": failureMessage
-            };
+            return new ValidationResult(true, failureMessage);
         }
+    };
+
+    // + rules.StringLength
+    rules.StringLength = function (minimumValueOrFunction, maximumValueOrFunction, options) {
+        if (arguments.length < 2) {
+            throw "At least 2 arguments are expected.";
+        }
+
+        options = utils.mergeOptions(rules.StringLength.defaultOptions, options);
+
+        return new rules.Length(minimumValueOrFunction, maximumValueOrFunction, options);
+    };
+
+    rules.StringLength.defaultOptions = {
+        "failureMessageFormat": "",
+        "failureMessageFormatForMinimumOnly": "",
+        "failureMessageFormatForMaximumOnly": "",
+        "valueFormat": undefined,
+        "valueFormatter": valerie.converters.passThrough.formatter
     };
 })();
 
 ///#source 1 1 ../sources/extras/valerie.knockout.fluent.js
 // valerie.knockout.fluent
-// - additional functions for the PropertyValidationState prototype for specifying converts and rules in a fluent manner
+// - additional functions for the PropertyValidationState prototype for fluently specifying converters and rules
 // (c) 2013 egrove Ltd.
 // License: MIT (http://www.opensource.org/licenses/mit-license.php)
 
@@ -1436,21 +1640,127 @@ var valerie = valerie || {};
         converters = valerie.converters,
         rules = valerie.rules;
 
-    // + between
-    prototype.between = function (minimumValueOrFunction, maximumValueOrFunction, options) {
-        this.settings.rule = new rules.Range(minimumValueOrFunction, maximumValueOrFunction, options);
+    // + during
+    prototype.during = function (earliestValueOrFunction, latestValueOrFunction, options) {
+        this.settings.rule = new rules.During(earliestValueOrFunction, latestValueOrFunction, options);
 
         return this;
     };
 
+    // + earliest
+    prototype.earliest = function (earliestValueOrFunction, options) {
+        this.settings.rule = new rules.During(earliestValueOrFunction, undefined, options);
+
+        return this;
+    };
+
+    // + latest
+    prototype.latest = function (latestValueOrFunction, options) {
+        this.settings.rule = new rules.During(undefined, latestValueOrFunction, options);
+
+        return this;
+    };
+
+    // + length
+    prototype.length = function (shortestValueOrFunction, longestValueOrFunction, options) {
+        this.settings.rule = new rules.StringLength(shortestValueOrFunction, longestValueOrFunction, options);
+
+        return this;
+    };
+
+    // + matches
+    prototype.matches = function (permittedValueOrFunction, options) {
+        permittedValueOrFunction = [permittedValueOrFunction];
+        
+        this.settings.rule = new rules.Matches(permittedValueOrFunction, options);
+
+        return this;
+    };
+
+    // + maximum
+    prototype.maximum = function (maximumValueOrFunction, options) {
+        this.settings.rule = new rules.Range(undefined, maximumValueOrFunction, options);
+
+        return this;
+    };
+
+    // + maximumNumerOfItems
+    prototype.maximumNumerOfItems = function (maximumValueOrFunction, options) {
+        this.settings.rule = new rules.ArrayLength(undefined, maximumValueOrFunction, options);
+
+        return this;
+    };
+
+    // + maximumLength
+    prototype.maximumLength = function (longestValueOrFunction, options) {
+        this.settings.rule = new rules.StringLength(undefined, longestValueOrFunction, options);
+
+        return this;
+    };
+    
+    // + minimum
+    prototype.minimum = function (minimumValueOrFunction, options) {
+        this.settings.rule = new rules.Range(minimumValueOrFunction, undefined, options);
+
+        return this;
+    };
+
+    // + minimumNumerOfItems
+    prototype.minimumNumerOfItems = function (minimumValueOrFunction, options) {
+        this.settings.rule = new rules.ArrayLength(minimumValueOrFunction, undefined, options);
+
+        return this;
+    };
+
+    // + minimumLength
+    prototype.maximumLength = function (shortestValueOrFunction, options) {
+        this.settings.rule = new rules.StringLength(shortestValueOrFunction, undefined, options);
+
+        return this;
+    };
+
+    // + noneOf
+    prototype.noneOf = function (forbiddenValuesOrFunction, options) {
+        this.settings.rule = new rules.NoneOf(forbiddenValuesOrFunction, options);
+
+        return this;
+    };
+
+    // + not
+    prototype.not = function (forbiddenValueOrFunction, options) {
+        this.settings.rule = new rules.Not([forbiddenValueOrFunction], options);
+
+        return this;
+    };
+    
     // + number
     prototype.number = function () {
         this.settings.converter = converters.number;
 
         return this;
     };
-})();
 
+    // + numberOfItems
+    prototype.numberOfItems = function (minimumValueOrFunction, maximumValueOrFunction, options) {
+        this.settings.rule = new rules.ArrayLength(minimumValueOrFunction, maximumValueOrFunction, options);
+
+        return this;
+    };
+
+    // + oneOf
+    prototype.oneOf = function (permittedValuesOrFunction, options) {
+        this.settings.rule = new rules.OneOf(permittedValuesOrFunction, options);
+
+        return this;
+    };
+
+    // + range
+    prototype.range = function (minimumValueOrFunction, maximumValueOrFunction, options) {
+        this.settings.rule = new rules.Range(minimumValueOrFunction, maximumValueOrFunction, options);
+
+        return this;
+    };
+})();
 
 ///#source 1 1 ../sources/locales/en-gb/strings.js
 (function () {
@@ -1464,9 +1774,29 @@ var valerie = valerie || {};
     defaultOptions.invalidEntryFailureMessage = "The value entered is invalid";
     defaultOptions.missingFailureMessage = "A value is required.";
 
+    defaultOptions = rules.ArrayLength.defaultOptions;
+    defaultOptions.failureMessageFormat = "There must be between {minimum} and {maximum} items.";
+    defaultOptions.failureMessageFormatForMinimumOnly = "There must be at least {minimum} items.";
+    defaultOptions.failureMessageFormatForMaximumOnly = "There must be at most {maximum} items.";
+
+    defaultOptions = rules.During.defaultOptions;
+    defaultOptions.failureMessageFormat = "The value must be between {minimum} and {maximum}.";
+    defaultOptions.failureMessageFormatForMinimumOnly = "The value must be {minimum} at the earliest.";
+    defaultOptions.failureMessageFormatForMaximumOnly = "The value must be {maximum} at the latest.";
+
+    defaultOptions = rules.Length.defaultOptions;
+    defaultOptions.failureMessageFormat = "The length must be between {minimum} and {maximum}.";
+    defaultOptions.failureMessageFormatForMinimumOnly = "The length must be no less than {minimum}.";
+    defaultOptions.failureMessageFormatForMaximumOnly = "The length must be no greater than {maximum}.";
+
     defaultOptions = rules.Range.defaultOptions;
+    defaultOptions.failureMessageFormat = "The value must be between {minimum} and {maximum}.";
     defaultOptions.failureMessageFormatForMinimumOnly = "The value must be no less than {minimum}.";
     defaultOptions.failureMessageFormatForMaximumOnly = "The value must be no greater than {maximum}.";
-    defaultOptions.failureMessageFormatForRange = "The value must be between {minimum} and {maximum}.";
+
+    defaultOptions = rules.StringLength.defaultOptions;
+    defaultOptions.failureMessageFormat = "The value must have between {minimum} and {maximum} characters.";
+    defaultOptions.failureMessageFormatForMinimumOnly = "The value must have at least {minimum} characters.";
+    defaultOptions.failureMessageFormatForMaximumOnly = "The value have at most {maximum} characters.";
 })();
 
