@@ -13,7 +13,9 @@
   <file>../sources/core/valerie.knockout.js</file>
   <file>../sources/core/valerie.knockout.bindings.js</file>
   <!-- Extras -->
-  <file>../sources/extras/valerie.converters.js</file>
+  <file>../sources/extras/valerie.numericHelper.js</file>
+  <file>../sources/extras/valerie.converters.numeric.js</file>
   <file>../sources/extras/valerie.rules.js</file>
-  <file>../sources/extras/valerie.knockout.fluent.js</file>
+  <file>../sources/extras/valerie.knockout.fluent.converters.js</file>
+  <file>../sources/extras/valerie.knockout.fluent.rules.js</file>
 </bundle>

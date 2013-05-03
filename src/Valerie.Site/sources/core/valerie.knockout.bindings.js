@@ -276,7 +276,7 @@
                     value = ko.utils.unwrapObservable(observableOrComputedOrValue),
                     validationState,
                     formatter = converters.passThrough.formatter,
-                    valueFormat = undefined;
+                    valueFormat;
 
                 validationState = getValidationState(observableOrComputedOrValue);
 

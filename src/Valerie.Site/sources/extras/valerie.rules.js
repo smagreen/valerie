@@ -59,8 +59,11 @@
     };
 
     // + rules.Expression
-    rules.Expression = function (regularExpression, options) {       
-        this.expression = utils.isString(regularExpression) ? new RegExp(regularExpression) : regularExpression;
+    rules.Expression = function (regularExpressionObjectOrString, options) {
+        this.expression = utils.isString(regularExpressionObjectOrString) ?
+            new RegExp(regularExpressionObjectOrString) :
+            regularExpressionObjectOrString;
+
         this.settings = utils.mergeOptions(rules.Expression.defaultOptions, options);
     };
 
@@ -81,7 +84,7 @@
             }
 
             failureMessage = formatting.replacePlaceholders(
-                failureMessageFormat, {
+                this.settings.failureMessageFormat, {
                     "value": this.settings.valueFormatter(value, this.settings.valueFormat)
                 });
 
@@ -90,7 +93,7 @@
     };
     
     // + rules.Length
-    rules.Length = function (minimumValueOrFunction, maximumValueOrFunction, options) {
+    rules.Length = function(minimumValueOrFunction, maximumValueOrFunction, options) {
         if (arguments.length < 2) {
             throw "At least 2 arguments are expected.";
         }
@@ -99,14 +102,16 @@
 
         var rangeRule = new rules.Range(minimumValueOrFunction, maximumValueOrFunction, options);
 
-        this.test = function (value) {
-            var length = undefined;
+        this.test = function(value) {
+            var length;
 
             if (value !== undefined && value !== null && value.hasOwnProperty("length")) {
                 length = value.length;
             }
 
+            // ReSharper disable UsageOfPossiblyUnassignedValue
             return rangeRule.test(length);
+            // ReSharper restore UsageOfPossiblyUnassignedValue
         };
     };
 
@@ -147,12 +152,12 @@
         "test": function (value) {
             var failureMessage,
                 index,
-                values = forbiddenValues();
+                values = this.forbiddenValues();
 
             for (index = 0; index < values.length; index++) {
                 if (value === values[index]) {
                     failureMessage = formatting.replacePlaceholders(
-                        failureMessageFormat, {
+                        this.settings.failureMessageFormat, {
                             "value": this.settings.valueFormatter(value, this.settings.valueFormat)
                         });
 
@@ -193,7 +198,7 @@
         "test": function (value) {
             var failureMessage,
                 index,
-                values = permittedValues();
+                values = this.permittedValues();
 
             for (index = 0; index < values.length; index++) {
                 if (value === values[index]) {
@@ -202,7 +207,7 @@
             }
 
             failureMessage = formatting.replacePlaceholders(
-                failureMessageFormat, {
+                this.settings.failureMessageFormat, {
                     "value": this.settings.valueFormatter(value, this.settings.valueFormat)
                 });
 

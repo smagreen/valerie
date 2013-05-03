@@ -100,6 +100,11 @@ var valerie = valerie || {};
         return typeof value === "object";
     };
 
+    // + utils.isString
+    utils.isString = function (value) {
+        return {}.toString.call(value) === "[object String]";
+    };
+    
     // + utils.mergeOptions
     utils.mergeOptions = function (defaultOptions, options) {
         var mergedOptions = {},
@@ -144,6 +149,17 @@ var valerie = valerie || {};
     "use strict";
 
     var formatting = valerie.formatting = valerie.formatting || {};
+
+    // + formatting.addThousandsSeparator
+    formatting.addThousandsSeparator = function (numberString, thousandsSeparator, decimalSeparator) {
+        var wholeAndFractionalParts = numberString.toString().split(decimalSeparator),
+            wholePart = wholeAndFractionalParts[0];
+
+        wholePart = wholePart.replace(/\B(?=(\d{3})+(?!\d))/g, thousandsSeparator);
+        wholeAndFractionalParts[0] = wholePart;
+
+        return wholeAndFractionalParts.join(decimalSeparator);
+    };
 
     // + format.replacePlaceholders
     formatting.replacePlaceholders = function (format, replacements) {
@@ -353,7 +369,7 @@ var valerie = valerie || {};
     dom.classNamesDictionaryToString = function (dictionary) {
         var name,
             array = [];
-        
+
         for (name in dictionary) {
             if (dictionary.hasOwnProperty(name)) {
                 if (dictionary[name]) {
@@ -1170,13 +1186,13 @@ var valerie = valerie || {};
 
         // + formattedValue binding handler
         koBindingHandlers.formattedValue = isolatedBindingHandler(
-            function(element, valueAccessor, allBindingsAccessor) {
+            function (element, valueAccessor, allBindingsAccessor) {
                 var bindings = allBindingsAccessor(),
                     observableOrComputedOrValue = valueAccessor(),
                     value = ko.utils.unwrapObservable(observableOrComputedOrValue),
                     validationState,
                     formatter = converters.passThrough.formatter,
-                    valueFormat = undefined;
+                    valueFormat;
 
                 validationState = getValidationState(observableOrComputedOrValue);
 
@@ -1203,16 +1219,16 @@ var valerie = valerie || {};
         //   - when validation failed and the bound element has been touched
         //   - when validation passed and the bound element has been touched
         koBindingHandlers.validationCss = isolatedBindingHandler(
-            function(element, valueAccessor, allBindingsAccessor, viewModel) {
-                var functionToApply = function(validationState) {
+            function (element, valueAccessor, allBindingsAccessor, viewModel) {
+                var functionToApply = function (validationState) {
                     var classNames = koBindingHandlers.validationCss.classNames,
                         elementClassNames = element.className,
                         dictionary = dom.classNamesStringToDictionary(elementClassNames);
-                  
+
                     dictionary[classNames.failed] = validationState.failed();
                     dictionary[classNames.passed] = validationState.passed();
                     dictionary[classNames.touched] = validationState.touched();
-                    
+
                     // Add composite classes for browsers which don't support multi-class selectors.
                     dictionary[classNames.failedAndTouched] = validationState.failed() && validationState.touched();
                     dictionary[classNames.passedAndTouched] = validationState.passed() && validationState.touched();
@@ -1220,7 +1236,7 @@ var valerie = valerie || {};
                     elementClassNames = dom.classNamesDictionaryToString(dictionary);
                     element.className = elementClassNames;
                 };
-                
+
                 applyForValidationState(functionToApply, element, valueAccessor, allBindingsAccessor, viewModel);
             });
 
@@ -1291,12 +1307,154 @@ var valerie = valerie || {};
     })();
 })();
 
-///#source 1 1 ../sources/extras/valerie.converters.js
-// valerie.converters
-// - general purpose converters
+///#source 1 1 ../sources/extras/valerie.numericHelper.js
+// valerie.numericHelper
+// - helper for parsing and formatting numeric values
 // - used by other parts of the valerie library
 // (c) 2013 egrove Ltd.
 // License: MIT (http://www.opensource.org/licenses/mit-license.php)
+
+/// <reference path="../core/valerie.formatting.js"/>
+
+/*global valerie: true */
+
+var valerie = valerie || {};
+
+(function () {
+    "use strict";
+
+    var formatting = valerie.formatting,
+        formatStringAsOptions = function (numericHelper, format) {
+            var settings = numericHelper.settings,
+                formatExpression = numericHelper.expressions.format,
+                matches = formatExpression.exec(format),
+                asCurrency = false,
+                includeThousandsSeparator = false,
+                withDecimalPlaces,
+                numberOfDecimalPlacesSpecified,
+                numberOfDecimalPlaces = 0;
+
+            if (matches !== null) {
+                asCurrency = matches[1].length > 0,
+                includeThousandsSeparator = matches[2].length > 0,
+                withDecimalPlaces = matches[3].length > 0,
+                numberOfDecimalPlacesSpecified = matches[4].length > 0,
+                numberOfDecimalPlaces = Number(matches[4]);
+
+                if (withDecimalPlaces) {
+                    if (!numberOfDecimalPlacesSpecified && asCurrency) {
+                        numberOfDecimalPlaces = settings.currencyMinorUnitPlaces;
+                    }
+                }
+            }
+
+            return {
+                "includeCurrencySymbol": asCurrency,
+                "includeThousandsSeparator": includeThousandsSeparator,
+                "numberOfDecimalPlaces": numberOfDecimalPlaces
+            };
+        };
+
+    // + valerie.NumericHelper
+    valerie.NumericHelper = function (decimalSeparator, thousandsSeparator, currencySign, currencyMinorUnitPlaces) {
+        var integerExpression = "\\d+(\\" + thousandsSeparator + "\\d{3})*",
+            currencyMajorExpression = "(\\" + currencySign + ")?" + integerExpression,
+            currentMajorMinorExpression = currencyMajorExpression + "(\\" +
+                decimalSeparator + "\\d{" + currencyMinorUnitPlaces + "})?",
+            floatExpression = integerExpression + "(\\" + decimalSeparator + "\\d+)?",
+            formatExpression = "(\\" + currencySign + "?)" +
+                "(\\" + thousandsSeparator + "?)" +
+                "(\\" + decimalSeparator + "?(\\d*))";
+
+        this.settings = {
+            "decimalSeparator": decimalSeparator,
+            "thousandsSeparator": thousandsSeparator,
+            "currencySign": currencySign,
+            "currencyMinorUnitPlaces": currencyMinorUnitPlaces
+        };
+
+        this.expressions = {
+            "currencyMajor": new RegExp("^" + currencyMajorExpression + "$"),
+            "currencyMajorMinor": new RegExp("^" + currentMajorMinorExpression + "$"),
+            "float": new RegExp("^" + floatExpression + "$"),
+            "integer": new RegExp("^" + integerExpression + "$"),
+            "format": new RegExp("^" + formatExpression + "$")
+        };
+    };
+
+    valerie.NumericHelper.prototype = {
+        "addThousandsSeparator": function (numericString) {
+            var settings = this.settings;
+
+            return formatting.addThousandsSeparator(numericString, settings.thousandsSeparator,
+                settings.decimalSeparator);
+        },
+        "format": function (value, format) {
+            if (value === undefined || value === null) {
+                return "";
+            }
+
+            if (format === undefined || format === null) {
+                format = "";
+            }
+
+            var settings = this.settings,
+                formatOptions = formatStringAsOptions(this, format),
+                numberOfDecimalPlaces = formatOptions.numberOfDecimalPlaces,
+                negative = value < 0;
+
+            if (negative) {
+                value = -value;
+            }
+
+            if (numberOfDecimalPlaces !== undefined) {
+                value = value.toFixed(numberOfDecimalPlaces);
+            } else {
+                value = value.toString();
+            }
+
+            value = value.replace(".", settings.decimalSeparator);
+
+            if (formatOptions.includeThousandsSeparator) {
+                value = this.addThousandsSeparator(value);
+            }
+
+            return (negative ? "-" : "") +
+                (formatOptions.includeCurrencySymbol ? settings.currencySign : "") +
+                value;
+        },
+        "isCurrencyMajor": function (numericString) {
+            return this.expressions.currencyMajor.test(numericString);
+        },
+        "isCurrencyMajorMinor": function (numericString) {
+            return this.expressions.currencyMajorMinor.test(numericString);
+        },
+        "isFloat": function (numericString) {
+            return this.expressions.float.test(numericString);
+        },
+        "isInteger": function (numericString) {
+            return this.expressions.integer.test(numericString);
+        },
+        "normaliseString": function (numericString) {
+            var settings = this.settings;
+
+            numericString = numericString.replace(settings.currencySign, "");
+            numericString = numericString.replace(settings.thousandsSeparator, "");
+            numericString = numericString.replace(settings.decimalSeparator, ".");
+
+            return numericString;
+        }
+    };
+})();
+
+///#source 1 1 ../sources/extras/valerie.converters.numeric.js
+// valerie.converters.numeric
+// - converters for numeric values
+// - used by other parts of the valerie library
+// (c) 2013 egrove Ltd.
+// License: MIT (http://www.opensource.org/licenses/mit-license.php)
+
+/// <reference path="valerie.numericHelper.js"/>
 
 /*global valerie: true */
 
@@ -1306,6 +1464,95 @@ var valerie = valerie || {};
     "use strict";
 
     var converters = valerie.converters = valerie.converters || {};
+
+    // + converters.defaultNumericHelper
+    converters.defaultNumericHelper = new valerie.NumericHelper(".", ",", "$", 2);
+
+    // + converters.currencyMajor
+    converters.currencyMajor = {
+        "formatter": function (value, format) {
+            var numericHelper = converters.currency.numericHelper || converters.defaultNumericHelper;
+
+            return numericHelper.format(value, format);
+        },
+        "parser": function (value) {
+            var numericHelper = converters.currency.numericHelper || converters.defaultNumericHelper;
+
+            if (!numericHelper.isCurrencyMajor(value)) {
+                return undefined;
+            }
+
+            value = numericHelper.normaliseString(value);
+
+            return Number(value);
+        }
+    };
+
+    // + converters.currencyMajorMinor
+    converters.currencyMajorMinor = {
+        "formatter": function (value, format) {           
+            var numericHelper = converters.currency.numericHelper || converters.defaultNumericHelper;
+
+            return numericHelper.format(value, format);
+        },
+        "parser": function (value) {
+            var numericHelper = converters.currency.numericHelper || converters.defaultNumericHelper;
+
+            if (!numericHelper.isCurrencyMajorMinor(value)) {
+                return undefined;
+            }
+
+            value = numericHelper.normaliseString(value);
+
+            return Number(value);
+        }
+    };
+
+    converters.currency = { "numericHelper": undefined };
+
+    // + converters.float
+    converters.float = {
+        "formatter": function (value, format) {
+            var numericHelper = converters.float.numericHelper || converters.defaultNumericHelper;
+
+            return numericHelper.format(value, format);
+        },
+        "parser": function (value) {
+            var numericHelper = converters.float.numericHelper || converters.defaultNumericHelper;
+
+            if (!numericHelper.isFloat(value)) {
+                return undefined;
+            }
+
+            value = numericHelper.normaliseString(value);
+
+            return Number(value);
+        }
+    };
+
+    converters.float.numericHelper = undefined;
+
+    // + converters.integer
+    converters.integer = {
+        "formatter": function (value, format) {
+            var numericHelper = converters.integer.numericHelper || converters.defaultNumericHelper;
+
+            return numericHelper.format(value, format);
+        },
+        "parser": function (value) {
+            var numericHelper = converters.integer.numericHelper || converters.defaultNumericHelper;
+
+            if (!numericHelper.isInteger(value)) {
+                return undefined;
+            }
+
+            value = numericHelper.normaliseString(value);
+
+            return Number(value);
+        }
+    };
+
+    converters.integer.numericHelper = undefined;
 
     // + converters.number
     converters.number = {
@@ -1325,25 +1572,6 @@ var valerie = valerie || {};
             value = Number(value);
 
             if (isNaN(value)) {
-                return undefined;
-            }
-
-            return value;
-        }
-    };
-
-    // + converters.string
-    converters.string = {
-        "formatter": function (value) {
-            if (value === undefined || value === null) {
-                return "";
-            }
-
-            return value;
-        },
-
-        "parser": function (value) {
-            if (value === undefined || value === null) {
                 return undefined;
             }
 
@@ -1374,8 +1602,6 @@ var valerie = valerie || {};
         rules = valerie.rules = valerie.rules || {},
         utils = valerie.utils,
         formatting = valerie.formatting;
-
-    // ToDo: During (Range for dates and times).
 
     // + rules.ArrayLength
     rules.ArrayLength = function (minimumValueOrFunction, maximumValueOrFunction, options) {
@@ -1415,8 +1641,42 @@ var valerie = valerie || {};
         "valueFormatter": valerie.converters.passThrough.formatter
     };
 
+    // + rules.Expression
+    rules.Expression = function (regularExpressionObjectOrString, options) {
+        this.expression = utils.isString(regularExpressionObjectOrString) ?
+            new RegExp(regularExpressionObjectOrString) :
+            regularExpressionObjectOrString;
+
+        this.settings = utils.mergeOptions(rules.Expression.defaultOptions, options);
+    };
+
+    rules.Expression.defaultOptions = {
+        "failureMessageFormat": "",
+        "valueFormat": undefined,
+        "valueFormatter": valerie.converters.passThrough.formatter
+    };
+
+    rules.Expression.prototype = {
+        "test": function(value) {
+            var failureMessage;
+
+            if (value !== undefined && value !== null) {
+                if (this.expresssion.test(value)) {
+                    return ValidationResult.success;
+                }
+            }
+
+            failureMessage = formatting.replacePlaceholders(
+                this.settings.failureMessageFormat, {
+                    "value": this.settings.valueFormatter(value, this.settings.valueFormat)
+                });
+
+            return new ValidationResult(true, failureMessage);
+        }
+    };
+    
     // + rules.Length
-    rules.Length = function (minimumValueOrFunction, maximumValueOrFunction, options) {
+    rules.Length = function(minimumValueOrFunction, maximumValueOrFunction, options) {
         if (arguments.length < 2) {
             throw "At least 2 arguments are expected.";
         }
@@ -1425,14 +1685,16 @@ var valerie = valerie || {};
 
         var rangeRule = new rules.Range(minimumValueOrFunction, maximumValueOrFunction, options);
 
-        this.test = function (value) {
-            var length = undefined;
+        this.test = function(value) {
+            var length;
 
             if (value !== undefined && value !== null && value.hasOwnProperty("length")) {
                 length = value.length;
             }
 
+            // ReSharper disable UsageOfPossiblyUnassignedValue
             return rangeRule.test(length);
+            // ReSharper restore UsageOfPossiblyUnassignedValue
         };
     };
 
@@ -1470,15 +1732,15 @@ var valerie = valerie || {};
     };
 
     rules.NoneOf.prototype = {
-        "test": function(value) {
+        "test": function (value) {
             var failureMessage,
                 index,
-                values = forbiddenValues();
+                values = this.forbiddenValues();
 
             for (index = 0; index < values.length; index++) {
                 if (value === values[index]) {
                     failureMessage = formatting.replacePlaceholders(
-                        failureMessageFormat, {
+                        this.settings.failureMessageFormat, {
                             "value": this.settings.valueFormatter(value, this.settings.valueFormat)
                         });
 
@@ -1504,7 +1766,7 @@ var valerie = valerie || {};
     };
 
     // + rules.OneOf
-    rules.OneOf = function(permittedValuesOrFunction, options) {
+    rules.OneOf = function (permittedValuesOrFunction, options) {
         this.permittedValues = utils.asFunction(permittedValuesOrFunction);
         this.settings = utils.mergeOptions(rules.OneOf.defaultOptions, options);
     };
@@ -1516,10 +1778,10 @@ var valerie = valerie || {};
     };
 
     rules.OneOf.prototype = {
-        "test": function(value) {
+        "test": function (value) {
             var failureMessage,
                 index,
-                values = permittedValues();
+                values = this.permittedValues();
 
             for (index = 0; index < values.length; index++) {
                 if (value === values[index]) {
@@ -1528,14 +1790,14 @@ var valerie = valerie || {};
             }
 
             failureMessage = formatting.replacePlaceholders(
-                failureMessageFormat, {
+                this.settings.failureMessageFormat, {
                     "value": this.settings.valueFormatter(value, this.settings.valueFormat)
                 });
 
             return new ValidationResult(true, failureMessage);
         }
     };
-    
+
     // + rules.Range
     rules.Range = function (minimumValueOrFunction, maximumValueOrFunction, options) {
         if (arguments.length < 2 || arguments.length > 3) {
@@ -1621,15 +1883,15 @@ var valerie = valerie || {};
     };
 })();
 
-///#source 1 1 ../sources/extras/valerie.knockout.fluent.js
-// valerie.knockout.fluent
-// - additional functions for the PropertyValidationState prototype for fluently specifying converters and rules
+///#source 1 1 ../sources/extras/valerie.knockout.fluent.converters.js
+// valerie.knockout.fluent.converters
+// - additional functions for the PropertyValidationState prototype for fluently specifying converters
 // (c) 2013 egrove Ltd.
 // License: MIT (http://www.opensource.org/licenses/mit-license.php)
 
+/// <reference path="../core/valerie.validationResult.js"/>
 /// <reference path="../core/valerie.knockout.js"/>
-/// <reference path="valerie.converters.js"/>
-/// <reference path="valerie.rules.js"/>
+/// <reference path="valerie.converters.numeric.js"/>
 
 /*global ko: false, valerie: false */
 
@@ -1637,7 +1899,77 @@ var valerie = valerie || {};
     "use strict";
 
     var prototype = valerie.knockout.PropertyValidationState.prototype,
-        converters = valerie.converters,
+        converters = valerie.converters;
+
+    // + currencyMajor
+    prototype.currencyMajor = function () {
+        this.settings.converter = converters.currencyMajor;
+
+        // ToDo: Set entry format and value format to different values.
+        return this;
+    };
+
+    // + currencyMajorMinor
+    prototype.currencyMajorMinor = function () {
+        var numericHelper = converters.currency.numericHelper || converters.defaultNumericHelper;
+        
+        this.settings.converter = converters.currencyMajorMinor;
+
+        // ToDo: Set entry format and value format to different values.
+        this.settings.entryFormat = this.settings.valueFormat = numericHelper.settings.decimalSeparator +
+            numericHelper.settings.currencyMinorUnitPlaces;
+
+        return this;
+    };
+
+    // + float
+    prototype.float = function () {
+        this.settings.converter = converters.float;
+
+        return this;
+    };
+
+    // + integer
+    prototype.integer = function () {
+        this.settings.converter = converters.integer;
+
+        return this;
+    };
+
+    // + number
+    prototype.number = function () {
+        this.settings.converter = converters.number;
+
+        return this;
+    };
+
+    // + string
+    prototype.string = function () {
+        this.settings.converter = converters.passThrough;
+
+        return this;
+    };
+})();
+
+///#source 1 1 ../sources/extras/valerie.knockout.fluent.rules.js
+// valerie.knockout.fluent.rules
+// - additional functions for the PropertyValidationState prototype for fluently specifying rules
+// (c) 2013 egrove Ltd.
+// License: MIT (http://www.opensource.org/licenses/mit-license.php)
+
+/// <reference path="../core/valerie.validationResult.js"/>
+/// <reference path="../core/valerie.knockout.js"/>
+/// <reference path="valerie.rules.js"/>
+
+/*global ko: false, valerie: false */
+
+(function () {
+    "use strict";
+
+    // ReSharper disable InconsistentNaming
+    var ValidationResult = valerie.ValidationResult,
+        // ReSharper restore InconsistentNaming        
+        prototype = valerie.knockout.PropertyValidationState.prototype,
         rules = valerie.rules;
 
     // + during
@@ -1650,6 +1982,13 @@ var valerie = valerie || {};
     // + earliest
     prototype.earliest = function (earliestValueOrFunction, options) {
         this.settings.rule = new rules.During(earliestValueOrFunction, undefined, options);
+
+        return this;
+    };
+
+    // + expression
+    prototype.expression = function (regularExpressionObjectOrString, options) {
+        this.settings.rule = new rules.Expression(regularExpressionObjectOrString, options);
 
         return this;
     };
@@ -1671,7 +2010,7 @@ var valerie = valerie || {};
     // + matches
     prototype.matches = function (permittedValueOrFunction, options) {
         permittedValueOrFunction = [permittedValueOrFunction];
-        
+
         this.settings.rule = new rules.Matches(permittedValueOrFunction, options);
 
         return this;
@@ -1697,7 +2036,14 @@ var valerie = valerie || {};
 
         return this;
     };
-    
+
+    // + message
+    prototype.message = function (message) {
+        this.settings.rule.settings.failureMessageFormat = message;
+
+        return this;
+    };
+
     // + minimum
     prototype.minimum = function (minimumValueOrFunction, options) {
         this.settings.rule = new rules.Range(minimumValueOrFunction, undefined, options);
@@ -1732,13 +2078,6 @@ var valerie = valerie || {};
 
         return this;
     };
-    
-    // + number
-    prototype.number = function () {
-        this.settings.converter = converters.number;
-
-        return this;
-    };
 
     // + numberOfItems
     prototype.numberOfItems = function (minimumValueOrFunction, maximumValueOrFunction, options) {
@@ -1757,6 +2096,21 @@ var valerie = valerie || {};
     // + range
     prototype.range = function (minimumValueOrFunction, maximumValueOrFunction, options) {
         this.settings.rule = new rules.Range(minimumValueOrFunction, maximumValueOrFunction, options);
+
+        return this;
+    };
+
+    // + rule
+    prototype.rule = function (testFunction, failureMessage) {
+        this.settings.rule = {
+            "test": function (value) {
+                if (testFunction(value)) {
+                    return ValidationResult.success;
+                }
+
+                return new ValidationResult(true, failureMessage);
+            }
+        };
 
         return this;
     };

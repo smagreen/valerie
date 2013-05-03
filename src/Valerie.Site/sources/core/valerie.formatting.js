@@ -13,6 +13,17 @@ var valerie = valerie || {};
 
     var formatting = valerie.formatting = valerie.formatting || {};
 
+    // + formatting.addThousandsSeparator
+    formatting.addThousandsSeparator = function (numberString, thousandsSeparator, decimalSeparator) {
+        var wholeAndFractionalParts = numberString.toString().split(decimalSeparator),
+            wholePart = wholeAndFractionalParts[0];
+
+        wholePart = wholePart.replace(/\B(?=(\d{3})+(?!\d))/g, thousandsSeparator);
+        wholeAndFractionalParts[0] = wholePart;
+
+        return wholeAndFractionalParts.join(decimalSeparator);
+    };
+
     // + format.replacePlaceholders
     formatting.replacePlaceholders = function (format, replacements) {
         if (replacements === undefined || replacements === null) {

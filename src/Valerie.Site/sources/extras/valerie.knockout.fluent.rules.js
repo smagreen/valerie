@@ -1,10 +1,10 @@
-﻿// valerie.knockout.fluent
-// - additional functions for the PropertyValidationState prototype for fluently specifying converters and rules
+﻿// valerie.knockout.fluent.rules
+// - additional functions for the PropertyValidationState prototype for fluently specifying rules
 // (c) 2013 egrove Ltd.
 // License: MIT (http://www.opensource.org/licenses/mit-license.php)
 
+/// <reference path="../core/valerie.validationResult.js"/>
 /// <reference path="../core/valerie.knockout.js"/>
-/// <reference path="valerie.converters.js"/>
 /// <reference path="valerie.rules.js"/>
 
 /*global ko: false, valerie: false */
@@ -12,8 +12,10 @@
 (function () {
     "use strict";
 
-    var prototype = valerie.knockout.PropertyValidationState.prototype,
-        converters = valerie.converters,
+    // ReSharper disable InconsistentNaming
+    var ValidationResult = valerie.ValidationResult,
+        // ReSharper restore InconsistentNaming        
+        prototype = valerie.knockout.PropertyValidationState.prototype,
         rules = valerie.rules;
 
     // + during
@@ -26,6 +28,13 @@
     // + earliest
     prototype.earliest = function (earliestValueOrFunction, options) {
         this.settings.rule = new rules.During(earliestValueOrFunction, undefined, options);
+
+        return this;
+    };
+
+    // + expression
+    prototype.expression = function (regularExpressionObjectOrString, options) {
+        this.settings.rule = new rules.Expression(regularExpressionObjectOrString, options);
 
         return this;
     };
@@ -80,7 +89,7 @@
 
         return this;
     };
-    
+
     // + minimum
     prototype.minimum = function (minimumValueOrFunction, options) {
         this.settings.rule = new rules.Range(minimumValueOrFunction, undefined, options);
@@ -112,13 +121,6 @@
     // + not
     prototype.not = function (forbiddenValueOrFunction, options) {
         this.settings.rule = new rules.Not([forbiddenValueOrFunction], options);
-
-        return this;
-    };
-
-    // + number
-    prototype.number = function () {
-        this.settings.converter = converters.number;
 
         return this;
     };
@@ -155,13 +157,6 @@
                 return new ValidationResult(true, failureMessage);
             }
         };
-
-        return this;
-    };
-
-    // + string
-    prototype.string = function () {
-        this.settings.converter = converters.string;
 
         return this;
     };

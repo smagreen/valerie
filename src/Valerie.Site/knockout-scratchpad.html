@@ -88,7 +88,7 @@
                 <section data-bind="invisibleWhenSummaryEmpty: houseDetails">
                     <h3>Validation Summary</h3>
                     <ul data-bind="foreach: houseDetails.validation().summary()">
-                        <li><span data-bind="text: name"></span>: <span data-bind="    text: message"></span></li>
+                        <li><span data-bind="text: name"></span>: <span data-bind="text: message"></span></li>
                     </ul>
                 </section>
             </section>
@@ -108,8 +108,9 @@
                 </div>
                 <div data-bind="visibleWhenValid: housePrice">
                     <p>
-                        You can borrow between: <strong data-bind="formattedValue: loanAmountMin"></strong> and
-                            <strong data-bind="formattedValue: loanAmountMax"></strong>.
+                        You can borrow between:
+                        <strong data-bind="formattedValue: loanAmountMin, formatter: valerie.converters.currencyMajor.formatter, valueFormat: '$,'"></strong> and
+                        <strong data-bind="formattedValue: loanAmountMax"></strong>.
                     </p>
                 </div>
                 <div>
@@ -160,12 +161,16 @@
                 housePrice = ko.observable(150000)
                     .validate()
                     .applicable(ko.observable(true))
-                    .number()
+                    .currencyMajor()
                     .required()
                     .range(75000, 500000)
                     .end(),
-                loanAmountMin = ko.computed(function () { return housePrice() / 4; }),
-                loanAmountMax = ko.computed(function () { return (housePrice() * 3) / 4; });
+                loanAmountMin = ko.computed(function() { return housePrice() / 4; }),
+                loanAmountMax = ko.computed(function() { return (housePrice() * 3) / 4; })
+                    .validate()
+                    .currencyMajor()
+                    .valueFormat("$,.20")
+                    .end();
 
             viewModel = v.validatableModel({
                 "clearErrors": function () { viewModel.validation().touched(false).clearSummary(true); },
@@ -185,9 +190,9 @@
                     .validateMyProperties()
                     .end(),
                 "housePrice": housePrice,
-                "loanAmount": ko.observable(20000)
+                "loanAmount": ko.observable(90000)
                     .validate()
-                    .number()
+                    .currencyMajorMinor()
                     .applicable(housePrice.validation().passed)
                     .required()
                     .range(loanAmountMin, loanAmountMax)
