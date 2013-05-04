@@ -24,7 +24,7 @@ var valerie = valerie || {};
                 numberOfDecimalPlaces = undefined;
             } else {
                 if (decimalPlaceIndex > -1) {
-                    if (format[decimalPlaceIndex + 1] === "c") {
+                    if (format.charAt(decimalPlaceIndex + 1) === "c") {
                         numberOfDecimalPlaces = numericHelper.settings.currencyMinorUnitPlaces;
                     } else {
                         numberOfDecimalPlaces = Number(format.substr(decimalPlaceIndex + 1));
@@ -32,7 +32,6 @@ var valerie = valerie || {};
                 }
             }
 
-            alert(format + ":" + numberOfDecimalPlaces);
             return {
                 "includeCurrencySign": includeCurrencySign,
                 "includeThousandsSeparator": includeThousandsSeparator,
