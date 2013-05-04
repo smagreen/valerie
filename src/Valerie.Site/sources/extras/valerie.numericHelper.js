@@ -14,65 +14,74 @@ var valerie = valerie || {};
     "use strict";
 
     var formatting = valerie.formatting,
-        formatStringAsOptions = function (numericHelper, format) {
+        formatExpression = new RegExp("^(\\C?)(\\,?)(\\.?(c|\\d*))$"),
+        formatStringAsOptions = function(numericHelper, format) {
             var settings = numericHelper.settings,
-                formatExpression = numericHelper.expressions.format,
                 matches = formatExpression.exec(format),
-                asCurrency = false,
+                includeCurrencySign = false,
                 includeThousandsSeparator = false,
                 withDecimalPlaces,
                 numberOfDecimalPlacesSpecified,
-                numberOfDecimalPlaces = 0;
+                numberOfDecimalPlaces;
 
             if (matches !== null) {
-                asCurrency = matches[1].length > 0,
-                includeThousandsSeparator = matches[2].length > 0,
-                withDecimalPlaces = matches[3].length > 0,
-                numberOfDecimalPlacesSpecified = matches[4].length > 0,
-                numberOfDecimalPlaces = Number(matches[4]);
+                includeCurrencySign = matches[1].length > 0;
+                includeThousandsSeparator = matches[2].length > 0;
+                withDecimalPlaces = matches[3].length > 0;
+                numberOfDecimalPlacesSpecified = matches[4].length > 0;
 
                 if (withDecimalPlaces) {
-                    if (!numberOfDecimalPlacesSpecified && asCurrency) {
-                        numberOfDecimalPlaces = settings.currencyMinorUnitPlaces;
+                    if (numberOfDecimalPlacesSpecified) {
+                        numberOfDecimalPlaces = matches[4];
+
+                        if (numberOfDecimalPlaces === "c") {
+                            numberOfDecimalPlaces = settings.currencyMinorUnitPlaces;
+                        } else {
+                            numberOfDecimalPlaces = Number(numberOfDecimalPlaces);
+                        }
                     }
+                } else {
+                    numberOfDecimalPlaces = 0;
                 }
             }
 
             return {
-                "includeCurrencySymbol": asCurrency,
+                "includeCurrencySign": includeCurrencySign,
                 "includeThousandsSeparator": includeThousandsSeparator,
+                // ReSharper disable UsageOfPossiblyUnassignedValue
                 "numberOfDecimalPlaces": numberOfDecimalPlaces
+                // ReSharper restore UsageOfPossiblyUnassignedValue
             };
         };
 
     // + valerie.NumericHelper
-    valerie.NumericHelper = function (decimalSeparator, thousandsSeparator, currencySign, currencyMinorUnitPlaces) {
-        var integerExpression = "\\d+(\\" + thousandsSeparator + "\\d{3})*",
-            currencyMajorExpression = "(\\" + currencySign + ")?" + integerExpression,
-            currentMajorMinorExpression = currencyMajorExpression + "(\\" +
-                decimalSeparator + "\\d{" + currencyMinorUnitPlaces + "})?",
-            floatExpression = integerExpression + "(\\" + decimalSeparator + "\\d+)?",
-            formatExpression = "(\\" + currencySign + "?)" +
-                "(\\" + thousandsSeparator + "?)" +
-                "(\\" + decimalSeparator + "?(\\d*))";
-
-        this.settings = {
-            "decimalSeparator": decimalSeparator,
-            "thousandsSeparator": thousandsSeparator,
-            "currencySign": currencySign,
-            "currencyMinorUnitPlaces": currencyMinorUnitPlaces
-        };
-
-        this.expressions = {
-            "currencyMajor": new RegExp("^" + currencyMajorExpression + "$"),
-            "currencyMajorMinor": new RegExp("^" + currentMajorMinorExpression + "$"),
-            "float": new RegExp("^" + floatExpression + "$"),
-            "integer": new RegExp("^" + integerExpression + "$"),
-            "format": new RegExp("^" + formatExpression + "$")
-        };
+    valerie.NumericHelper = function () {
     };
 
     valerie.NumericHelper.prototype = {
+        "init": function (decimalSeparator, thousandsSeparator, currencySign, currencyMinorUnitPlaces) {
+            var integerExpression = "\\d+(\\" + thousandsSeparator + "\\d{3})*",
+                currencyMajorExpression = "(\\" + currencySign + ")?" + integerExpression,
+                currentMajorMinorExpression = currencyMajorExpression + "(\\" +
+                    decimalSeparator + "\\d{" + currencyMinorUnitPlaces + "})?",
+                floatExpression = integerExpression + "(\\" + decimalSeparator + "\\d+)?";
+
+            this.settings = {
+                "decimalSeparator": decimalSeparator,
+                "thousandsSeparator": thousandsSeparator,
+                "currencySign": currencySign,
+                "currencyMinorUnitPlaces": currencyMinorUnitPlaces
+            };
+
+            this.expressions = {
+                "currencyMajor": new RegExp("^" + currencyMajorExpression + "$"),
+                "currencyMajorMinor": new RegExp("^" + currentMajorMinorExpression + "$"),
+                "float": new RegExp("^" + floatExpression + "$"),
+                "integer": new RegExp("^" + integerExpression + "$")
+            };
+
+            return this;
+        },
         "addThousandsSeparator": function (numericString) {
             var settings = this.settings;
 
@@ -110,7 +119,7 @@ var valerie = valerie || {};
             }
 
             return (negative ? "-" : "") +
-                (formatOptions.includeCurrencySymbol ? settings.currencySign : "") +
+                (formatOptions.includeCurrencySign ? settings.currencySign : "") +
                 value;
         },
         "isCurrencyMajor": function (numericString) {
@@ -125,7 +134,7 @@ var valerie = valerie || {};
         "isInteger": function (numericString) {
             return this.expressions.integer.test(numericString);
         },
-        "parse": function(numericString) {
+        "parse": function (numericString) {
             numericString = this.unformat(numericString);
 
             return Number(numericString);

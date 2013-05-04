@@ -499,14 +499,15 @@
                     valueFormat = settings.valueFormat,
                     valueFormatter = settings.converter.formatter,
                     rules = settings.rules,
-                    rule;
+                    ruleSettings;
 
                 for (index = 0; index < rules.length; index++) {
-                    rule = rules[index];
+                    ruleSettings = rules[index].settings;
 
-                    rule.valueFormat = valueFormat;
-                    rule.valueFormatter = valueFormatter;
+                    ruleSettings.valueFormat = valueFormat;
+                    ruleSettings.valueFormatter = valueFormatter;
                 }
+                
                 return this.observableOrComputed;
             },
             "name": function (valueOrFunction) {

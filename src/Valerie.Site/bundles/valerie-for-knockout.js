@@ -883,14 +883,15 @@ var valerie = valerie || {};
                     valueFormat = settings.valueFormat,
                     valueFormatter = settings.converter.formatter,
                     rules = settings.rules,
-                    rule;
+                    ruleSettings;
 
                 for (index = 0; index < rules.length; index++) {
-                    rule = rules[index];
+                    ruleSettings = rules[index].settings;
 
-                    rule.valueFormat = valueFormat;
-                    rule.valueFormatter = valueFormatter;
+                    ruleSettings.valueFormat = valueFormat;
+                    ruleSettings.valueFormatter = valueFormatter;
                 }
+                
                 return this.observableOrComputed;
             },
             "name": function (valueOrFunction) {
@@ -1341,65 +1342,74 @@ var valerie = valerie || {};
     "use strict";
 
     var formatting = valerie.formatting,
-        formatStringAsOptions = function (numericHelper, format) {
+        formatExpression = new RegExp("^(\\C?)(\\,?)(\\.?(c|\\d*))$"),
+        formatStringAsOptions = function(numericHelper, format) {
             var settings = numericHelper.settings,
-                formatExpression = numericHelper.expressions.format,
                 matches = formatExpression.exec(format),
-                asCurrency = false,
+                includeCurrencySign = false,
                 includeThousandsSeparator = false,
                 withDecimalPlaces,
                 numberOfDecimalPlacesSpecified,
-                numberOfDecimalPlaces = 0;
+                numberOfDecimalPlaces;
 
             if (matches !== null) {
-                asCurrency = matches[1].length > 0,
-                includeThousandsSeparator = matches[2].length > 0,
-                withDecimalPlaces = matches[3].length > 0,
-                numberOfDecimalPlacesSpecified = matches[4].length > 0,
-                numberOfDecimalPlaces = Number(matches[4]);
+                includeCurrencySign = matches[1].length > 0;
+                includeThousandsSeparator = matches[2].length > 0;
+                withDecimalPlaces = matches[3].length > 0;
+                numberOfDecimalPlacesSpecified = matches[4].length > 0;
 
                 if (withDecimalPlaces) {
-                    if (!numberOfDecimalPlacesSpecified && asCurrency) {
-                        numberOfDecimalPlaces = settings.currencyMinorUnitPlaces;
+                    if (numberOfDecimalPlacesSpecified) {
+                        numberOfDecimalPlaces = matches[4];
+
+                        if (numberOfDecimalPlaces === "c") {
+                            numberOfDecimalPlaces = settings.currencyMinorUnitPlaces;
+                        } else {
+                            numberOfDecimalPlaces = Number(numberOfDecimalPlaces);
+                        }
                     }
+                } else {
+                    numberOfDecimalPlaces = 0;
                 }
             }
 
             return {
-                "includeCurrencySymbol": asCurrency,
+                "includeCurrencySign": includeCurrencySign,
                 "includeThousandsSeparator": includeThousandsSeparator,
+                // ReSharper disable UsageOfPossiblyUnassignedValue
                 "numberOfDecimalPlaces": numberOfDecimalPlaces
+                // ReSharper restore UsageOfPossiblyUnassignedValue
             };
         };
 
     // + valerie.NumericHelper
-    valerie.NumericHelper = function (decimalSeparator, thousandsSeparator, currencySign, currencyMinorUnitPlaces) {
-        var integerExpression = "\\d+(\\" + thousandsSeparator + "\\d{3})*",
-            currencyMajorExpression = "(\\" + currencySign + ")?" + integerExpression,
-            currentMajorMinorExpression = currencyMajorExpression + "(\\" +
-                decimalSeparator + "\\d{" + currencyMinorUnitPlaces + "})?",
-            floatExpression = integerExpression + "(\\" + decimalSeparator + "\\d+)?",
-            formatExpression = "(\\" + currencySign + "?)" +
-                "(\\" + thousandsSeparator + "?)" +
-                "(\\" + decimalSeparator + "?(\\d*))";
-
-        this.settings = {
-            "decimalSeparator": decimalSeparator,
-            "thousandsSeparator": thousandsSeparator,
-            "currencySign": currencySign,
-            "currencyMinorUnitPlaces": currencyMinorUnitPlaces
-        };
-
-        this.expressions = {
-            "currencyMajor": new RegExp("^" + currencyMajorExpression + "$"),
-            "currencyMajorMinor": new RegExp("^" + currentMajorMinorExpression + "$"),
-            "float": new RegExp("^" + floatExpression + "$"),
-            "integer": new RegExp("^" + integerExpression + "$"),
-            "format": new RegExp("^" + formatExpression + "$")
-        };
+    valerie.NumericHelper = function () {
     };
 
     valerie.NumericHelper.prototype = {
+        "init": function (decimalSeparator, thousandsSeparator, currencySign, currencyMinorUnitPlaces) {
+            var integerExpression = "\\d+(\\" + thousandsSeparator + "\\d{3})*",
+                currencyMajorExpression = "(\\" + currencySign + ")?" + integerExpression,
+                currentMajorMinorExpression = currencyMajorExpression + "(\\" +
+                    decimalSeparator + "\\d{" + currencyMinorUnitPlaces + "})?",
+                floatExpression = integerExpression + "(\\" + decimalSeparator + "\\d+)?";
+
+            this.settings = {
+                "decimalSeparator": decimalSeparator,
+                "thousandsSeparator": thousandsSeparator,
+                "currencySign": currencySign,
+                "currencyMinorUnitPlaces": currencyMinorUnitPlaces
+            };
+
+            this.expressions = {
+                "currencyMajor": new RegExp("^" + currencyMajorExpression + "$"),
+                "currencyMajorMinor": new RegExp("^" + currentMajorMinorExpression + "$"),
+                "float": new RegExp("^" + floatExpression + "$"),
+                "integer": new RegExp("^" + integerExpression + "$")
+            };
+
+            return this;
+        },
         "addThousandsSeparator": function (numericString) {
             var settings = this.settings;
 
@@ -1437,7 +1447,7 @@ var valerie = valerie || {};
             }
 
             return (negative ? "-" : "") +
-                (formatOptions.includeCurrencySymbol ? settings.currencySign : "") +
+                (formatOptions.includeCurrencySign ? settings.currencySign : "") +
                 value;
         },
         "isCurrencyMajor": function (numericString) {
@@ -1452,7 +1462,7 @@ var valerie = valerie || {};
         "isInteger": function (numericString) {
             return this.expressions.integer.test(numericString);
         },
-        "parse": function(numericString) {
+        "parse": function (numericString) {
             numericString = this.unformat(numericString);
 
             return Number(numericString);
@@ -1485,20 +1495,19 @@ var valerie = valerie || {};
 (function () {
     "use strict";
 
-    var converters = valerie.converters = valerie.converters || {};
+    var converters = valerie.converters = valerie.converters || {},
+        defaultNumericHelper = new valerie.NumericHelper().init(".", ",", "$", 2);
 
     // + converters.defaultNumericHelper
-    converters.defaultNumericHelper = new valerie.NumericHelper(".", ",", "$", 2);
+    converters.defaultNumericHelper = defaultNumericHelper;
 
     // + converters.currencyMajor
     converters.currencyMajor = {
         "formatter": function (value, format) {
-            var numericHelper = converters.currency.numericHelper || converters.defaultNumericHelper;
-
-            return numericHelper.format(value, format);
+            return converters.currency.numericHelper.format(value, format);
         },
         "parser": function (value) {
-            var numericHelper = converters.currency.numericHelper || converters.defaultNumericHelper;
+            var numericHelper = converters.currency.numericHelper;
 
             if (!numericHelper.isCurrencyMajor(value)) {
                 return undefined;
@@ -1511,12 +1520,10 @@ var valerie = valerie || {};
     // + converters.currencyMajorMinor
     converters.currencyMajorMinor = {
         "formatter": function (value, format) {
-            var numericHelper = converters.currency.numericHelper || converters.defaultNumericHelper;
-
-            return numericHelper.format(value, format);
+            return converters.currency.numericHelper.format(value, format);
         },
         "parser": function (value) {
-            var numericHelper = converters.currency.numericHelper || converters.defaultNumericHelper;
+            var numericHelper = converters.currency.numericHelper;
 
             if (!numericHelper.isCurrencyMajorMinor(value)) {
                 return undefined;
@@ -1526,17 +1533,15 @@ var valerie = valerie || {};
         }
     };
 
-    converters.currency = { "numericHelper": undefined };
+    converters.currency = { "numericHelper": defaultNumericHelper };
 
     // + converters.float
     converters.float = {
         "formatter": function (value, format) {
-            var numericHelper = converters.float.numericHelper || converters.defaultNumericHelper;
-
-            return numericHelper.format(value, format);
+            return converters.float.numericHelper.format(value, format);
         },
         "parser": function (value) {
-            var numericHelper = converters.float.numericHelper || converters.defaultNumericHelper;
+            var numericHelper = converters.float.numericHelper;
 
             if (!numericHelper.isFloat(value)) {
                 return undefined;
@@ -1546,17 +1551,15 @@ var valerie = valerie || {};
         }
     };
 
-    converters.float.numericHelper = undefined;
+    converters.float.numericHelper = defaultNumericHelper;
 
     // + converters.integer
     converters.integer = {
         "formatter": function (value, format) {
-            var numericHelper = converters.integer.numericHelper || converters.defaultNumericHelper;
-
-            return numericHelper.format(value, format);
+            return converters.integer.numericHelper.format(value, format);
         },
         "parser": function (value) {
-            var numericHelper = converters.integer.numericHelper || converters.defaultNumericHelper;
+            var numericHelper = converters.integer.numericHelper;
 
             if (!numericHelper.isInteger(value)) {
                 return undefined;
@@ -1566,7 +1569,7 @@ var valerie = valerie || {};
         }
     };
 
-    converters.integer.numericHelper = undefined;
+    converters.integer.numericHelper = defaultNumericHelper;
 
     // + converters.number
     converters.number = {
@@ -1903,7 +1906,7 @@ var valerie = valerie || {};
 // (c) 2013 egrove Ltd.
 // License: MIT (http://www.opensource.org/licenses/mit-license.php)
 
-/// <reference path="../core/valerie.validationResult.js"/>
+/// <reference path="../core/valerie.utils.js"/>
 /// <reference path="../core/valerie.knockout.js"/>
 /// <reference path="valerie.converters.numeric.js"/>
 
@@ -1912,48 +1915,64 @@ var valerie = valerie || {};
 (function () {
     "use strict";
 
-    var prototype = valerie.knockout.PropertyValidationState.prototype,
-        converters = valerie.converters;
+    var utils = valerie.utils,
+        converters = valerie.converters,
+        prototype = valerie.knockout.PropertyValidationState.prototype;
 
     // + currencyMajor
-    prototype.currencyMajor = function() {
-        var numericHelper = converters.currency.numericHelper || converters.defaultNumericHelper,
-            helperSettings = numericHelper.settings,
-            settings = this.settings;
-
-        settings.converter = converters.currencyMajor;
-        settings.entryFormat = "";
-        settings.valueFormat = helperSettings.currencySign + helperSettings.thousandsSeparator;
+    prototype.currencyMajor = function (options) {
+        options = utils.mergeOptions(this.currencyMajor.defaultOptions, options);
+        this.settings = utils.mergeOptions(this.settings, options);
+        this.settings.converter = converters.currencyMajor;
 
         return this;
+    };
+
+    prototype.currencyMajor.defaultOptions = {
+        "entryFormat": undefined,
+        "valueFormat": "C,"
     };
 
     // + currencyMajorMinor
-    prototype.currencyMajorMinor = function () {
-        var numericHelper = converters.currency.numericHelper || converters.defaultNumericHelper,
-            helperSettings = numericHelper.settings,
-            settings = this.settings;
-        
-        settings.converter = converters.currencyMajorMinor;
-        settings.entryFormat = "";
-        settings.valueFormat = helperSettings.currencySign + helperSettings.thousandsSeparator +
-            helperSettings.decimalSeparator;
+    prototype.currencyMajorMinor = function (options) {
+        options = utils.mergeOptions(this.currencyMajorMinor.defaultOptions, options);
+        this.settings = utils.mergeOptions(this.settings, options);
+        this.settings.converter = converters.currencyMajorMinor;
 
         return this;
     };
 
+    prototype.currencyMajorMinor.defaultOptions = {
+        "entryFormat": "c",
+        "valueFormat": "C,.c"
+    };
+
     // + float
-    prototype.float = function () {
+    prototype.float = function (options) {
+        options = utils.mergeOptions(this.float.defaultOptions, options);
+        this.settings = utils.mergeOptions(this.settings, options);
         this.settings.converter = converters.float;
 
         return this;
     };
 
+    prototype.float.defaultOptions = {
+        "entryFormat": undefined,
+        "valueFormat": ",."
+    };
+
     // + integer
-    prototype.integer = function () {
+    prototype.integer = function (options) {
+        options = utils.mergeOptions(this.integer.defaultOptions, options);
+        this.settings = utils.mergeOptions(this.settings, options);
         this.settings.converter = converters.integer;
 
         return this;
+    };
+
+    prototype.integer.defaultOptions = {
+        "entryFormat": undefined,
+        "valueFormat": ","
     };
 
     // + number

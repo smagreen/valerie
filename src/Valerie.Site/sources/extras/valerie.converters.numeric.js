@@ -13,20 +13,19 @@ var valerie = valerie || {};
 (function () {
     "use strict";
 
-    var converters = valerie.converters = valerie.converters || {};
+    var converters = valerie.converters = valerie.converters || {},
+        defaultNumericHelper = new valerie.NumericHelper().init(".", ",", "$", 2);
 
     // + converters.defaultNumericHelper
-    converters.defaultNumericHelper = new valerie.NumericHelper(".", ",", "$", 2);
+    converters.defaultNumericHelper = defaultNumericHelper;
 
     // + converters.currencyMajor
     converters.currencyMajor = {
         "formatter": function (value, format) {
-            var numericHelper = converters.currency.numericHelper || converters.defaultNumericHelper;
-
-            return numericHelper.format(value, format);
+            return converters.currency.numericHelper.format(value, format);
         },
         "parser": function (value) {
-            var numericHelper = converters.currency.numericHelper || converters.defaultNumericHelper;
+            var numericHelper = converters.currency.numericHelper;
 
             if (!numericHelper.isCurrencyMajor(value)) {
                 return undefined;
@@ -39,12 +38,10 @@ var valerie = valerie || {};
     // + converters.currencyMajorMinor
     converters.currencyMajorMinor = {
         "formatter": function (value, format) {
-            var numericHelper = converters.currency.numericHelper || converters.defaultNumericHelper;
-
-            return numericHelper.format(value, format);
+            return converters.currency.numericHelper.format(value, format);
         },
         "parser": function (value) {
-            var numericHelper = converters.currency.numericHelper || converters.defaultNumericHelper;
+            var numericHelper = converters.currency.numericHelper;
 
             if (!numericHelper.isCurrencyMajorMinor(value)) {
                 return undefined;
@@ -54,17 +51,15 @@ var valerie = valerie || {};
         }
     };
 
-    converters.currency = { "numericHelper": undefined };
+    converters.currency = { "numericHelper": defaultNumericHelper };
 
     // + converters.float
     converters.float = {
         "formatter": function (value, format) {
-            var numericHelper = converters.float.numericHelper || converters.defaultNumericHelper;
-
-            return numericHelper.format(value, format);
+            return converters.float.numericHelper.format(value, format);
         },
         "parser": function (value) {
-            var numericHelper = converters.float.numericHelper || converters.defaultNumericHelper;
+            var numericHelper = converters.float.numericHelper;
 
             if (!numericHelper.isFloat(value)) {
                 return undefined;
@@ -74,17 +69,15 @@ var valerie = valerie || {};
         }
     };
 
-    converters.float.numericHelper = undefined;
+    converters.float.numericHelper = defaultNumericHelper;
 
     // + converters.integer
     converters.integer = {
         "formatter": function (value, format) {
-            var numericHelper = converters.integer.numericHelper || converters.defaultNumericHelper;
-
-            return numericHelper.format(value, format);
+            return converters.integer.numericHelper.format(value, format);
         },
         "parser": function (value) {
-            var numericHelper = converters.integer.numericHelper || converters.defaultNumericHelper;
+            var numericHelper = converters.integer.numericHelper;
 
             if (!numericHelper.isInteger(value)) {
                 return undefined;
@@ -94,7 +87,7 @@ var valerie = valerie || {};
         }
     };
 
-    converters.integer.numericHelper = undefined;
+    converters.integer.numericHelper = defaultNumericHelper;
 
     // + converters.number
     converters.number = {

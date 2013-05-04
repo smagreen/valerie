@@ -87,7 +87,7 @@
                 <section data-bind="invisibleWhenSummaryEmpty: houseDetails">
                     <h3>Validation Summary</h3>
                     <ul data-bind="foreach: houseDetails.validation().summary()">
-                        <li><span data-bind="text: name"></span>: <span data-bind="text: message"></span></li>
+                        <li><span data-bind="text: name"></span>: <span data-bind="    text: message"></span></li>
                     </ul>
                 </section>
             </section>
@@ -108,7 +108,8 @@
                 <div data-bind="visibleWhenValid: housePrice">
                     <p>
                         You can borrow between:
-                        <strong data-bind="formattedValue: loanAmountMin, formatter: valerie.converters.currencyMajor.formatter, valueFormat: '$,'"></strong> and
+                        <strong data-bind="formattedValue: loanAmountMin, formatter: valerie.converters.currencyMajor.formatter, valueFormat: '$,'"></strong>
+                        and
                         <strong data-bind="formattedValue: loanAmountMax"></strong>.
                     </p>
                 </div>
@@ -122,7 +123,7 @@
             <section data-bind="invisibleWhenSummaryEmpty: true">
                 <h3>Validation Summary</h3>
                 <ul data-bind="foreach: validation().summary()">
-                    <li><span data-bind="text: name"></span>: <span data-bind="text: message"></span></li>
+                    <li><span data-bind="text: name"></span>: <span data-bind="    text: message"></span></li>
                 </ul>
             </section>
             <div>
@@ -151,10 +152,12 @@
 
     <script type="text/javascript">
         window.onload = function () {
-            var v = valerie.knockout;
+            var v = valerie,
+                k = v.knockout;
 
             // Configure valerie
-            v.useValidatingBindingHandlers();
+            v.converters.defaultNumericHelper.init(".", ",", "£", 2);
+            k.useValidatingBindingHandlers();
 
             var viewModel,
                 housePrice = ko.observable(150000)
@@ -164,17 +167,17 @@
                     .required()
                     .range(75000, 500000)
                     .end(),
-                loanAmountMin = ko.computed(function() { return housePrice() / 4; }),
-                loanAmountMax = ko.computed(function() { return (housePrice() * 3) / 4; })
+                loanAmountMin = ko.computed(function () { return housePrice() / 4; }),
+                loanAmountMax = ko.computed(function () { return (housePrice() * 3) / 4; })
                     .validate()
                     .currencyMajor()
-                    .valueFormat("$,.4")
+                    .valueFormat("C,.4")
                     .end();
 
-            viewModel = v.validatableModel({
+            window.viewModel = viewModel = k.validatableModel({
                 "clearErrors": function () { viewModel.validation().touched(false).clearSummary(true); },
                 "submit": function () { viewModel.validation().touched(true).updateSummary(true); },
-                "houseDetails": v.validatableModel({
+                "houseDetails": k.validatableModel({
                     "houseType": ko.observable()
                         .validate()
                         .required()

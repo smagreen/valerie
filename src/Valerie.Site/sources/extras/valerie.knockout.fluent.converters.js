@@ -3,7 +3,7 @@
 // (c) 2013 egrove Ltd.
 // License: MIT (http://www.opensource.org/licenses/mit-license.php)
 
-/// <reference path="../core/valerie.validationResult.js"/>
+/// <reference path="../core/valerie.utils.js"/>
 /// <reference path="../core/valerie.knockout.js"/>
 /// <reference path="valerie.converters.numeric.js"/>
 
@@ -12,48 +12,64 @@
 (function () {
     "use strict";
 
-    var prototype = valerie.knockout.PropertyValidationState.prototype,
-        converters = valerie.converters;
+    var utils = valerie.utils,
+        converters = valerie.converters,
+        prototype = valerie.knockout.PropertyValidationState.prototype;
 
     // + currencyMajor
-    prototype.currencyMajor = function() {
-        var numericHelper = converters.currency.numericHelper || converters.defaultNumericHelper,
-            helperSettings = numericHelper.settings,
-            settings = this.settings;
-
-        settings.converter = converters.currencyMajor;
-        settings.entryFormat = "";
-        settings.valueFormat = helperSettings.currencySign + helperSettings.thousandsSeparator;
+    prototype.currencyMajor = function (options) {
+        options = utils.mergeOptions(this.currencyMajor.defaultOptions, options);
+        this.settings = utils.mergeOptions(this.settings, options);
+        this.settings.converter = converters.currencyMajor;
 
         return this;
+    };
+
+    prototype.currencyMajor.defaultOptions = {
+        "entryFormat": undefined,
+        "valueFormat": "C,"
     };
 
     // + currencyMajorMinor
-    prototype.currencyMajorMinor = function () {
-        var numericHelper = converters.currency.numericHelper || converters.defaultNumericHelper,
-            helperSettings = numericHelper.settings,
-            settings = this.settings;
-        
-        settings.converter = converters.currencyMajorMinor;
-        settings.entryFormat = "";
-        settings.valueFormat = helperSettings.currencySign + helperSettings.thousandsSeparator +
-            helperSettings.decimalSeparator;
+    prototype.currencyMajorMinor = function (options) {
+        options = utils.mergeOptions(this.currencyMajorMinor.defaultOptions, options);
+        this.settings = utils.mergeOptions(this.settings, options);
+        this.settings.converter = converters.currencyMajorMinor;
 
         return this;
     };
 
+    prototype.currencyMajorMinor.defaultOptions = {
+        "entryFormat": "c",
+        "valueFormat": "C,.c"
+    };
+
     // + float
-    prototype.float = function () {
+    prototype.float = function (options) {
+        options = utils.mergeOptions(this.float.defaultOptions, options);
+        this.settings = utils.mergeOptions(this.settings, options);
         this.settings.converter = converters.float;
 
         return this;
     };
 
+    prototype.float.defaultOptions = {
+        "entryFormat": undefined,
+        "valueFormat": ",."
+    };
+
     // + integer
-    prototype.integer = function () {
+    prototype.integer = function (options) {
+        options = utils.mergeOptions(this.integer.defaultOptions, options);
+        this.settings = utils.mergeOptions(this.settings, options);
         this.settings.converter = converters.integer;
 
         return this;
+    };
+
+    prototype.integer.defaultOptions = {
+        "entryFormat": undefined,
+        "valueFormat": ","
     };
 
     // + number
