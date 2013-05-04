@@ -38,15 +38,6 @@ var valerie = valerie || {};
 
     var utils = valerie.utils = valerie.utils || {};
 
-    // + utils.asArray
-    utils.asArray = function (valueOrArray) {
-        if (utils.isArray(valueOrArray)) {
-            return valueOrArray;
-        }
-
-        return [valueOrArray];
-    };
-
     // + utils.asFunction
     utils.asFunction = function (valueOrFunction) {
         if (utils.isFunction(valueOrFunction)) {
@@ -54,6 +45,11 @@ var valerie = valerie || {};
         }
 
         return function () { return valueOrFunction; };
+    };
+
+    // + utils.isArray
+    utils.isArray = function (value) {
+        return {}.toString.call(value) === "[object Array]";
     };
 
     // + utils.isArrayOrObject
@@ -108,7 +104,8 @@ var valerie = valerie || {};
     // + utils.mergeOptions
     utils.mergeOptions = function (defaultOptions, options) {
         var mergedOptions = {},
-            name;
+            name,
+            value;
 
         if (defaultOptions === undefined || defaultOptions === null) {
             defaultOptions = {};
@@ -120,7 +117,13 @@ var valerie = valerie || {};
 
         for (name in defaultOptions) {
             if (defaultOptions.hasOwnProperty(name)) {
-                mergedOptions[name] = defaultOptions[name];
+                value = defaultOptions[name];
+                
+                if (utils.isArray(value)) {
+                    value = value.slice(0);
+                }
+
+                mergedOptions[name] = value;
             }
         }
 
@@ -179,9 +182,9 @@ var valerie = valerie || {};
     };
 })();
 
-///#source 1 1 ../sources/core/valerie.passThrough.js
-// valerie.passThrough
-// - the pass through converter and rule
+///#source 1 1 ../sources/core/valerie.passThroughConverter.js
+// valerie.passThroughConverter
+// - the pass through converter
 // - used by other parts of the valerie library
 // (c) 2013 egrove Ltd.
 // License: MIT (http://www.opensource.org/licenses/mit-license.php)
@@ -195,11 +198,7 @@ var valerie = valerie || {};
 (function () {
     "use strict";
 
-    // ReSharper disable InconsistentNaming
-    var ValidationResult = valerie.ValidationResult,
-        // ReSharper restore InconsistentNaming
-        converters = valerie.converters = valerie.converters || {},
-        rules = valerie.rules = valerie.rules || {};
+    var converters = valerie.converters = valerie.converters || {};
 
     // + converters.passThrough
     converters.passThrough = {
@@ -212,17 +211,6 @@ var valerie = valerie || {};
         },
         "parser": function (value) {
             return value;
-        }
-    };
-
-    // + rules.PassThrough
-    rules.PassThrough = function () {
-        this.settings = {};
-    };
-
-    rules.PassThrough.prototype = {
-        "test": function () {
-            return ValidationResult.success;
         }
     };
 })();
@@ -401,7 +389,7 @@ var valerie = valerie || {};
 
 /// <reference path="../../frameworks/knockout-2.2.1.debug.js"/>
 /// <reference path="valerie.validationResult.js"/>
-/// <reference path="valerie.passThrough.js"/>
+/// <reference path="valerie.passThroughConverter.js"/>
 /// <reference path="valerie.utils.js"/> 
 /// <reference path="valerie.formatting.js"/> 
 /// <reference path="valerie.extras.js"/>
@@ -780,10 +768,24 @@ var valerie = valerie || {};
 
             return 1;
         },
-            ruleResultFunction = function () {
-                var value = this.observableOrComputed();
+            rulesResultFunction = function () {
+                var value = this.observableOrComputed(),
+                    index,
+                    rules = this.settings.rules,
+                    rule,
+                    result;
 
-                return this.settings.rule.test(value);
+                for (index = 0; index < rules.length; index++) {
+                    rule = rules[index];
+                    
+                    result = rule.test(value);
+                    
+                    if (result.failed) {
+                        return result;
+                    }
+                }
+
+                return ValidationResult.success;
             },
             // Functions for computeds.
             failedFunction = function () {
@@ -821,7 +823,7 @@ var valerie = valerie || {};
                     return result;
                 }
 
-                result = ruleResultFunction.apply(this);
+                result = rulesResultFunction.apply(this);
                 if (result.failed) {
                     return result;
                 }
@@ -861,6 +863,11 @@ var valerie = valerie || {};
 
         definition.prototype = {
             // Validation state methods support a fluent interface.
+            "addRule": function(rule) {
+                this.settings.rules.push(rule);
+
+                return this;
+            },
             "applicable": function (valueOrFunction) {
                 if (valueOrFunction === undefined) {
                     valueOrFunction = true;
@@ -871,9 +878,19 @@ var valerie = valerie || {};
                 return this;
             },
             "end": function () {
-                this.settings.rule.settings.valueFormat = this.settings.valueFormat;
-                this.settings.rule.settings.valueFormatter = this.settings.converter.formatter;
+                var index,
+                    settings = this.settings,
+                    valueFormat = settings.valueFormat,
+                    valueFormatter = settings.converter.formatter,
+                    rules = settings.rules,
+                    rule;
 
+                for (index = 0; index < rules.length; index++) {
+                    rule = rules[index];
+
+                    rule.valueFormat = valueFormat;
+                    rule.valueFormatter = valueFormatter;
+                }
                 return this.observableOrComputed;
             },
             "name": function (valueOrFunction) {
@@ -907,7 +924,7 @@ var valerie = valerie || {};
             "missingTest": utils.isMissing,
             "name": utils.asFunction(),
             "required": utils.asFunction(false),
-            "rule": new valerie.rules.PassThrough(),
+            "rules": [],
             "valueFormat": undefined
         };
     })();
@@ -1435,7 +1452,12 @@ var valerie = valerie || {};
         "isInteger": function (numericString) {
             return this.expressions.integer.test(numericString);
         },
-        "normaliseString": function (numericString) {
+        "parse": function(numericString) {
+            numericString = this.unformat(numericString);
+
+            return Number(numericString);
+        },
+        "unformat": function (numericString) {
             var settings = this.settings;
 
             numericString = numericString.replace(settings.currencySign, "");
@@ -1482,15 +1504,13 @@ var valerie = valerie || {};
                 return undefined;
             }
 
-            value = numericHelper.normaliseString(value);
-
-            return Number(value);
+            return numericHelper.parse(value);
         }
     };
 
     // + converters.currencyMajorMinor
     converters.currencyMajorMinor = {
-        "formatter": function (value, format) {           
+        "formatter": function (value, format) {
             var numericHelper = converters.currency.numericHelper || converters.defaultNumericHelper;
 
             return numericHelper.format(value, format);
@@ -1502,9 +1522,7 @@ var valerie = valerie || {};
                 return undefined;
             }
 
-            value = numericHelper.normaliseString(value);
-
-            return Number(value);
+            return numericHelper.parse(value);
         }
     };
 
@@ -1524,9 +1542,7 @@ var valerie = valerie || {};
                 return undefined;
             }
 
-            value = numericHelper.normaliseString(value);
-
-            return Number(value);
+            return numericHelper.parse(value);
         }
     };
 
@@ -1546,9 +1562,7 @@ var valerie = valerie || {};
                 return undefined;
             }
 
-            value = numericHelper.normaliseString(value);
-
-            return Number(value);
+            return numericHelper.parse(value);
         }
     };
 
@@ -1588,7 +1602,7 @@ var valerie = valerie || {};
 // License: MIT (http://www.opensource.org/licenses/mit-license.php)
 
 /// <reference path="../core/valerie.validationResult.js"/>
-/// <reference path="../core/valerie.passThrough.js"/>
+/// <reference path="../core/valerie.passThroughConverter.js"/>
 /// <reference path="../core/valerie.utils.js"/>
 
 /*global valerie: false */
@@ -1902,22 +1916,28 @@ var valerie = valerie || {};
         converters = valerie.converters;
 
     // + currencyMajor
-    prototype.currencyMajor = function () {
-        this.settings.converter = converters.currencyMajor;
+    prototype.currencyMajor = function() {
+        var numericHelper = converters.currency.numericHelper || converters.defaultNumericHelper,
+            helperSettings = numericHelper.settings,
+            settings = this.settings;
 
-        // ToDo: Set entry format and value format to different values.
+        settings.converter = converters.currencyMajor;
+        settings.entryFormat = "";
+        settings.valueFormat = helperSettings.currencySign + helperSettings.thousandsSeparator;
+
         return this;
     };
 
     // + currencyMajorMinor
     prototype.currencyMajorMinor = function () {
-        var numericHelper = converters.currency.numericHelper || converters.defaultNumericHelper;
+        var numericHelper = converters.currency.numericHelper || converters.defaultNumericHelper,
+            helperSettings = numericHelper.settings,
+            settings = this.settings;
         
-        this.settings.converter = converters.currencyMajorMinor;
-
-        // ToDo: Set entry format and value format to different values.
-        this.settings.entryFormat = this.settings.valueFormat = numericHelper.settings.decimalSeparator +
-            numericHelper.settings.currencyMinorUnitPlaces;
+        settings.converter = converters.currencyMajorMinor;
+        settings.entryFormat = "";
+        settings.valueFormat = helperSettings.currencySign + helperSettings.thousandsSeparator +
+            helperSettings.decimalSeparator;
 
         return this;
     };
@@ -1974,135 +1994,106 @@ var valerie = valerie || {};
 
     // + during
     prototype.during = function (earliestValueOrFunction, latestValueOrFunction, options) {
-        this.settings.rule = new rules.During(earliestValueOrFunction, latestValueOrFunction, options);
-
-        return this;
+        return this.addRule(new rules.During(earliestValueOrFunction, latestValueOrFunction, options));
     };
 
     // + earliest
     prototype.earliest = function (earliestValueOrFunction, options) {
-        this.settings.rule = new rules.During(earliestValueOrFunction, undefined, options);
-
-        return this;
+        return this.addRule(new rules.During(earliestValueOrFunction, undefined, options));
     };
 
     // + expression
     prototype.expression = function (regularExpressionObjectOrString, options) {
-        this.settings.rule = new rules.Expression(regularExpressionObjectOrString, options);
-
-        return this;
+        return this.addRule(new rules.Expression(regularExpressionObjectOrString, options));
     };
 
     // + latest
     prototype.latest = function (latestValueOrFunction, options) {
-        this.settings.rule = new rules.During(undefined, latestValueOrFunction, options);
-
-        return this;
+        return this.addRule(new rules.During(undefined, latestValueOrFunction, options));
     };
 
     // + length
     prototype.length = function (shortestValueOrFunction, longestValueOrFunction, options) {
-        this.settings.rule = new rules.StringLength(shortestValueOrFunction, longestValueOrFunction, options);
-
-        return this;
+        return this.addRule(new rules.StringLength(shortestValueOrFunction, longestValueOrFunction, options));
     };
 
     // + matches
     prototype.matches = function (permittedValueOrFunction, options) {
-        permittedValueOrFunction = [permittedValueOrFunction];
-
-        this.settings.rule = new rules.Matches(permittedValueOrFunction, options);
-
-        return this;
+        return this.addRule(new rules.Matches(permittedValueOrFunction, options));
     };
 
     // + maximum
     prototype.maximum = function (maximumValueOrFunction, options) {
-        this.settings.rule = new rules.Range(undefined, maximumValueOrFunction, options);
-
-        return this;
+        return this.addRule(new rules.Range(undefined, maximumValueOrFunction, options));
     };
 
-    // + maximumNumerOfItems
-    prototype.maximumNumerOfItems = function (maximumValueOrFunction, options) {
-        this.settings.rule = new rules.ArrayLength(undefined, maximumValueOrFunction, options);
-
-        return this;
+    // + maximumNumberOfItems
+    prototype.maximumNumberOfItems = function (maximumValueOrFunction, options) {
+        return this.addRule(new rules.ArrayLength(undefined, maximumValueOrFunction, options));
     };
 
     // + maximumLength
     prototype.maximumLength = function (longestValueOrFunction, options) {
-        this.settings.rule = new rules.StringLength(undefined, longestValueOrFunction, options);
-
-        return this;
+        return this.addRule(new rules.StringLength(undefined, longestValueOrFunction, options));
     };
 
-    // + message
-    prototype.message = function (message) {
-        this.settings.rule.settings.failureMessageFormat = message;
+    // + ruleMessage
+    prototype.ruleMessage = function (message) {
+        var stateRules = this.settings.rules,
+            index = stateRules.length - 1,
+            rule;
+
+        if (index >= 0) {
+            rule = stateRules[index];
+            rule.settings.failureMessageFormat = message;
+        }
 
         return this;
     };
 
     // + minimum
     prototype.minimum = function (minimumValueOrFunction, options) {
-        this.settings.rule = new rules.Range(minimumValueOrFunction, undefined, options);
-
-        return this;
+        return this.addRule(new rules.Range(minimumValueOrFunction, undefined, options));
     };
 
     // + minimumNumerOfItems
     prototype.minimumNumerOfItems = function (minimumValueOrFunction, options) {
-        this.settings.rule = new rules.ArrayLength(minimumValueOrFunction, undefined, options);
-
-        return this;
+        return this.addRule(new rules.ArrayLength(minimumValueOrFunction, undefined, options));
     };
 
     // + minimumLength
-    prototype.maximumLength = function (shortestValueOrFunction, options) {
-        this.settings.rule = new rules.StringLength(shortestValueOrFunction, undefined, options);
-
-        return this;
+    prototype.minimumLength = function (shortestValueOrFunction, options) {
+        return this.addRule(new rules.StringLength(shortestValueOrFunction, undefined, options));
     };
 
     // + noneOf
     prototype.noneOf = function (forbiddenValuesOrFunction, options) {
-        this.settings.rule = new rules.NoneOf(forbiddenValuesOrFunction, options);
-
-        return this;
+        return this.addRule(new rules.NoneOf(forbiddenValuesOrFunction, options));
     };
 
     // + not
     prototype.not = function (forbiddenValueOrFunction, options) {
-        this.settings.rule = new rules.Not([forbiddenValueOrFunction], options);
-
-        return this;
+        return this.addRule(new rules.Not(forbiddenValueOrFunction, options));
     };
 
     // + numberOfItems
     prototype.numberOfItems = function (minimumValueOrFunction, maximumValueOrFunction, options) {
-        this.settings.rule = new rules.ArrayLength(minimumValueOrFunction, maximumValueOrFunction, options);
-
-        return this;
+        return this.addRule(new rules.ArrayLength(minimumValueOrFunction, maximumValueOrFunction, options));
     };
 
     // + oneOf
     prototype.oneOf = function (permittedValuesOrFunction, options) {
-        this.settings.rule = new rules.OneOf(permittedValuesOrFunction, options);
-
-        return this;
+        return this.addRule(new rules.OneOf(permittedValuesOrFunction, options));
     };
 
     // + range
     prototype.range = function (minimumValueOrFunction, maximumValueOrFunction, options) {
-        this.settings.rule = new rules.Range(minimumValueOrFunction, maximumValueOrFunction, options);
-
-        return this;
+        return this.addRule(new rules.Range(minimumValueOrFunction, maximumValueOrFunction, options));
     };
 
     // + rule
     prototype.rule = function (testFunction, failureMessage) {
-        this.settings.rule = {
+        return this.addRule({
             "test": function (value) {
                 if (testFunction(value)) {
                     return ValidationResult.success;
@@ -2110,11 +2101,10 @@ var valerie = valerie || {};
 
                 return new ValidationResult(true, failureMessage);
             }
-        };
-
-        return this;
+        });
     };
 })();
+
 
 ///#source 1 1 ../sources/locales/en-gb/strings.js
 (function () {

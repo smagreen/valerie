@@ -5,7 +5,7 @@
 
 /// <reference path="../../frameworks/knockout-2.2.1.debug.js"/>
 /// <reference path="valerie.validationResult.js"/>
-/// <reference path="valerie.passThrough.js"/>
+/// <reference path="valerie.passThroughConverter.js"/>
 /// <reference path="valerie.utils.js"/> 
 /// <reference path="valerie.formatting.js"/> 
 /// <reference path="valerie.extras.js"/>
@@ -384,10 +384,24 @@
 
             return 1;
         },
-            ruleResultFunction = function () {
-                var value = this.observableOrComputed();
+            rulesResultFunction = function () {
+                var value = this.observableOrComputed(),
+                    index,
+                    rules = this.settings.rules,
+                    rule,
+                    result;
 
-                return this.settings.rule.test(value);
+                for (index = 0; index < rules.length; index++) {
+                    rule = rules[index];
+                    
+                    result = rule.test(value);
+                    
+                    if (result.failed) {
+                        return result;
+                    }
+                }
+
+                return ValidationResult.success;
             },
             // Functions for computeds.
             failedFunction = function () {
@@ -425,7 +439,7 @@
                     return result;
                 }
 
-                result = ruleResultFunction.apply(this);
+                result = rulesResultFunction.apply(this);
                 if (result.failed) {
                     return result;
                 }
@@ -465,6 +479,11 @@
 
         definition.prototype = {
             // Validation state methods support a fluent interface.
+            "addRule": function(rule) {
+                this.settings.rules.push(rule);
+
+                return this;
+            },
             "applicable": function (valueOrFunction) {
                 if (valueOrFunction === undefined) {
                     valueOrFunction = true;
@@ -475,9 +494,19 @@
                 return this;
             },
             "end": function () {
-                this.settings.rule.settings.valueFormat = this.settings.valueFormat;
-                this.settings.rule.settings.valueFormatter = this.settings.converter.formatter;
+                var index,
+                    settings = this.settings,
+                    valueFormat = settings.valueFormat,
+                    valueFormatter = settings.converter.formatter,
+                    rules = settings.rules,
+                    rule;
 
+                for (index = 0; index < rules.length; index++) {
+                    rule = rules[index];
+
+                    rule.valueFormat = valueFormat;
+                    rule.valueFormatter = valueFormatter;
+                }
                 return this.observableOrComputed;
             },
             "name": function (valueOrFunction) {
@@ -511,7 +540,7 @@
             "missingTest": utils.isMissing,
             "name": utils.asFunction(),
             "required": utils.asFunction(false),
-            "rule": new valerie.rules.PassThrough(),
+            "rules": [],
             "valueFormat": undefined
         };
     })();

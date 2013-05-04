@@ -32,15 +32,13 @@ var valerie = valerie || {};
                 return undefined;
             }
 
-            value = numericHelper.normaliseString(value);
-
-            return Number(value);
+            return numericHelper.parse(value);
         }
     };
 
     // + converters.currencyMajorMinor
     converters.currencyMajorMinor = {
-        "formatter": function (value, format) {           
+        "formatter": function (value, format) {
             var numericHelper = converters.currency.numericHelper || converters.defaultNumericHelper;
 
             return numericHelper.format(value, format);
@@ -52,9 +50,7 @@ var valerie = valerie || {};
                 return undefined;
             }
 
-            value = numericHelper.normaliseString(value);
-
-            return Number(value);
+            return numericHelper.parse(value);
         }
     };
 
@@ -74,9 +70,7 @@ var valerie = valerie || {};
                 return undefined;
             }
 
-            value = numericHelper.normaliseString(value);
-
-            return Number(value);
+            return numericHelper.parse(value);
         }
     };
 
@@ -96,9 +90,7 @@ var valerie = valerie || {};
                 return undefined;
             }
 
-            value = numericHelper.normaliseString(value);
-
-            return Number(value);
+            return numericHelper.parse(value);
         }
     };
 

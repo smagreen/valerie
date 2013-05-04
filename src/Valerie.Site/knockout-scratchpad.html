@@ -4,7 +4,6 @@
     <!--[if lte IE 8]>
             <script type="text/javascript" src="frameworks/html5shiv.js"></script>
         <![endif]-->
-
     <meta charset="utf-8">
     <title>valerie knockout Scratchpad</title>
     <style type="text/css">
@@ -169,7 +168,7 @@
                 loanAmountMax = ko.computed(function() { return (housePrice() * 3) / 4; })
                     .validate()
                     .currencyMajor()
-                    .valueFormat("$,.20")
+                    .valueFormat("$,.4")
                     .end();
 
             viewModel = v.validatableModel({
@@ -196,6 +195,8 @@
                     .applicable(housePrice.validation().passed)
                     .required()
                     .range(loanAmountMin, loanAmountMax)
+                    .not(133700)
+                    .ruleMessage("Elite loan amount forbidden!")
                     .end(),
                 "loanAmountMin": loanAmountMin,
                 "loanAmountMax": loanAmountMax

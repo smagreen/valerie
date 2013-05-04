@@ -1,5 +1,5 @@
-﻿// valerie.passThrough
-// - the pass through converter and rule
+﻿// valerie.passThroughConverter
+// - the pass through converter
 // - used by other parts of the valerie library
 // (c) 2013 egrove Ltd.
 // License: MIT (http://www.opensource.org/licenses/mit-license.php)
@@ -13,11 +13,7 @@ var valerie = valerie || {};
 (function () {
     "use strict";
 
-    // ReSharper disable InconsistentNaming
-    var ValidationResult = valerie.ValidationResult,
-        // ReSharper restore InconsistentNaming
-        converters = valerie.converters = valerie.converters || {},
-        rules = valerie.rules = valerie.rules || {};
+    var converters = valerie.converters = valerie.converters || {};
 
     // + converters.passThrough
     converters.passThrough = {
@@ -30,17 +26,6 @@ var valerie = valerie || {};
         },
         "parser": function (value) {
             return value;
-        }
-    };
-
-    // + rules.PassThrough
-    rules.PassThrough = function () {
-        this.settings = {};
-    };
-
-    rules.PassThrough.prototype = {
-        "test": function () {
-            return ValidationResult.success;
         }
     };
 })();

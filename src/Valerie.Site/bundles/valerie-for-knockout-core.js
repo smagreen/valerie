@@ -38,15 +38,6 @@ var valerie = valerie || {};
 
     var utils = valerie.utils = valerie.utils || {};
 
-    // + utils.asArray
-    utils.asArray = function (valueOrArray) {
-        if (utils.isArray(valueOrArray)) {
-            return valueOrArray;
-        }
-
-        return [valueOrArray];
-    };
-
     // + utils.asFunction
     utils.asFunction = function (valueOrFunction) {
         if (utils.isFunction(valueOrFunction)) {
@@ -54,6 +45,11 @@ var valerie = valerie || {};
         }
 
         return function () { return valueOrFunction; };
+    };
+
+    // + utils.isArray
+    utils.isArray = function (value) {
+        return {}.toString.call(value) === "[object Array]";
     };
 
     // + utils.isArrayOrObject
@@ -108,7 +104,8 @@ var valerie = valerie || {};
     // + utils.mergeOptions
     utils.mergeOptions = function (defaultOptions, options) {
         var mergedOptions = {},
-            name;
+            name,
+            value;
 
         if (defaultOptions === undefined || defaultOptions === null) {
             defaultOptions = {};
@@ -120,7 +117,13 @@ var valerie = valerie || {};
 
         for (name in defaultOptions) {
             if (defaultOptions.hasOwnProperty(name)) {
-                mergedOptions[name] = defaultOptions[name];
+                value = defaultOptions[name];
+                
+                if (utils.isArray(value)) {
+                    value = value.slice(0);
+                }
+
+                mergedOptions[name] = value;
             }
         }
 
@@ -179,9 +182,9 @@ var valerie = valerie || {};
     };
 })();
 
-///#source 1 1 ../sources/core/valerie.passThrough.js
-// valerie.passThrough
-// - the pass through converter and rule
+///#source 1 1 ../sources/core/valerie.passThroughConverter.js
+// valerie.passThroughConverter
+// - the pass through converter
 // - used by other parts of the valerie library
 // (c) 2013 egrove Ltd.
 // License: MIT (http://www.opensource.org/licenses/mit-license.php)
@@ -195,11 +198,7 @@ var valerie = valerie || {};
 (function () {
     "use strict";
 
-    // ReSharper disable InconsistentNaming
-    var ValidationResult = valerie.ValidationResult,
-        // ReSharper restore InconsistentNaming
-        converters = valerie.converters = valerie.converters || {},
-        rules = valerie.rules = valerie.rules || {};
+    var converters = valerie.converters = valerie.converters || {};
 
     // + converters.passThrough
     converters.passThrough = {
@@ -212,17 +211,6 @@ var valerie = valerie || {};
         },
         "parser": function (value) {
             return value;
-        }
-    };
-
-    // + rules.PassThrough
-    rules.PassThrough = function () {
-        this.settings = {};
-    };
-
-    rules.PassThrough.prototype = {
-        "test": function () {
-            return ValidationResult.success;
         }
     };
 })();
@@ -401,7 +389,7 @@ var valerie = valerie || {};
 
 /// <reference path="../../frameworks/knockout-2.2.1.debug.js"/>
 /// <reference path="valerie.validationResult.js"/>
-/// <reference path="valerie.passThrough.js"/>
+/// <reference path="valerie.passThroughConverter.js"/>
 /// <reference path="valerie.utils.js"/> 
 /// <reference path="valerie.formatting.js"/> 
 /// <reference path="valerie.extras.js"/>
@@ -780,10 +768,24 @@ var valerie = valerie || {};
 
             return 1;
         },
-            ruleResultFunction = function () {
-                var value = this.observableOrComputed();
+            rulesResultFunction = function () {
+                var value = this.observableOrComputed(),
+                    index,
+                    rules = this.settings.rules,
+                    rule,
+                    result;
 
-                return this.settings.rule.test(value);
+                for (index = 0; index < rules.length; index++) {
+                    rule = rules[index];
+                    
+                    result = rule.test(value);
+                    
+                    if (result.failed) {
+                        return result;
+                    }
+                }
+
+                return ValidationResult.success;
             },
             // Functions for computeds.
             failedFunction = function () {
@@ -821,7 +823,7 @@ var valerie = valerie || {};
                     return result;
                 }
 
-                result = ruleResultFunction.apply(this);
+                result = rulesResultFunction.apply(this);
                 if (result.failed) {
                     return result;
                 }
@@ -861,6 +863,11 @@ var valerie = valerie || {};
 
         definition.prototype = {
             // Validation state methods support a fluent interface.
+            "addRule": function(rule) {
+                this.settings.rules.push(rule);
+
+                return this;
+            },
             "applicable": function (valueOrFunction) {
                 if (valueOrFunction === undefined) {
                     valueOrFunction = true;
@@ -871,9 +878,19 @@ var valerie = valerie || {};
                 return this;
             },
             "end": function () {
-                this.settings.rule.settings.valueFormat = this.settings.valueFormat;
-                this.settings.rule.settings.valueFormatter = this.settings.converter.formatter;
+                var index,
+                    settings = this.settings,
+                    valueFormat = settings.valueFormat,
+                    valueFormatter = settings.converter.formatter,
+                    rules = settings.rules,
+                    rule;
 
+                for (index = 0; index < rules.length; index++) {
+                    rule = rules[index];
+
+                    rule.valueFormat = valueFormat;
+                    rule.valueFormatter = valueFormatter;
+                }
                 return this.observableOrComputed;
             },
             "name": function (valueOrFunction) {
@@ -907,7 +924,7 @@ var valerie = valerie || {};
             "missingTest": utils.isMissing,
             "name": utils.asFunction(),
             "required": utils.asFunction(false),
-            "rule": new valerie.rules.PassThrough(),
+            "rules": [],
             "valueFormat": undefined
         };
     })();

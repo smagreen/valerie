@@ -5,7 +5,7 @@
 // License: MIT (http://www.opensource.org/licenses/mit-license.php)
 
 /// <reference path="../core/valerie.validationResult.js"/>
-/// <reference path="../core/valerie.passThrough.js"/>
+/// <reference path="../core/valerie.passThroughConverter.js"/>
 /// <reference path="../core/valerie.utils.js"/>
 
 /*global valerie: false */

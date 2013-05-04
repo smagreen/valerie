@@ -20,135 +20,106 @@
 
     // + during
     prototype.during = function (earliestValueOrFunction, latestValueOrFunction, options) {
-        this.settings.rule = new rules.During(earliestValueOrFunction, latestValueOrFunction, options);
-
-        return this;
+        return this.addRule(new rules.During(earliestValueOrFunction, latestValueOrFunction, options));
     };
 
     // + earliest
     prototype.earliest = function (earliestValueOrFunction, options) {
-        this.settings.rule = new rules.During(earliestValueOrFunction, undefined, options);
-
-        return this;
+        return this.addRule(new rules.During(earliestValueOrFunction, undefined, options));
     };
 
     // + expression
     prototype.expression = function (regularExpressionObjectOrString, options) {
-        this.settings.rule = new rules.Expression(regularExpressionObjectOrString, options);
-
-        return this;
+        return this.addRule(new rules.Expression(regularExpressionObjectOrString, options));
     };
 
     // + latest
     prototype.latest = function (latestValueOrFunction, options) {
-        this.settings.rule = new rules.During(undefined, latestValueOrFunction, options);
-
-        return this;
+        return this.addRule(new rules.During(undefined, latestValueOrFunction, options));
     };
 
     // + length
     prototype.length = function (shortestValueOrFunction, longestValueOrFunction, options) {
-        this.settings.rule = new rules.StringLength(shortestValueOrFunction, longestValueOrFunction, options);
-
-        return this;
+        return this.addRule(new rules.StringLength(shortestValueOrFunction, longestValueOrFunction, options));
     };
 
     // + matches
     prototype.matches = function (permittedValueOrFunction, options) {
-        permittedValueOrFunction = [permittedValueOrFunction];
-
-        this.settings.rule = new rules.Matches(permittedValueOrFunction, options);
-
-        return this;
+        return this.addRule(new rules.Matches(permittedValueOrFunction, options));
     };
 
     // + maximum
     prototype.maximum = function (maximumValueOrFunction, options) {
-        this.settings.rule = new rules.Range(undefined, maximumValueOrFunction, options);
-
-        return this;
+        return this.addRule(new rules.Range(undefined, maximumValueOrFunction, options));
     };
 
-    // + maximumNumerOfItems
-    prototype.maximumNumerOfItems = function (maximumValueOrFunction, options) {
-        this.settings.rule = new rules.ArrayLength(undefined, maximumValueOrFunction, options);
-
-        return this;
+    // + maximumNumberOfItems
+    prototype.maximumNumberOfItems = function (maximumValueOrFunction, options) {
+        return this.addRule(new rules.ArrayLength(undefined, maximumValueOrFunction, options));
     };
 
     // + maximumLength
     prototype.maximumLength = function (longestValueOrFunction, options) {
-        this.settings.rule = new rules.StringLength(undefined, longestValueOrFunction, options);
-
-        return this;
+        return this.addRule(new rules.StringLength(undefined, longestValueOrFunction, options));
     };
 
-    // + message
-    prototype.message = function (message) {
-        this.settings.rule.settings.failureMessageFormat = message;
+    // + ruleMessage
+    prototype.ruleMessage = function (message) {
+        var stateRules = this.settings.rules,
+            index = stateRules.length - 1,
+            rule;
+
+        if (index >= 0) {
+            rule = stateRules[index];
+            rule.settings.failureMessageFormat = message;
+        }
 
         return this;
     };
 
     // + minimum
     prototype.minimum = function (minimumValueOrFunction, options) {
-        this.settings.rule = new rules.Range(minimumValueOrFunction, undefined, options);
-
-        return this;
+        return this.addRule(new rules.Range(minimumValueOrFunction, undefined, options));
     };
 
     // + minimumNumerOfItems
     prototype.minimumNumerOfItems = function (minimumValueOrFunction, options) {
-        this.settings.rule = new rules.ArrayLength(minimumValueOrFunction, undefined, options);
-
-        return this;
+        return this.addRule(new rules.ArrayLength(minimumValueOrFunction, undefined, options));
     };
 
     // + minimumLength
-    prototype.maximumLength = function (shortestValueOrFunction, options) {
-        this.settings.rule = new rules.StringLength(shortestValueOrFunction, undefined, options);
-
-        return this;
+    prototype.minimumLength = function (shortestValueOrFunction, options) {
+        return this.addRule(new rules.StringLength(shortestValueOrFunction, undefined, options));
     };
 
     // + noneOf
     prototype.noneOf = function (forbiddenValuesOrFunction, options) {
-        this.settings.rule = new rules.NoneOf(forbiddenValuesOrFunction, options);
-
-        return this;
+        return this.addRule(new rules.NoneOf(forbiddenValuesOrFunction, options));
     };
 
     // + not
     prototype.not = function (forbiddenValueOrFunction, options) {
-        this.settings.rule = new rules.Not([forbiddenValueOrFunction], options);
-
-        return this;
+        return this.addRule(new rules.Not(forbiddenValueOrFunction, options));
     };
 
     // + numberOfItems
     prototype.numberOfItems = function (minimumValueOrFunction, maximumValueOrFunction, options) {
-        this.settings.rule = new rules.ArrayLength(minimumValueOrFunction, maximumValueOrFunction, options);
-
-        return this;
+        return this.addRule(new rules.ArrayLength(minimumValueOrFunction, maximumValueOrFunction, options));
     };
 
     // + oneOf
     prototype.oneOf = function (permittedValuesOrFunction, options) {
-        this.settings.rule = new rules.OneOf(permittedValuesOrFunction, options);
-
-        return this;
+        return this.addRule(new rules.OneOf(permittedValuesOrFunction, options));
     };
 
     // + range
     prototype.range = function (minimumValueOrFunction, maximumValueOrFunction, options) {
-        this.settings.rule = new rules.Range(minimumValueOrFunction, maximumValueOrFunction, options);
-
-        return this;
+        return this.addRule(new rules.Range(minimumValueOrFunction, maximumValueOrFunction, options));
     };
 
     // + rule
     prototype.rule = function (testFunction, failureMessage) {
-        this.settings.rule = {
+        return this.addRule({
             "test": function (value) {
                 if (testFunction(value)) {
                     return ValidationResult.success;
@@ -156,8 +127,7 @@
 
                 return new ValidationResult(true, failureMessage);
             }
-        };
-
-        return this;
+        });
     };
 })();
+

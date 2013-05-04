@@ -125,7 +125,12 @@ var valerie = valerie || {};
         "isInteger": function (numericString) {
             return this.expressions.integer.test(numericString);
         },
-        "normaliseString": function (numericString) {
+        "parse": function(numericString) {
+            numericString = this.unformat(numericString);
+
+            return Number(numericString);
+        },
+        "unformat": function (numericString) {
             var settings = this.settings;
 
             numericString = numericString.replace(settings.currencySign, "");

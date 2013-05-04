@@ -7,7 +7,7 @@
   <file>../sources/core/valerie.validationResult.js</file>
   <file>../sources/core/valerie.utils.js</file>
   <file>../sources/core/valerie.formatting.js</file>
-  <file>../sources/core/valerie.passThrough.js</file>
+  <file>../sources/core/valerie.passThroughConverter.js</file>
   <file>../sources/core/valerie.knockout.extras.js</file>
   <file>../sources/core/valerie.dom.js</file>
   <file>../sources/core/valerie.knockout.js</file>

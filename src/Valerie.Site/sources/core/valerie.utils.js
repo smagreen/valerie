@@ -13,15 +13,6 @@ var valerie = valerie || {};
 
     var utils = valerie.utils = valerie.utils || {};
 
-    // + utils.asArray
-    utils.asArray = function (valueOrArray) {
-        if (utils.isArray(valueOrArray)) {
-            return valueOrArray;
-        }
-
-        return [valueOrArray];
-    };
-
     // + utils.asFunction
     utils.asFunction = function (valueOrFunction) {
         if (utils.isFunction(valueOrFunction)) {
@@ -29,6 +20,11 @@ var valerie = valerie || {};
         }
 
         return function () { return valueOrFunction; };
+    };
+
+    // + utils.isArray
+    utils.isArray = function (value) {
+        return {}.toString.call(value) === "[object Array]";
     };
 
     // + utils.isArrayOrObject
@@ -83,7 +79,8 @@ var valerie = valerie || {};
     // + utils.mergeOptions
     utils.mergeOptions = function (defaultOptions, options) {
         var mergedOptions = {},
-            name;
+            name,
+            value;
 
         if (defaultOptions === undefined || defaultOptions === null) {
             defaultOptions = {};
@@ -95,7 +92,13 @@ var valerie = valerie || {};
 
         for (name in defaultOptions) {
             if (defaultOptions.hasOwnProperty(name)) {
-                mergedOptions[name] = defaultOptions[name];
+                value = defaultOptions[name];
+                
+                if (utils.isArray(value)) {
+                    value = value.slice(0);
+                }
+
+                mergedOptions[name] = value;
             }
         }
 

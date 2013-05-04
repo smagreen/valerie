@@ -16,22 +16,28 @@
         converters = valerie.converters;
 
     // + currencyMajor
-    prototype.currencyMajor = function () {
-        this.settings.converter = converters.currencyMajor;
+    prototype.currencyMajor = function() {
+        var numericHelper = converters.currency.numericHelper || converters.defaultNumericHelper,
+            helperSettings = numericHelper.settings,
+            settings = this.settings;
 
-        // ToDo: Set entry format and value format to different values.
+        settings.converter = converters.currencyMajor;
+        settings.entryFormat = "";
+        settings.valueFormat = helperSettings.currencySign + helperSettings.thousandsSeparator;
+
         return this;
     };
 
     // + currencyMajorMinor
     prototype.currencyMajorMinor = function () {
-        var numericHelper = converters.currency.numericHelper || converters.defaultNumericHelper;
+        var numericHelper = converters.currency.numericHelper || converters.defaultNumericHelper,
+            helperSettings = numericHelper.settings,
+            settings = this.settings;
         
-        this.settings.converter = converters.currencyMajorMinor;
-
-        // ToDo: Set entry format and value format to different values.
-        this.settings.entryFormat = this.settings.valueFormat = numericHelper.settings.decimalSeparator +
-            numericHelper.settings.currencyMinorUnitPlaces;
+        settings.converter = converters.currencyMajorMinor;
+        settings.entryFormat = "";
+        settings.valueFormat = helperSettings.currencySign + helperSettings.thousandsSeparator +
+            helperSettings.decimalSeparator;
 
         return this;
     };
