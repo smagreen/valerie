@@ -6,6 +6,7 @@
 
 /// <reference path="../../frameworks/knockout-2.2.1.debug.js"/>
 
+/*jshint eqnull: true */
 /*global ko: false, valerie: true */
 
 var valerie = valerie || {};
@@ -22,6 +23,7 @@ var valerie = valerie || {};
     extras.isolatedBindingHandler = function (initOrUpdateFunction, updateFunction) {
         var initFunction = (arguments.length === 1) ? function () {
         } : initOrUpdateFunction;
+        
         updateFunction = (arguments.length === 2) ? updateFunction : initOrUpdateFunction;
 
         return {
@@ -48,7 +50,7 @@ var valerie = valerie || {};
             paused,
             computed;
 
-        if (pausedValueOrObservableOrComputed === undefined || pausedValueOrObservableOrComputed === null) {
+        if (pausedValueOrObservableOrComputed == null) {
             paused = ko.observable(false);
         } else {
             paused = ko.utils.isSubscribable(pausedValueOrObservableOrComputed) ?

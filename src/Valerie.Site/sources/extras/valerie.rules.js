@@ -8,6 +8,7 @@
 /// <reference path="../core/valerie.passThroughConverter.js"/>
 /// <reference path="../core/valerie.utils.js"/>
 
+/*jshint eqnull: true */
 /*global valerie: false */
 
 (function () {
@@ -35,7 +36,7 @@
         "failureMessageFormat": "",
         "failureMessageFormatForMinimumOnly": "",
         "failureMessageFormatForMaximumOnly": "",
-        "valueFormat": undefined,
+        "valueFormat": null,
         "valueFormatter": valerie.converters.passThrough.formatter
     };
 
@@ -54,7 +55,7 @@
         "failureMessageFormat": "",
         "failureMessageFormatForMinimumOnly": "",
         "failureMessageFormatForMaximumOnly": "",
-        "valueFormat": undefined,
+        "valueFormat": null,
         "valueFormatter": valerie.converters.passThrough.formatter
     };
 
@@ -69,7 +70,7 @@
 
     rules.Expression.defaultOptions = {
         "failureMessageFormat": "",
-        "valueFormat": undefined,
+        "valueFormat": null,
         "valueFormatter": valerie.converters.passThrough.formatter
     };
 
@@ -77,7 +78,7 @@
         "test": function(value) {
             var failureMessage;
 
-            if (value !== undefined && value !== null) {
+            if (value != null) {
                 if (this.expresssion.test(value)) {
                     return ValidationResult.success;
                 }
@@ -105,7 +106,7 @@
         this.test = function(value) {
             var length;
 
-            if (value !== undefined && value !== null && value.hasOwnProperty("length")) {
+            if (value != null && value.hasOwnProperty("length")) {
                 length = value.length;
             }
 
@@ -119,7 +120,7 @@
         "failureMessageFormat": "",
         "failureMessageFormatForMinimumOnly": "",
         "failureMessageFormatForMaximumOnly": "",
-        "valueFormat": undefined,
+        "valueFormat": null,
         "valueFormatter": valerie.converters.passThrough.formatter
     };
 
@@ -132,7 +133,7 @@
 
     rules.Matches.defaultOptions = {
         "failureMessageFormat": "",
-        "valueFormat": undefined,
+        "valueFormat": null,
         "valueFormatter": valerie.converters.passThrough.formatter
     };
 
@@ -144,7 +145,7 @@
 
     rules.NoneOf.defaultOptions = {
         "failureMessageFormat": "",
-        "valueFormat": undefined,
+        "valueFormat": null,
         "valueFormatter": valerie.converters.passThrough.formatter
     };
 
@@ -178,7 +179,7 @@
 
     rules.Not.defaultOptions = {
         "failureMessageFormat": "",
-        "valueFormat": undefined,
+        "valueFormat": null,
         "valueFormatter": valerie.converters.passThrough.formatter
     };
 
@@ -190,7 +191,7 @@
 
     rules.OneOf.defaultOptions = {
         "failureMessageFormat": "",
-        "valueFormat": undefined,
+        "valueFormat": null,
         "valueFormatter": valerie.converters.passThrough.formatter
     };
 
@@ -230,7 +231,7 @@
         "failureMessageFormat": "",
         "failureMessageFormatForMinimumOnly": "",
         "failureMessageFormatForMaximumOnly": "",
-        "valueFormat": undefined,
+        "valueFormat": null,
         "valueFormatter": valerie.converters.passThrough.formatter
     };
 
@@ -240,9 +241,9 @@
                 failureMessageFormat = this.settings.failureMessageFormat,
                 maximum = this.maximum(),
                 minimum = this.minimum(),
-                haveMaximum = maximum !== undefined && maximum !== null,
-                haveMinimum = minimum !== undefined && minimum !== null,
-                haveValue = value !== undefined && value !== null,
+                haveMaximum = maximum != null ,
+                haveMinimum = minimum != null,
+                haveValue = value != null,
                 valueInsideRange = true;
 
             if (!haveMaximum && !haveMinimum) {
@@ -295,7 +296,7 @@
         "failureMessageFormat": "",
         "failureMessageFormatForMinimumOnly": "",
         "failureMessageFormatForMaximumOnly": "",
-        "valueFormat": undefined,
+        "valueFormat": null,
         "valueFormatter": valerie.converters.passThrough.formatter
     };
 })();

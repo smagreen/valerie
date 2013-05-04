@@ -30,6 +30,7 @@ var valerie = valerie || {};
 // License: MIT (http://www.opensource.org/licenses/mit-license.php)
 
 /*global valerie: true */
+/*jshint eqnull: true */
 
 var valerie = valerie || {};
 
@@ -63,7 +64,7 @@ var valerie = valerie || {};
 
     // + utils.isFunction
     utils.isFunction = function (value) {
-        if (value === undefined || value === null) {
+        if (value == null) {
             return false;
         }
 
@@ -72,7 +73,7 @@ var valerie = valerie || {};
 
     // + utils.isMissing
     utils.isMissing = function (value) {
-        if (value === undefined || value === null) {
+        if (value == null) {
             return true;
         }
 
@@ -107,11 +108,11 @@ var valerie = valerie || {};
             name,
             value;
 
-        if (defaultOptions === undefined || defaultOptions === null) {
+        if (defaultOptions == null) {
             defaultOptions = {};
         }
 
-        if (options === undefined || options === null) {
+        if (options == null) {
             options = {};
         }
 
@@ -144,7 +145,7 @@ var valerie = valerie || {};
 // (c) 2013 egrove Ltd.
 // License: MIT (http://www.opensource.org/licenses/mit-license.php)
 
-/*global valerie: true */
+/*jshint eqnull: true */
 
 var valerie = valerie || {};
 
@@ -166,14 +167,14 @@ var valerie = valerie || {};
 
     // + format.replacePlaceholders
     formatting.replacePlaceholders = function (format, replacements) {
-        if (replacements === undefined || replacements === null) {
+        if (replacements == null) {
             replacements = {};
         }
 
         return format.replace(/\{(\w+)\}/g, function (match, subMatch) {
             var replacement = replacements[subMatch];
 
-            if (replacement === undefined || replacement === null) {
+            if (replacement == null) {
                 return match;
             }
 
@@ -191,6 +192,7 @@ var valerie = valerie || {};
 
 /// <reference path="valerie.validationResult.js"/>
 
+/*jshint eqnull: true */
 /*global valerie: true */
 
 var valerie = valerie || {};
@@ -203,7 +205,7 @@ var valerie = valerie || {};
     // + converters.passThrough
     converters.passThrough = {
         "formatter": function (value) {
-            if (value === undefined || value === null) {
+            if (value == null) {
                 return "";
             }
 
@@ -224,6 +226,7 @@ var valerie = valerie || {};
 
 /// <reference path="../../frameworks/knockout-2.2.1.debug.js"/>
 
+/*jshint eqnull: true */
 /*global ko: false, valerie: true */
 
 var valerie = valerie || {};
@@ -266,7 +269,7 @@ var valerie = valerie || {};
             paused,
             computed;
 
-        if (pausedValueOrObservableOrComputed === undefined || pausedValueOrObservableOrComputed === null) {
+        if (pausedValueOrObservableOrComputed == null) {
             paused = ko.observable(false);
         } else {
             paused = ko.utils.isSubscribable(pausedValueOrObservableOrComputed) ?
@@ -324,7 +327,7 @@ var valerie = valerie || {};
 // (c) 2013 egrove Ltd.
 // License: MIT (http://www.opensource.org/licenses/mit-license.php)
 
-/*global valerie: true */
+/*jshint eqnull: true */
 
 var valerie = valerie || {};
 
@@ -340,7 +343,7 @@ var valerie = valerie || {};
             dictionary = {},
             index;
 
-        if (classNames === undefined || classNames === null) {
+        if (classNames == null) {
             return dictionary;
         }
 
@@ -394,6 +397,7 @@ var valerie = valerie || {};
 /// <reference path="valerie.formatting.js"/> 
 /// <reference path="valerie.extras.js"/>
 
+/*jshint eqnull: true */
 /*global ko: false, valerie: false */
 
 (function () {
@@ -439,7 +443,7 @@ var valerie = valerie || {};
             if (model.hasOwnProperty(name)) {
                 value = model[name];
 
-                if (value === undefined || value === null) {
+                if (value == null) {
                     continue;
                 }
 
@@ -476,12 +480,12 @@ var valerie = valerie || {};
     // - gets the validation state from a model, observable or computed
     // - for use when developing bindings
     knockout.getValidationState = function (modelOrObservableOrComputed) {
-        if (modelOrObservableOrComputed === undefined || modelOrObservableOrComputed === null) {
-            return undefined;
+        if (modelOrObservableOrComputed == null) {
+            return null;
         }
 
         if (!modelOrObservableOrComputed.hasOwnProperty(getValidationStateMethodName)) {
-            return undefined;
+            return null;
         }
 
         return modelOrObservableOrComputed[getValidationStateMethodName]();
@@ -491,7 +495,7 @@ var valerie = valerie || {};
     // - determines if the given model, observable or computed has a validation state
     // - for use when developing bindings
     knockout.hasValidationState = function (modelOrObservableOrComputed) {
-        if (modelOrObservableOrComputed === undefined || modelOrObservableOrComputed === null) {
+        if (modelOrObservableOrComputed == null) {
             return false;
         }
 
@@ -638,7 +642,7 @@ var valerie = valerie || {};
                 return this;
             },
             "applicable": function (valueOrFunction) {
-                if (valueOrFunction === undefined) {
+                if (valueOrFunction == null) {
                     valueOrFunction = true;
                 }
 
@@ -746,7 +750,7 @@ var valerie = valerie || {};
             "applicable": utils.asFunction(true),
             "failureMessageFormat": "",
             "name": utils.asFunction("(?)"),
-            "paused": undefined
+            "paused": null
         };
     })();
 
@@ -869,7 +873,7 @@ var valerie = valerie || {};
                 return this;
             },
             "applicable": function (valueOrFunction) {
-                if (valueOrFunction === undefined) {
+                if (valueOrFunction == null) {
                     valueOrFunction = true;
                 }
 
@@ -883,14 +887,15 @@ var valerie = valerie || {};
                     valueFormat = settings.valueFormat,
                     valueFormatter = settings.converter.formatter,
                     rules = settings.rules,
-                    rule;
+                    ruleSettings;
 
                 for (index = 0; index < rules.length; index++) {
-                    rule = rules[index];
+                    ruleSettings = rules[index].settings;
 
-                    rule.valueFormat = valueFormat;
-                    rule.valueFormatter = valueFormatter;
+                    ruleSettings.valueFormat = valueFormat;
+                    ruleSettings.valueFormatter = valueFormatter;
                 }
+                
                 return this.observableOrComputed;
             },
             "name": function (valueOrFunction) {
@@ -899,7 +904,7 @@ var valerie = valerie || {};
                 return this;
             },
             "required": function (valueOrFunction) {
-                if (valueOrFunction === undefined) {
+                if (valueOrFunction == null) {
                     valueOrFunction = true;
                 }
 
@@ -918,14 +923,14 @@ var valerie = valerie || {};
         definition.defaultOptions = {
             "applicable": utils.asFunction(true),
             "converter": valerie.converters.passThrough,
-            "entryFormat": undefined,
+            "entryFormat": null,
             "invalidEntryFailureMessage": "",
             "missingFailureMessage": "",
             "missingTest": utils.isMissing,
             "name": utils.asFunction(),
             "required": utils.asFunction(false),
             "rules": [],
-            "valueFormat": undefined
+            "valueFormat": null
         };
     })();
 })();
@@ -946,6 +951,7 @@ var valerie = valerie || {};
 /// <reference path="valerie.knockout.js"/>
 /// <reference path="valerie.passThrough.js"/>
 
+/*jshint eqnull: true */
 /*global ko: false, valerie: false */
 
 (function () {
@@ -1004,7 +1010,7 @@ var valerie = valerie || {};
                     settings = validationState.settings;
 
                 if (enteredValue.length === 0 && settings.required()) {
-                    observableOrComputed(undefined);
+                    observableOrComputed(null);
 
                     validationState.boundEntry.result(new ValidationResult(true, settings.missingFailureMessage));
 
@@ -1014,7 +1020,7 @@ var valerie = valerie || {};
                 parsedValue = settings.converter.parser(enteredValue);
                 observableOrComputed(parsedValue);
 
-                if (parsedValue === undefined) {
+                if (parsedValue == null) {
                     validationState.boundEntry.result(new ValidationResult(true, settings.invalidEntryFailureMessage));
 
                     return;
@@ -1054,7 +1060,7 @@ var valerie = valerie || {};
                     });
 
                     // Use the name of the bound element if a property name has not been specified.
-                    if (validationState.settings.name() === undefined) {
+                    if (validationState.settings.name() == null) {
                         validationState.settings.name = utils.asFunction(element.name);
                     }
                 }
@@ -1080,7 +1086,7 @@ var valerie = valerie || {};
                     return;
                 }
 
-                if (validationState.settings.name() === undefined) {
+                if (validationState.settings.name() == null) {
                     validationState.settings.name = utils.asFunction(element.name);
                 }
 
@@ -1219,7 +1225,7 @@ var valerie = valerie || {};
                 }
 
                 formatter = bindings.formatter || formatter;
-                if (valueFormat === undefined || valueFormat === null) {
+                if (valueFormat == null) {
                     valueFormat = bindings.valueFormat;
                 }
 

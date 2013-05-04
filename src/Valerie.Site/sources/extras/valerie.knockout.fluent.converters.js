@@ -7,6 +7,7 @@
 /// <reference path="../core/valerie.knockout.js"/>
 /// <reference path="valerie.converters.numeric.js"/>
 
+/*jshint eqnull: true */
 /*global ko: false, valerie: false */
 
 (function () {
@@ -26,7 +27,7 @@
     };
 
     prototype.currencyMajor.defaultOptions = {
-        "entryFormat": undefined,
+        "entryFormat": null,
         "valueFormat": "C,"
     };
 
@@ -54,7 +55,7 @@
     };
 
     prototype.float.defaultOptions = {
-        "entryFormat": undefined,
+        "entryFormat": null,
         "valueFormat": ",."
     };
 
@@ -68,7 +69,7 @@
     };
 
     prototype.integer.defaultOptions = {
-        "entryFormat": undefined,
+        "entryFormat": null,
         "valueFormat": ","
     };
 

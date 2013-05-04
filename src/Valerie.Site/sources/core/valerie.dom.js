@@ -4,7 +4,7 @@
 // (c) 2013 egrove Ltd.
 // License: MIT (http://www.opensource.org/licenses/mit-license.php)
 
-/*global valerie: true */
+/*jshint eqnull: true */
 
 var valerie = valerie || {};
 
@@ -20,7 +20,7 @@ var valerie = valerie || {};
             dictionary = {},
             index;
 
-        if (classNames === undefined || classNames === null) {
+        if (classNames == null) {
             return dictionary;
         }
 

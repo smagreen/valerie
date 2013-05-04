@@ -4,7 +4,7 @@
 // (c) 2013 egrove Ltd.
 // License: MIT (http://www.opensource.org/licenses/mit-license.php)
 
-/*global valerie: true */
+/*jshint eqnull: true */
 
 var valerie = valerie || {};
 
@@ -26,14 +26,14 @@ var valerie = valerie || {};
 
     // + format.replacePlaceholders
     formatting.replacePlaceholders = function (format, replacements) {
-        if (replacements === undefined || replacements === null) {
+        if (replacements == null) {
             replacements = {};
         }
 
         return format.replace(/\{(\w+)\}/g, function (match, subMatch) {
             var replacement = replacements[subMatch];
 
-            if (replacement === undefined || replacement === null) {
+            if (replacement == null) {
                 return match;
             }
 

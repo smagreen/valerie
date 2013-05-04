@@ -10,6 +10,7 @@
 /// <reference path="valerie.formatting.js"/> 
 /// <reference path="valerie.extras.js"/>
 
+/*jshint eqnull: true */
 /*global ko: false, valerie: false */
 
 (function () {
@@ -55,7 +56,7 @@
             if (model.hasOwnProperty(name)) {
                 value = model[name];
 
-                if (value === undefined || value === null) {
+                if (value == null) {
                     continue;
                 }
 
@@ -92,12 +93,12 @@
     // - gets the validation state from a model, observable or computed
     // - for use when developing bindings
     knockout.getValidationState = function (modelOrObservableOrComputed) {
-        if (modelOrObservableOrComputed === undefined || modelOrObservableOrComputed === null) {
-            return undefined;
+        if (modelOrObservableOrComputed == null) {
+            return null;
         }
 
         if (!modelOrObservableOrComputed.hasOwnProperty(getValidationStateMethodName)) {
-            return undefined;
+            return null;
         }
 
         return modelOrObservableOrComputed[getValidationStateMethodName]();
@@ -107,7 +108,7 @@
     // - determines if the given model, observable or computed has a validation state
     // - for use when developing bindings
     knockout.hasValidationState = function (modelOrObservableOrComputed) {
-        if (modelOrObservableOrComputed === undefined || modelOrObservableOrComputed === null) {
+        if (modelOrObservableOrComputed == null) {
             return false;
         }
 
@@ -254,7 +255,7 @@
                 return this;
             },
             "applicable": function (valueOrFunction) {
-                if (valueOrFunction === undefined) {
+                if (valueOrFunction == null) {
                     valueOrFunction = true;
                 }
 
@@ -362,7 +363,7 @@
             "applicable": utils.asFunction(true),
             "failureMessageFormat": "",
             "name": utils.asFunction("(?)"),
-            "paused": undefined
+            "paused": null
         };
     })();
 
@@ -386,10 +387,10 @@
         },
             rulesResultFunction = function () {
                 var value = this.observableOrComputed(),
-                    index,
                     rules = this.settings.rules,
                     rule,
-                    result;
+                    result,
+                    index;
 
                 for (index = 0; index < rules.length; index++) {
                     rule = rules[index];
@@ -485,7 +486,7 @@
                 return this;
             },
             "applicable": function (valueOrFunction) {
-                if (valueOrFunction === undefined) {
+                if (valueOrFunction == null) {
                     valueOrFunction = true;
                 }
 
@@ -516,7 +517,7 @@
                 return this;
             },
             "required": function (valueOrFunction) {
-                if (valueOrFunction === undefined) {
+                if (valueOrFunction == null) {
                     valueOrFunction = true;
                 }
 
@@ -535,14 +536,14 @@
         definition.defaultOptions = {
             "applicable": utils.asFunction(true),
             "converter": valerie.converters.passThrough,
-            "entryFormat": undefined,
+            "entryFormat": null,
             "invalidEntryFailureMessage": "",
             "missingFailureMessage": "",
             "missingTest": utils.isMissing,
             "name": utils.asFunction(),
             "required": utils.asFunction(false),
             "rules": [],
-            "valueFormat": undefined
+            "valueFormat": null
         };
     })();
 })();

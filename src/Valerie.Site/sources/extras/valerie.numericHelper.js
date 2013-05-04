@@ -6,7 +6,8 @@
 
 /// <reference path="../core/valerie.formatting.js"/>
 
-/*global valerie: true */
+/*jshint eqnull: true */
+/*global valerie: true, boss:true */
 
 var valerie = valerie || {};
 
@@ -21,7 +22,7 @@ var valerie = valerie || {};
                 numberOfDecimalPlaces = 0;
 
             if (decimalPlaceIndex === format.length - 1) {
-                numberOfDecimalPlaces = undefined;
+                numberOfDecimalPlaces = null;
             } else {
                 if (decimalPlaceIndex > -1) {
                     if (format.charAt(decimalPlaceIndex + 1) === "c") {
@@ -74,11 +75,11 @@ var valerie = valerie || {};
                 settings.decimalSeparator);
         },
         "format": function (value, format) {
-            if (value === undefined || value === null) {
+            if (value == null) {
                 return "";
             }
 
-            if (format === undefined || format === null) {
+            if (format == null) {
                 format = "";
             }
 
@@ -91,7 +92,7 @@ var valerie = valerie || {};
                 value = -value;
             }
 
-            if (numberOfDecimalPlaces !== undefined) {
+            if (numberOfDecimalPlaces != null) {
                 value = value.toFixed(numberOfDecimalPlaces);
             } else {
                 value = value.toString();

@@ -13,6 +13,7 @@
 /// <reference path="valerie.knockout.js"/>
 /// <reference path="valerie.passThrough.js"/>
 
+/*jshint eqnull: true */
 /*global ko: false, valerie: false */
 
 (function () {
@@ -71,7 +72,7 @@
                     settings = validationState.settings;
 
                 if (enteredValue.length === 0 && settings.required()) {
-                    observableOrComputed(undefined);
+                    observableOrComputed(null);
 
                     validationState.boundEntry.result(new ValidationResult(true, settings.missingFailureMessage));
 
@@ -81,7 +82,7 @@
                 parsedValue = settings.converter.parser(enteredValue);
                 observableOrComputed(parsedValue);
 
-                if (parsedValue === undefined) {
+                if (parsedValue == null) {
                     validationState.boundEntry.result(new ValidationResult(true, settings.invalidEntryFailureMessage));
 
                     return;
@@ -121,7 +122,7 @@
                     });
 
                     // Use the name of the bound element if a property name has not been specified.
-                    if (validationState.settings.name() === undefined) {
+                    if (validationState.settings.name() == null) {
                         validationState.settings.name = utils.asFunction(element.name);
                     }
                 }
@@ -136,9 +137,9 @@
         validatedValueBindingHandler = koBindingHandlers.validatedValue = {
             "init": function (element, valueAccessor, allBindingsAccessor, viewModel, bindingContext) {
                 var observableOrComputed = valueAccessor(),
-                    tagName = ko.utils.tagNameLower(element),
-                    textualInput,
-                    validationState = getValidationState(observableOrComputed);
+                    validationState = getValidationState(observableOrComputed),
+                    tagName,
+                    textualInput;
 
                 if (!validationState) {
                     valueBindingHandler.init(element, valueAccessor, allBindingsAccessor, viewModel,
@@ -147,7 +148,7 @@
                     return;
                 }
 
-                if (validationState.settings.name() === undefined) {
+                if (validationState.settings.name() == null) {
                     validationState.settings.name = utils.asFunction(element.name);
                 }
 
@@ -155,6 +156,7 @@
                     blurHandler(element, observableOrComputed);
                 });
 
+                tagName = ko.utils.tagNameLower(element),
                 textualInput = (tagName === "input" && element.type.toLowerCase() === "text") || tagName === "textarea";
 
                 if (!textualInput) {
@@ -274,11 +276,9 @@
                 var bindings = allBindingsAccessor(),
                     observableOrComputedOrValue = valueAccessor(),
                     value = ko.utils.unwrapObservable(observableOrComputedOrValue),
-                    validationState,
+                    validationState =getValidationState(observableOrComputedOrValue),
                     formatter = converters.passThrough.formatter,
                     valueFormat;
-
-                validationState = getValidationState(observableOrComputedOrValue);
 
                 if (validationState) {
                     formatter = validationState.settings.converter.formatter;
@@ -286,7 +286,7 @@
                 }
 
                 formatter = bindings.formatter || formatter;
-                if (valueFormat === undefined || valueFormat === null) {
+                if (valueFormat == null) {
                     valueFormat = bindings.valueFormat;
                 }
 

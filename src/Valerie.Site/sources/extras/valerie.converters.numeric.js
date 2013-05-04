@@ -6,6 +6,7 @@
 
 /// <reference path="valerie.numericHelper.js"/>
 
+/*jshint eqnull: true */
 /*global valerie: true */
 
 var valerie = valerie || {};
@@ -28,7 +29,7 @@ var valerie = valerie || {};
             var numericHelper = converters.currency.numericHelper;
 
             if (!numericHelper.isCurrencyMajor(value)) {
-                return undefined;
+                return null;
             }
 
             return numericHelper.parse(value);
@@ -44,7 +45,7 @@ var valerie = valerie || {};
             var numericHelper = converters.currency.numericHelper;
 
             if (!numericHelper.isCurrencyMajorMinor(value)) {
-                return undefined;
+                return null;
             }
 
             return numericHelper.parse(value);
@@ -62,7 +63,7 @@ var valerie = valerie || {};
             var numericHelper = converters.float.numericHelper;
 
             if (!numericHelper.isFloat(value)) {
-                return undefined;
+                return null;
             }
 
             return numericHelper.parse(value);
@@ -80,7 +81,7 @@ var valerie = valerie || {};
             var numericHelper = converters.integer.numericHelper;
 
             if (!numericHelper.isInteger(value)) {
-                return undefined;
+                return null;
             }
 
             return numericHelper.parse(value);
@@ -92,22 +93,21 @@ var valerie = valerie || {};
     // + converters.number
     converters.number = {
         "formatter": function (value) {
-
-            if (value === undefined || value === null) {
+            if (value == null) {
                 return "";
             }
 
             return value.toString();
         },
         "parser": function (value) {
-            if (value === undefined || value === null) {
-                return undefined;
+            if (value == null) {
+                return null;
             }
 
             value = Number(value);
 
             if (isNaN(value)) {
-                return undefined;
+                return null;
             }
 
             return value;

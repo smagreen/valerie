@@ -7,6 +7,7 @@
 /// <reference path="../core/valerie.knockout.js"/>
 /// <reference path="valerie.rules.js"/>
 
+/*jshint eqnull: true */
 /*global ko: false, valerie: false */
 
 (function () {
@@ -25,7 +26,7 @@
 
     // + earliest
     prototype.earliest = function (earliestValueOrFunction, options) {
-        return this.addRule(new rules.During(earliestValueOrFunction, undefined, options));
+        return this.addRule(new rules.During(earliestValueOrFunction, null, options));
     };
 
     // + expression
@@ -35,7 +36,7 @@
 
     // + latest
     prototype.latest = function (latestValueOrFunction, options) {
-        return this.addRule(new rules.During(undefined, latestValueOrFunction, options));
+        return this.addRule(new rules.During(null, latestValueOrFunction, options));
     };
 
     // + length
@@ -50,17 +51,17 @@
 
     // + maximum
     prototype.maximum = function (maximumValueOrFunction, options) {
-        return this.addRule(new rules.Range(undefined, maximumValueOrFunction, options));
+        return this.addRule(new rules.Range(null, maximumValueOrFunction, options));
     };
 
     // + maximumNumberOfItems
     prototype.maximumNumberOfItems = function (maximumValueOrFunction, options) {
-        return this.addRule(new rules.ArrayLength(undefined, maximumValueOrFunction, options));
+        return this.addRule(new rules.ArrayLength(null, maximumValueOrFunction, options));
     };
 
     // + maximumLength
     prototype.maximumLength = function (longestValueOrFunction, options) {
-        return this.addRule(new rules.StringLength(undefined, longestValueOrFunction, options));
+        return this.addRule(new rules.StringLength(null, longestValueOrFunction, options));
     };
 
     // + ruleMessage
@@ -79,17 +80,17 @@
 
     // + minimum
     prototype.minimum = function (minimumValueOrFunction, options) {
-        return this.addRule(new rules.Range(minimumValueOrFunction, undefined, options));
+        return this.addRule(new rules.Range(minimumValueOrFunction, null, options));
     };
 
     // + minimumNumerOfItems
     prototype.minimumNumerOfItems = function (minimumValueOrFunction, options) {
-        return this.addRule(new rules.ArrayLength(minimumValueOrFunction, undefined, options));
+        return this.addRule(new rules.ArrayLength(minimumValueOrFunction, null, options));
     };
 
     // + minimumLength
     prototype.minimumLength = function (shortestValueOrFunction, options) {
-        return this.addRule(new rules.StringLength(shortestValueOrFunction, undefined, options));
+        return this.addRule(new rules.StringLength(shortestValueOrFunction, null, options));
     };
 
     // + noneOf

@@ -5,6 +5,7 @@
 // License: MIT (http://www.opensource.org/licenses/mit-license.php)
 
 /*global valerie: true */
+/*jshint eqnull: true */
 
 var valerie = valerie || {};
 
@@ -38,7 +39,7 @@ var valerie = valerie || {};
 
     // + utils.isFunction
     utils.isFunction = function (value) {
-        if (value === undefined || value === null) {
+        if (value == null) {
             return false;
         }
 
@@ -47,7 +48,7 @@ var valerie = valerie || {};
 
     // + utils.isMissing
     utils.isMissing = function (value) {
-        if (value === undefined || value === null) {
+        if (value == null) {
             return true;
         }
 
@@ -82,11 +83,11 @@ var valerie = valerie || {};
             name,
             value;
 
-        if (defaultOptions === undefined || defaultOptions === null) {
+        if (defaultOptions == null) {
             defaultOptions = {};
         }
 
-        if (options === undefined || options === null) {
+        if (options == null) {
             options = {};
         }
 

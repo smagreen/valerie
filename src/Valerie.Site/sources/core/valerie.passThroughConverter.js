@@ -6,6 +6,7 @@
 
 /// <reference path="valerie.validationResult.js"/>
 
+/*jshint eqnull: true */
 /*global valerie: true */
 
 var valerie = valerie || {};
@@ -18,7 +19,7 @@ var valerie = valerie || {};
     // + converters.passThrough
     converters.passThrough = {
         "formatter": function (value) {
-            if (value === undefined || value === null) {
+            if (value == null) {
                 return "";
             }
 
