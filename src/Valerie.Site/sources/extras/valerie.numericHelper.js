@@ -14,43 +14,29 @@ var valerie = valerie || {};
     "use strict";
 
     var formatting = valerie.formatting,
-        formatExpression = new RegExp("^(\\C?)(\\,?)(\\.?(c|\\d*))$"),
-        formatStringAsOptions = function(numericHelper, format) {
-            var settings = numericHelper.settings,
-                matches = formatExpression.exec(format),
-                includeCurrencySign = false,
-                includeThousandsSeparator = false,
-                withDecimalPlaces,
-                numberOfDecimalPlacesSpecified,
-                numberOfDecimalPlaces;
+        formatStringAsOptions = function (numericHelper, format) {
+            var includeCurrencySign = format.indexOf("C") > -1,
+                includeThousandsSeparator = format.indexOf(",") > -1,
+                decimalPlaceIndex = format.indexOf("."),
+                numberOfDecimalPlaces = 0;
 
-            if (matches !== null) {
-                includeCurrencySign = matches[1].length > 0;
-                includeThousandsSeparator = matches[2].length > 0;
-                withDecimalPlaces = matches[3].length > 0;
-                numberOfDecimalPlacesSpecified = matches[4].length > 0;
-
-                if (withDecimalPlaces) {
-                    if (numberOfDecimalPlacesSpecified) {
-                        numberOfDecimalPlaces = matches[4];
-
-                        if (numberOfDecimalPlaces === "c") {
-                            numberOfDecimalPlaces = settings.currencyMinorUnitPlaces;
-                        } else {
-                            numberOfDecimalPlaces = Number(numberOfDecimalPlaces);
-                        }
+            if (decimalPlaceIndex === format.length - 1) {
+                numberOfDecimalPlaces = undefined;
+            } else {
+                if (decimalPlaceIndex > -1) {
+                    if (format[decimalPlaceIndex + 1] === "c") {
+                        numberOfDecimalPlaces = numericHelper.settings.currencyMinorUnitPlaces;
+                    } else {
+                        numberOfDecimalPlaces = Number(format.substr(decimalPlaceIndex + 1));
                     }
-                } else {
-                    numberOfDecimalPlaces = 0;
                 }
             }
 
+            alert(format + ":" + numberOfDecimalPlaces);
             return {
                 "includeCurrencySign": includeCurrencySign,
                 "includeThousandsSeparator": includeThousandsSeparator,
-                // ReSharper disable UsageOfPossiblyUnassignedValue
                 "numberOfDecimalPlaces": numberOfDecimalPlaces
-                // ReSharper restore UsageOfPossiblyUnassignedValue
             };
         };
 

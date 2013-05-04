@@ -87,7 +87,7 @@
                 <section data-bind="invisibleWhenSummaryEmpty: houseDetails">
                     <h3>Validation Summary</h3>
                     <ul data-bind="foreach: houseDetails.validation().summary()">
-                        <li><span data-bind="text: name"></span>: <span data-bind="    text: message"></span></li>
+                        <li><span data-bind="text: name"></span>: <span data-bind="text: message"></span></li>
                     </ul>
                 </section>
             </section>
@@ -108,7 +108,7 @@
                 <div data-bind="visibleWhenValid: housePrice">
                     <p>
                         You can borrow between:
-                        <strong data-bind="formattedValue: loanAmountMin, formatter: valerie.converters.currencyMajor.formatter, valueFormat: '$,'"></strong>
+                        <strong data-bind="formattedValue: loanAmountMin, formatter: valerie.converters.currencyMajor.formatter, valueFormat: 'C,'"></strong>
                         and
                         <strong data-bind="formattedValue: loanAmountMax"></strong>.
                     </p>

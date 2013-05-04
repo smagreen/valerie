@@ -40,7 +40,7 @@
     };
 
     prototype.currencyMajorMinor.defaultOptions = {
-        "entryFormat": "c",
+        "entryFormat": ".c",
         "valueFormat": "C,.c"
     };
 
