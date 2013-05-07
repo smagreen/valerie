@@ -1486,7 +1486,7 @@ var valerie = valerie || {};
     "use strict";
 
     var converters = valerie.converters = valerie.converters || {},
-        defaultNumericHelper = new valerie.NumericHelper().init(".", ",", "$", 2);
+        defaultNumericHelper = new valerie.NumericHelper();
 
     // + converters.defaultNumericHelper
     converters.defaultNumericHelper = defaultNumericHelper;
@@ -2136,14 +2136,18 @@ var valerie = valerie || {};
 })();
 
 ///#source 1 1 ../valerie/localisation/en-gb/full.js
+/// <reference path="../../full/valerie.converters.numeric.js"/>
 /// <reference path="../../full/valerie.knockout.fluent.rules.js"/>
 
 /*global valerie: false */
 
 (function () {
-    var rules = valerie.rules,
+    var converters = valerie.converters,
+        rules = valerie.rules,
         defaultOptions;
 
+    converters.defaultNumericHelper.init(".", ",", "£", "2");
+    
     defaultOptions = rules.ArrayLength.defaultOptions;
     defaultOptions.failureMessageFormat = "There must be between {minimum} and {maximum} items.";
     defaultOptions.failureMessageFormatForMinimumOnly = "There must be at least {minimum} items.";

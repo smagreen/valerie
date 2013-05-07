@@ -1,11 +1,15 @@
-﻿/// <reference path="../../full/valerie.knockout.fluent.rules.js"/>
+﻿/// <reference path="../../full/valerie.converters.numeric.js"/>
+/// <reference path="../../full/valerie.knockout.fluent.rules.js"/>
 
 /*global valerie: false */
 
 (function () {
-    var rules = valerie.rules,
+    var converters = valerie.converters,
+        rules = valerie.rules,
         defaultOptions;
 
+    converters.defaultNumericHelper.init(".", ",", "£", "2");
+    
     defaultOptions = rules.ArrayLength.defaultOptions;
     defaultOptions.failureMessageFormat = "There must be between {minimum} and {maximum} items.";
     defaultOptions.failureMessageFormatForMinimumOnly = "There must be at least {minimum} items.";

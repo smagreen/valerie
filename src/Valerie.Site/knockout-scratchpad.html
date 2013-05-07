@@ -168,7 +168,6 @@
             var viewModel,
                 housePrice = ko.observable(150000)
                     .validate()
-                    .applicable(ko.observable(true))
                     .currencyMajor()
                     .required()
                     .range(75000, 500000)

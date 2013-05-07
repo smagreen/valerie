@@ -1486,7 +1486,7 @@ var valerie = valerie || {};
     "use strict";
 
     var converters = valerie.converters = valerie.converters || {},
-        defaultNumericHelper = new valerie.NumericHelper().init(".", ",", "$", 2);
+        defaultNumericHelper = new valerie.NumericHelper();
 
     // + converters.defaultNumericHelper
     converters.defaultNumericHelper = defaultNumericHelper;
