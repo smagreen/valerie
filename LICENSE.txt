@@ -1,5 +1,4 @@
-valeriejs
-A validation library for KnockoutJS.
+valeriejs - A validation library for KnockoutJS.
 
 Copyright (c) 2013 egrove Ltd
 
