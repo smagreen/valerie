@@ -1,4 +1,4 @@
-﻿///#source 1 1 ../sources/core/valerie.validationResult.js
+﻿///#source 1 1 ../valerie/core/valerie.validationResult.js
 // valerie.validationResult
 // - defines the ValidationResult constructor function
 // - used by other parts of the valerie library
@@ -22,7 +22,7 @@ var valerie = valerie || {};
     valerie.ValidationResult.success = new valerie.ValidationResult(false, "");
 })();
 
-///#source 1 1 ../sources/core/valerie.utils.js
+///#source 1 1 ../valerie/core/valerie.utils.js
 // valerie.utils
 // - general purpose utilities
 // - used by other parts of the valerie library
@@ -138,7 +138,7 @@ var valerie = valerie || {};
     };
 })();
 
-///#source 1 1 ../sources/core/valerie.formatting.js
+///#source 1 1 ../valerie/core/valerie.formatting.js
 // valerie.formatting
 // - general purpose formatting functions
 // - used by other parts of the valerie library
@@ -183,14 +183,12 @@ var valerie = valerie || {};
     };
 })();
 
-///#source 1 1 ../sources/core/valerie.passThroughConverter.js
+///#source 1 1 ../valerie/core/valerie.passThroughConverter.js
 // valerie.passThroughConverter
 // - the pass through converter
 // - used by other parts of the valerie library
 // (c) 2013 egrove Ltd.
 // License: MIT (http://www.opensource.org/licenses/mit-license.php)
-
-/// <reference path="valerie.validationResult.js"/>
 
 /*jshint eqnull: true */
 /*global valerie: true */
@@ -217,7 +215,7 @@ var valerie = valerie || {};
     };
 })();
 
-///#source 1 1 ../sources/core/valerie.knockout.extras.js
+///#source 1 1 ../valerie/core/valerie.knockout.extras.js
 // valerie.knockout.extras
 // - extra functionality for KnockoutJS
 // - used by other parts of the valerie library
@@ -243,6 +241,7 @@ var valerie = valerie || {};
     extras.isolatedBindingHandler = function (initOrUpdateFunction, updateFunction) {
         var initFunction = (arguments.length === 1) ? function () {
         } : initOrUpdateFunction;
+        
         updateFunction = (arguments.length === 2) ? updateFunction : initOrUpdateFunction;
 
         return {
@@ -320,7 +319,7 @@ var valerie = valerie || {};
     };
 })();
 
-///#source 1 1 ../sources/core/valerie.dom.js
+///#source 1 1 ../valerie/core/valerie.dom.js
 // valerie.dom
 // - utilities for working with the document object model
 // - used by other parts of the valerie library
@@ -384,7 +383,7 @@ var valerie = valerie || {};
     };
 })();
 
-///#source 1 1 ../sources/core/valerie.knockout.js
+///#source 1 1 ../valerie/core/valerie.knockout.js
 // valerie.knockout
 // - the class and functions that validate a view-model constructed using knockout observables and computeds
 // (c) 2013 egrove Ltd.
@@ -774,10 +773,10 @@ var valerie = valerie || {};
         },
             rulesResultFunction = function () {
                 var value = this.observableOrComputed(),
-                    index,
                     rules = this.settings.rules,
                     rule,
-                    result;
+                    result,
+                    index;
 
                 for (index = 0; index < rules.length; index++) {
                     rule = rules[index];
@@ -935,7 +934,7 @@ var valerie = valerie || {};
     })();
 })();
 
-///#source 1 1 ../sources/core/valerie.knockout.bindings.js
+///#source 1 1 ../valerie/core/valerie.knockout.bindings.js
 // valerie.knockout.bindings
 // - knockout bindings for:
 //   - validating user entries
@@ -1075,9 +1074,9 @@ var valerie = valerie || {};
         validatedValueBindingHandler = koBindingHandlers.validatedValue = {
             "init": function (element, valueAccessor, allBindingsAccessor, viewModel, bindingContext) {
                 var observableOrComputed = valueAccessor(),
-                    tagName = ko.utils.tagNameLower(element),
-                    textualInput,
-                    validationState = getValidationState(observableOrComputed);
+                    validationState = getValidationState(observableOrComputed),
+                    tagName,
+                    textualInput;
 
                 if (!validationState) {
                     valueBindingHandler.init(element, valueAccessor, allBindingsAccessor, viewModel,
@@ -1094,6 +1093,7 @@ var valerie = valerie || {};
                     blurHandler(element, observableOrComputed);
                 });
 
+                tagName = ko.utils.tagNameLower(element),
                 textualInput = (tagName === "input" && element.type.toLowerCase() === "text") || tagName === "textarea";
 
                 if (!textualInput) {
@@ -1213,11 +1213,9 @@ var valerie = valerie || {};
                 var bindings = allBindingsAccessor(),
                     observableOrComputedOrValue = valueAccessor(),
                     value = ko.utils.unwrapObservable(observableOrComputedOrValue),
-                    validationState,
+                    validationState =getValidationState(observableOrComputedOrValue),
                     formatter = converters.passThrough.formatter,
                     valueFormat;
-
-                validationState = getValidationState(observableOrComputedOrValue);
 
                 if (validationState) {
                     formatter = validationState.settings.converter.formatter;

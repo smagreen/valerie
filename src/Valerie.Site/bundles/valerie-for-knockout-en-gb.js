@@ -1,4 +1,4 @@
-﻿///#source 1 1 ../sources/core/valerie.validationResult.js
+﻿///#source 1 1 ../valerie/core/valerie.validationResult.js
 // valerie.validationResult
 // - defines the ValidationResult constructor function
 // - used by other parts of the valerie library
@@ -22,7 +22,7 @@ var valerie = valerie || {};
     valerie.ValidationResult.success = new valerie.ValidationResult(false, "");
 })();
 
-///#source 1 1 ../sources/core/valerie.utils.js
+///#source 1 1 ../valerie/core/valerie.utils.js
 // valerie.utils
 // - general purpose utilities
 // - used by other parts of the valerie library
@@ -138,7 +138,7 @@ var valerie = valerie || {};
     };
 })();
 
-///#source 1 1 ../sources/core/valerie.formatting.js
+///#source 1 1 ../valerie/core/valerie.formatting.js
 // valerie.formatting
 // - general purpose formatting functions
 // - used by other parts of the valerie library
@@ -183,14 +183,12 @@ var valerie = valerie || {};
     };
 })();
 
-///#source 1 1 ../sources/core/valerie.passThroughConverter.js
+///#source 1 1 ../valerie/core/valerie.passThroughConverter.js
 // valerie.passThroughConverter
 // - the pass through converter
 // - used by other parts of the valerie library
 // (c) 2013 egrove Ltd.
 // License: MIT (http://www.opensource.org/licenses/mit-license.php)
-
-/// <reference path="valerie.validationResult.js"/>
 
 /*jshint eqnull: true */
 /*global valerie: true */
@@ -217,7 +215,7 @@ var valerie = valerie || {};
     };
 })();
 
-///#source 1 1 ../sources/core/valerie.knockout.extras.js
+///#source 1 1 ../valerie/core/valerie.knockout.extras.js
 // valerie.knockout.extras
 // - extra functionality for KnockoutJS
 // - used by other parts of the valerie library
@@ -321,7 +319,7 @@ var valerie = valerie || {};
     };
 })();
 
-///#source 1 1 ../sources/core/valerie.dom.js
+///#source 1 1 ../valerie/core/valerie.dom.js
 // valerie.dom
 // - utilities for working with the document object model
 // - used by other parts of the valerie library
@@ -385,7 +383,7 @@ var valerie = valerie || {};
     };
 })();
 
-///#source 1 1 ../sources/core/valerie.knockout.js
+///#source 1 1 ../valerie/core/valerie.knockout.js
 // valerie.knockout
 // - the class and functions that validate a view-model constructed using knockout observables and computeds
 // (c) 2013 egrove Ltd.
@@ -936,7 +934,7 @@ var valerie = valerie || {};
     })();
 })();
 
-///#source 1 1 ../sources/core/valerie.knockout.bindings.js
+///#source 1 1 ../valerie/core/valerie.knockout.bindings.js
 // valerie.knockout.bindings
 // - knockout bindings for:
 //   - validating user entries
@@ -1330,7 +1328,7 @@ var valerie = valerie || {};
     })();
 })();
 
-///#source 1 1 ../sources/extras/valerie.numericHelper.js
+///#source 1 1 ../valerie/full/valerie.numericHelper.js
 // valerie.numericHelper
 // - helper for parsing and formatting numeric values
 // - used by other parts of the valerie library
@@ -1470,7 +1468,7 @@ var valerie = valerie || {};
     };
 })();
 
-///#source 1 1 ../sources/extras/valerie.converters.numeric.js
+///#source 1 1 ../valerie/full/valerie.converters.numeric.js
 // valerie.converters.numeric
 // - converters for numeric values
 // - used by other parts of the valerie library
@@ -1588,7 +1586,7 @@ var valerie = valerie || {};
     };
 })();
 
-///#source 1 1 ../sources/extras/valerie.rules.js
+///#source 1 1 ../valerie/full/valerie.rules.js
 // valerie.rules
 // - general purpose rules
 // - used by other parts of the valerie library
@@ -1892,7 +1890,7 @@ var valerie = valerie || {};
     };
 })();
 
-///#source 1 1 ../sources/extras/valerie.knockout.fluent.converters.js
+///#source 1 1 ../valerie/full/valerie.knockout.fluent.converters.js
 // valerie.knockout.fluent.converters
 // - additional functions for the PropertyValidationState prototype for fluently specifying converters
 // (c) 2013 egrove Ltd.
@@ -1983,7 +1981,7 @@ var valerie = valerie || {};
     };
 })();
 
-///#source 1 1 ../sources/extras/valerie.knockout.fluent.rules.js
+///#source 1 1 ../valerie/full/valerie.knockout.fluent.rules.js
 // valerie.knockout.fluent.rules
 // - additional functions for the PropertyValidationState prototype for fluently specifying rules
 // (c) 2013 egrove Ltd.
@@ -2119,10 +2117,15 @@ var valerie = valerie || {};
 })();
 
 
-///#source 1 1 ../sources/locales/en-gb/strings.js
+///#source 1 1 ../valerie/localisation/en-gb/core.js
+/// <reference path="../../core/valerie.knockout.js"/>
+
+/*global valerie: false */
+
 (function () {
+    "use strict";
+    
     var knockout = valerie.knockout,
-        rules = valerie.rules,
         defaultOptions;
 
     knockout.ModelValidationState.defaultOptions.failureMessageFormat = "There are validation errors.";
@@ -2130,6 +2133,16 @@ var valerie = valerie || {};
     defaultOptions = knockout.PropertyValidationState.defaultOptions;
     defaultOptions.invalidEntryFailureMessage = "The value entered is invalid";
     defaultOptions.missingFailureMessage = "A value is required.";
+})();
+
+///#source 1 1 ../valerie/localisation/en-gb/full.js
+/// <reference path="../../full/valerie.knockout.fluent.rules.js"/>
+
+/*global valerie: false */
+
+(function () {
+    var rules = valerie.rules,
+        defaultOptions;
 
     defaultOptions = rules.ArrayLength.defaultOptions;
     defaultOptions.failureMessageFormat = "There must be between {minimum} and {maximum} items.";
@@ -2143,7 +2156,7 @@ var valerie = valerie || {};
 
     defaultOptions = rules.Expression.defaultOptions;
     defaultOptions.failureMessageFormat = "The value is invalid.";
-    
+
     defaultOptions = rules.Length.defaultOptions;
     defaultOptions.failureMessageFormat = "The length must be between {minimum} and {maximum}.";
     defaultOptions.failureMessageFormatForMinimumOnly = "The length must be no less than {minimum}.";

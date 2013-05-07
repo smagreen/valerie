@@ -61,11 +61,11 @@
                 <div>
                     <label>
                         Location                    
-                            <select data-bind="value: houseDetails.location, validationCss: true">
-                                <option value="">Please Select...</option>
-                                <option>England</option>
-                                <option>Wales</option>
-                            </select>
+                        <select data-bind="value: houseDetails.location, validationCss: true">
+                            <option value="">Please Select...</option>
+                            <option>England</option>
+                            <option>Wales</option>
+                        </select>
                     </label>
                     <span data-bind="validationMessageFor: houseDetails.location"></span>
                 </div>
@@ -76,10 +76,12 @@
                     </label>
                     <label>
                         <input data-bind="checked: houseDetails.houseType" name="houseType" type="radio" value="Semi Detached" />
-                        Semi Detached</label>
+                        Semi Detached
+                    </label>
                     <label>
                         <input data-bind="checked: houseDetails.houseType" name="houseType" type="radio" value="Detached" />
-                        Detached</label>
+                        Detached
+                    </label>
                     <span data-bind="validationMessageFor: houseDetails.houseType"></span>
                 </div>
                 <!-- ToDo: Add checklist array for features. -->
@@ -87,7 +89,7 @@
                 <section data-bind="invisibleWhenSummaryEmpty: houseDetails">
                     <h3>Validation Summary</h3>
                     <ul data-bind="foreach: houseDetails.validation().summary()">
-                        <li><span data-bind="text: name"></span>: <span data-bind="text: message"></span></li>
+                        <li><span data-bind="text: name"></span>: <span data-bind="    text: message"></span></li>
                     </ul>
                 </section>
             </section>
@@ -96,7 +98,8 @@
                 <div>
                     <label>
                         House Price
-                            <input data-bind="value: housePrice, enableWhenApplicable: true, validationCss: true" /></label>
+                        <input data-bind="value: housePrice, enableWhenApplicable: true, validationCss: true" />
+                    </label>
                     <span data-bind="validationMessageFor: housePrice"></span>
                 </div>
                 <div>
@@ -116,7 +119,8 @@
                 <div>
                     <label>
                         Loan Amount
-                            <input data-bind="value: loanAmount, enableWhenApplicable: true" name="loanAmount" /></label>
+                        <input data-bind="value: loanAmount, enableWhenApplicable: true" name="loanAmount" />
+                    </label>
                     <span data-bind="validationMessageFor: loanAmount"></span>
                 </div>
             </section>
@@ -137,7 +141,9 @@
         </section>
     </div>
 
-    <!--[if lt IE 8]><script type="text/javascript" src="frameworks/json3.min.js"></script><![endif]-->
+    <!--[if lt IE 8]>
+            <script type="text/javascript" src="frameworks/json3.min.js"></script>
+        <![endif]-->
     <script type="text/javascript" src="frameworks/knockout-2.2.1.debug.js"></script>
     <script type="text/javascript" src="bundles/valerie-for-knockout-en-gb.js"></script>
 

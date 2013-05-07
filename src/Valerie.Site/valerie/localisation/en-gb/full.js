@@ -1,13 +1,10 @@
-﻿(function () {
-    var knockout = valerie.knockout,
-        rules = valerie.rules,
+﻿/// <reference path="../../full/valerie.knockout.fluent.rules.js"/>
+
+/*global valerie: false */
+
+(function () {
+    var rules = valerie.rules,
         defaultOptions;
-
-    knockout.ModelValidationState.defaultOptions.failureMessageFormat = "There are validation errors.";
-
-    defaultOptions = knockout.PropertyValidationState.defaultOptions;
-    defaultOptions.invalidEntryFailureMessage = "The value entered is invalid";
-    defaultOptions.missingFailureMessage = "A value is required.";
 
     defaultOptions = rules.ArrayLength.defaultOptions;
     defaultOptions.failureMessageFormat = "There must be between {minimum} and {maximum} items.";
@@ -21,7 +18,7 @@
 
     defaultOptions = rules.Expression.defaultOptions;
     defaultOptions.failureMessageFormat = "The value is invalid.";
-    
+
     defaultOptions = rules.Length.defaultOptions;
     defaultOptions.failureMessageFormat = "The length must be between {minimum} and {maximum}.";
     defaultOptions.failureMessageFormatForMinimumOnly = "The length must be no less than {minimum}.";

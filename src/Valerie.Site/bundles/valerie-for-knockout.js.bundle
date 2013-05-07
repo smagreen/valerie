@@ -4,18 +4,18 @@
 		output="valerie-for-knockout.js">
   <!--The order of the <file> elements determines the order of them when bundled.-->
   <!-- Core -->
-  <file>../sources/core/valerie.validationResult.js</file>
-  <file>../sources/core/valerie.utils.js</file>
-  <file>../sources/core/valerie.formatting.js</file>
-  <file>../sources/core/valerie.passThroughConverter.js</file>
-  <file>../sources/core/valerie.knockout.extras.js</file>
-  <file>../sources/core/valerie.dom.js</file>
-  <file>../sources/core/valerie.knockout.js</file>
-  <file>../sources/core/valerie.knockout.bindings.js</file>
-  <!-- Extras -->
-  <file>../sources/extras/valerie.numericHelper.js</file>
-  <file>../sources/extras/valerie.converters.numeric.js</file>
-  <file>../sources/extras/valerie.rules.js</file>
-  <file>../sources/extras/valerie.knockout.fluent.converters.js</file>
-  <file>../sources/extras/valerie.knockout.fluent.rules.js</file>
+  <file>../valerie/core/valerie.validationResult.js</file>
+  <file>../valerie/core/valerie.utils.js</file>
+  <file>../valerie/core/valerie.formatting.js</file>
+  <file>../valerie/core/valerie.passThroughConverter.js</file>
+  <file>../valerie/core/valerie.knockout.extras.js</file>
+  <file>../valerie/core/valerie.dom.js</file>
+  <file>../valerie/core/valerie.knockout.js</file>
+  <file>../valerie/core/valerie.knockout.bindings.js</file>
+  <!-- Full -->
+  <file>../valerie/full/valerie.numericHelper.js</file>
+  <file>../valerie/full/valerie.converters.numeric.js</file>
+  <file>../valerie/full/valerie.rules.js</file>
+  <file>../valerie/full/valerie.knockout.fluent.converters.js</file>
+  <file>../valerie/full/valerie.knockout.fluent.rules.js</file>
 </bundle>
