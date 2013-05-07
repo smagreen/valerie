@@ -29,26 +29,40 @@
             margin-top: 1em;
         }
 
-            form div span {
-                background-color: #aa3333;
-                color: #fff;
-                padding: 0.25em 0.5em;
-            }
-
-        input.error.touched, select.error.touched {
-            border-color: #aa3333;
+        form div aside {
+            display: none;
         }
 
-        input.success.touched, select.success.touched {
-            border-color: #33aa33;
+        form div aside.error {
+            background-color: #a33;
+            color: #fff;
+            padding: 0.25em 0.5em;
         }
 
-        input.error-and-touched, select.error-and-touched {
-            border-color: #aa3333;
+        form div aside.focused {
+            display: inline-block;
         }
 
-        input.success-and-touched, select.success-and-touched {
-            border-color: #33aa33;
+        form div aside.success, form div aside.untouched {
+            display: none !important;
+        }
+
+        form div span {
+            color: #a33;
+            display: block;
+            padding: 0.25em 0;
+        }
+
+        input.error, select.error {
+            border-color: #a33;
+        }
+
+        input.success, select.success {
+            border-color: #3a3;
+        }
+
+        input.untouched, select.untouched {
+            border-color: #ccc;
         }
     </style>
 </head>
@@ -61,11 +75,11 @@
                 <div>
                     <label>
                         Location                    
-                        <select data-bind="value: houseDetails.location, validationCss: true">
-                            <option value="">Please Select...</option>
-                            <option>England</option>
-                            <option>Wales</option>
-                        </select>
+                            <select data-bind="value: houseDetails.location, validationCss: true">
+                                <option value="">Please Select...</option>
+                                <option>England</option>
+                                <option>Wales</option>
+                            </select>
                     </label>
                     <span data-bind="validationMessageFor: houseDetails.location"></span>
                 </div>
@@ -89,7 +103,7 @@
                 <section data-bind="invisibleWhenSummaryEmpty: houseDetails">
                     <h3>Validation Summary</h3>
                     <ul data-bind="foreach: houseDetails.validation().summary()">
-                        <li><span data-bind="text: name"></span>: <span data-bind="    text: message"></span></li>
+                        <li><span data-bind="text: name"></span>: <span data-bind="text: message"></span></li>
                     </ul>
                 </section>
             </section>
@@ -98,7 +112,7 @@
                 <div>
                     <label>
                         House Price
-                        <input data-bind="value: housePrice, enableWhenApplicable: true, validationCss: true" />
+                            <input data-bind="value: housePrice, enableWhenApplicable: true, validationCss: true" />
                     </label>
                     <span data-bind="validationMessageFor: housePrice"></span>
                 </div>
@@ -111,23 +125,24 @@
                 <div data-bind="visibleWhenValid: housePrice">
                     <p>
                         You can borrow between:
-                        <strong data-bind="formattedValue: loanAmountMin, formatter: valerie.converters.currencyMajor.formatter, valueFormat: 'C,'"></strong>
+                            <strong data-bind="formattedValue: loanAmountMin, formatter: valerie.converters.currencyMajor.formatter, valueFormat: 'C,'"></strong>
                         &nbsp;and
-                        <strong data-bind="formattedValue: loanAmountMax"></strong>.
+                            <strong data-bind="formattedValue: loanAmountMax"></strong>.
                     </p>
                 </div>
                 <div>
                     <label>
                         Loan Amount
-                        <input data-bind="value: loanAmount, enableWhenApplicable: true" name="loanAmount" />
+                            <input data-bind="value: loanAmount, enableWhenApplicable: true, validationCss: true" name="loanAmount" />
                     </label>
+                    <aside data-bind="validationCss: loanAmount">Tooltip for an invalid entry.</aside>
                     <span data-bind="validationMessageFor: loanAmount"></span>
                 </div>
             </section>
             <section data-bind="invisibleWhenSummaryEmpty: true">
                 <h3>Validation Summary</h3>
                 <ul data-bind="foreach: validation().summary()">
-                    <li><span data-bind="text: name"></span>: <span data-bind="    text: message"></span></li>
+                    <li><span data-bind="text: name"></span>: <span data-bind="text: message"></span></li>
                 </ul>
             </section>
             <div>
@@ -146,15 +161,6 @@
         <![endif]-->
     <script type="text/javascript" src="frameworks/knockout-2.2.1.debug.js"></script>
     <script type="text/javascript" src="bundles/valerie-for-knockout-en-gb.js"></script>
-
-    <!--[if lt IE 8]>
-            <script type="text/javascript">
-                ko.bindingHandlers.validationCss.classNames = {
-                    "failedAndTouched": "error-and-touched",
-                    "passedAndTouched": "success-and-touched"
-                };
-            </script>
-        <![endif]-->
 
     <script type="text/javascript">
         window.onload = function () {

@@ -276,7 +276,7 @@
                 var bindings = allBindingsAccessor(),
                     observableOrComputedOrValue = valueAccessor(),
                     value = ko.utils.unwrapObservable(observableOrComputedOrValue),
-                    validationState =getValidationState(observableOrComputedOrValue),
+                    validationState = getValidationState(observableOrComputedOrValue),
                     formatter = converters.passThrough.formatter,
                     valueFormat;
 
@@ -296,29 +296,34 @@
         // + validationCss binding handler
         // - sets CSS classes on the bound element depending on the validation status of the value:
         //   - error: if validation failed
+        //   - focused: if the bound element is in focus
         //   - passed: if validation passed
         //   - touched: if the bound element has been touched
+        //   - untouched: if the bound element has not been touched
         // - the names of the classes used are held in the bindingHandlers.validationCss.classNames object
-        // - for browser that don't support multiple class selectors, single class names can be specified for:
-        //   - when validation failed and the bound element has been touched
-        //   - when validation passed and the bound element has been touched
         koBindingHandlers.validationCss = isolatedBindingHandler(
             function (element, valueAccessor, allBindingsAccessor, viewModel) {
                 var functionToApply = function (validationState) {
                     var classNames = koBindingHandlers.validationCss.classNames,
                         elementClassNames = element.className,
-                        dictionary = dom.classNamesStringToDictionary(elementClassNames);
+                        dictionary = dom.classNamesStringToDictionary(elementClassNames),
+                        failed = validationState.failed(),
+                        focused = false,
+                        passed = validationState.passed(),
+                        touched = validationState.touched(),
+                        untouched = !touched;
 
-                    dictionary[classNames.failed] = validationState.failed();
-                    dictionary[classNames.passed] = validationState.passed();
-                    dictionary[classNames.touched] = validationState.touched();
+                    if(validationState.boundEntry && validationState.boundEntry.focused()) {
+                        focused = true;
+                    }
 
-                    // Add composite classes for browsers which don't support multi-class selectors.
-                    dictionary[classNames.failedAndTouched] = validationState.failed() && validationState.touched();
-                    dictionary[classNames.passedAndTouched] = validationState.passed() && validationState.touched();
+                    dictionary[classNames.failed] = failed;
+                    dictionary[classNames.focused] = focused;
+                    dictionary[classNames.passed] = passed;
+                    dictionary[classNames.touched] = touched;
+                    dictionary[classNames.untouched] = untouched;
 
-                    elementClassNames = dom.classNamesDictionaryToString(dictionary);
-                    element.className = elementClassNames;
+                    element.className = dom.classNamesDictionaryToString(dictionary);
                 };
 
                 applyForValidationState(functionToApply, element, valueAccessor, allBindingsAccessor, viewModel);
@@ -326,10 +331,10 @@
 
         koBindingHandlers.validationCss.classNames = {
             "failed": "error",
+            "focused": "focused",
             "passed": "success",
             "touched": "touched",
-            "failedAndTouched": "",
-            "passedAndTouched": ""
+            "untouched": "untouched"
         };
 
         // + validationMessageFor binding handler

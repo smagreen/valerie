@@ -12,7 +12,8 @@ var valerie = valerie || {};
     "use strict";
 
     var dom = valerie.dom = valerie.dom || {},
-        classNamesSeparatorExpression = /\s+/g;
+        classNamesSeparatorExpression = /\s+/g,
+        trimWhitespaceExpression = /^\s+|\s+$/g;
 
     // + dom.classNamesStringToDictionary
     dom.classNamesStringToDictionary = function (classNames) {
@@ -23,6 +24,8 @@ var valerie = valerie || {};
         if (classNames == null) {
             return dictionary;
         }
+
+        classNames = classNames.replace(trimWhitespaceExpression, '');
 
         array = classNames.split(classNamesSeparatorExpression);
 
@@ -45,6 +48,8 @@ var valerie = valerie || {};
                 }
             }
         }
+
+        array.sort();
 
         return array.join(" ");
     };
