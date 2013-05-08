@@ -25,7 +25,7 @@ var valerie = valerie || {};
             return dictionary;
         }
 
-        classNames = classNames.replace(trimWhitespaceExpression, '');
+        classNames = classNames.replace(trimWhitespaceExpression, "");
 
         array = classNames.split(classNamesSeparatorExpression);
 

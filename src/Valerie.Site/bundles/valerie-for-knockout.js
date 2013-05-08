@@ -12,14 +12,50 @@ var valerie = valerie || {};
 (function () {
     "use strict";
 
+    var states = {
+        "failed": {},
+        "passed": {},
+        "pending": {}
+    },
+        // ReSharper disable InconsistentNaming
+        ValidationResult;
+    // ReSharper restore InconsistentNaming
+
     // + ValidationResult
     // - the result of a validation test
-    valerie.ValidationResult = function (failed, failureMessage) {
-        this.failed = failed;
-        this.failureMessage = failureMessage;
+    ValidationResult = valerie.ValidationResult = function (state, message) {
+        this.state = state;
+
+        this.failed = state === states.failed;
+        this.passed = state === states.passed;
+        this.pending = state === states.pending;
+
+        this.message = message;
     };
 
-    valerie.ValidationResult.success = new valerie.ValidationResult(false, "");
+    valerie.ValidationResult.states = states;
+
+    // + FailedValidationResult
+    // - a failed result for a validation test
+    valerie.FailedValidationResult = function (message) {
+        return new ValidationResult(states.failed, message);
+    };
+
+    // + PassedValidationResult
+    // - a passed result for a validation test
+    valerie.PassedValidationResult = function (message) {
+        return new ValidationResult(states.passed, message);
+    };
+
+    // + PendingValidationResult
+    // - a pending result for a validation test
+    valerie.PendingValidationResult = function (message) {
+        return new ValidationResult(states.pending, message);
+    };
+
+    valerie.ValidationResult.passed = new ValidationResult(states.passed, "");
+    
+    valerie.ValidationResult.pending = new ValidationResult(states.pending, "");
 })();
 
 ///#source 1 1 ../valerie/core/valerie.utils.js
@@ -347,7 +383,7 @@ var valerie = valerie || {};
             return dictionary;
         }
 
-        classNames = classNames.replace(trimWhitespaceExpression, '');
+        classNames = classNames.replace(trimWhitespaceExpression, "");
 
         array = classNames.split(classNamesSeparatorExpression);
 
@@ -408,8 +444,10 @@ var valerie = valerie || {};
     "use strict";
 
     // ReSharper disable InconsistentNaming
-    var ValidationResult = valerie.ValidationResult,
+    var FailedValidationResult = valerie.FailedValidationResult,
         // ReSharper restore InconsistentNaming
+        passedValidationResult = valerie.ValidationResult.passed,
+        pendingValidationResult = valerie.ValidationResult.pending,
         koObservable = ko.observable,
         koComputed = ko.computed,
         utils = valerie.utils,
@@ -553,11 +591,12 @@ var valerie = valerie || {};
     // - validation state for a model
     // - the model may comprise of simple or complex properties
     (function () {
+        // Functions for computeds.
         var failedFunction = function () {
             return this.result().failed;
         },
-            invalidStatesFunction = function () {
-                var invalidStates = [],
+            failedStatesFunction = function () {
+                var failedStates = [],
                     validationStates = this.validationStates(),
                     validationState,
                     result,
@@ -567,30 +606,51 @@ var valerie = valerie || {};
                     validationState = validationStates[index];
 
                     if (validationState.settings.applicable()) {
-                        result = validationStates[index].result();
+                        result = validationState.result();
 
                         if (result.failed) {
-                            invalidStates.push(validationState);
+                            failedStates.push(validationState);
                         }
                     }
                 }
 
-                return invalidStates;
+                return failedStates;
             },
             messageFunction = function () {
-                return this.result().failureMessage;
+                return this.result().message;
             },
             passedFunction = function () {
-                return !this.result().failed;
+                return this.result().passed;
             },
-            resultFunction = function () {
-                var invalidStates = this.invalidStates();
+            pendingFunction = function () {
+                return this.result().pending;
+            },
+            pendingStatesFunction = function () {
+                var pendingStates = [],
+                    validationStates = this.validationStates(),
+                    validationState,
+                    index;
 
-                if (invalidStates.length === 0) {
-                    return ValidationResult.success;
+                for (index = 0; index < validationStates.length; index++) {
+                    validationState = validationStates[index];
+
+                    if (validationState.result().pending) {
+                        pendingStates.push(validationState);
+                    }
                 }
 
-                return new ValidationResult(true, this.settings.failureMessageFormat);
+                return pendingStates;
+            },
+            resultFunction = function () {
+                if (this.failedStates().length > 0) {
+                    return new FailedValidationResult(this.settings.failureMessageFormat);
+                }
+
+                if (this.pendingStates().length > 0) {
+                    return pendingValidationResult;
+                }
+
+                return passedValidationResult;
             },
             touchedReadFunction = function () {
                 var index,
@@ -618,21 +678,25 @@ var valerie = valerie || {};
             options.applicable = utils.asFunction(options.applicable);
             options.name = utils.asFunction(options.name);
 
-            this.failed = koComputed(failedFunction, this, deferEvaluation);
-            this.invalidStates = koComputed(invalidStatesFunction, this, deferEvaluation);
-            this.message = koComputed(messageFunction, this, deferEvaluation);
             this.model = model;
             this.settings = options;
-            this.passed = koComputed(passedFunction, this, deferEvaluation);
-            this.result = extras.pausableComputed(resultFunction, this, deferEvaluation, options.paused);
             this.summary = koObservable([]);
+            this.validationStates = ko.observableArray();
+
+            // Computeds.
+            this.failed = koComputed(failedFunction, this, deferEvaluation);
+            this.failedStates = koComputed(failedStatesFunction, this, deferEvaluation);
+            this.message = koComputed(messageFunction, this, deferEvaluation);
+            this.passed = koComputed(passedFunction, this, deferEvaluation);
+            this.pending = koComputed(pendingFunction, this, deferEvaluation);
+            this.pendingStates = koComputed(pendingStatesFunction, this, deferEvaluation);
+            this.result = extras.pausableComputed(resultFunction, this, deferEvaluation, options.paused);
             this.touched = koComputed({
                 "read": touchedReadFunction,
                 "write": touchedWriteFunction,
                 "deferEvaluation": true,
                 "owner": this
             });
-            this.validationStates = ko.observableArray();
 
             this.paused = this.result.paused;
             this.refresh = this.result.refresh;
@@ -694,7 +758,7 @@ var valerie = valerie || {};
                 return this;
             },
             "updateSummary": function (updateSubModelSummaries) {
-                var states = this.invalidStates(),
+                var states = this.failedStates(),
                     state,
                     index,
                     failures = [];
@@ -785,29 +849,32 @@ var valerie = valerie || {};
 
                 for (index = 0; index < rules.length; index++) {
                     rule = rules[index];
-                    
+
                     result = rule.test(value);
-                    
-                    if (result.failed) {
+
+                    if (result.failed || result.pending) {
                         return result;
                     }
                 }
 
-                return ValidationResult.success;
+                return passedValidationResult;
             },
             // Functions for computeds.
             failedFunction = function () {
                 return this.result().failed;
             },
             messageFunction = function () {
-                var message = this.result().failureMessage;
+                var message = this.result().message;
 
                 message = formatting.replacePlaceholders(message, { "name": this.settings.name() });
 
                 return message;
             },
             passedFunction = function () {
-                return !this.result().failed;
+                return this.result().passed;
+            },
+            pendingFunction = function () {
+                return this.result().pending;
             },
             resultFunction = function () {
                 var missingResult,
@@ -821,22 +888,14 @@ var valerie = valerie || {};
                 missingResult = missingFunction.apply(this);
 
                 if (missingResult === -1) {
-                    return {
-                        "failed": true,
-                        "failureMessage": this.settings.missingFailureMessage
-                    };
+                    return new FailedValidationResult(this.settings.missingFailureMessage);
                 }
 
                 if (missingResult === 0) {
                     return result;
                 }
 
-                result = rulesResultFunction.apply(this);
-                if (result.failed) {
-                    return result;
-                }
-
-                return ValidationResult.success;
+                return rulesResultFunction.apply(this);
             },
             showMessageFunction = function () {
                 if (!this.settings.applicable()) {
@@ -855,23 +914,26 @@ var valerie = valerie || {};
 
             this.boundEntry = {
                 "focused": koObservable(false),
-                "result": koObservable(ValidationResult.success),
+                "result": koObservable(passedValidationResult),
                 "textualInput": false
             };
 
-            this.failed = koComputed(failedFunction, this, deferEvaluation);
-            this.message = extras.pausableComputed(messageFunction, this, deferEvaluation);
             this.observableOrComputed = observableOrComputed;
             this.settings = options;
+            this.touched = koObservable(false);
+
+            // Computeds.
+            this.failed = koComputed(failedFunction, this, deferEvaluation);
+            this.message = extras.pausableComputed(messageFunction, this, deferEvaluation);
             this.passed = koComputed(passedFunction, this, deferEvaluation);
+            this.pending = koComputed(pendingFunction, this, deferEvaluation);
             this.result = koComputed(resultFunction, this, deferEvaluation);
             this.showMessage = extras.pausableComputed(showMessageFunction, this, deferEvaluation);
-            this.touched = koObservable(false);
         };
 
         definition.prototype = {
             // Validation state methods support a fluent interface.
-            "addRule": function(rule) {
+            "addRule": function (rule) {
                 this.settings.rules.push(rule);
 
                 return this;
@@ -899,7 +961,7 @@ var valerie = valerie || {};
                     ruleSettings.valueFormat = valueFormat;
                     ruleSettings.valueFormatter = valueFormatter;
                 }
-                
+
                 return this.observableOrComputed;
             },
             "name": function (valueOrFunction) {
@@ -962,8 +1024,9 @@ var valerie = valerie || {};
     "use strict";
 
     // ReSharper disable InconsistentNaming
-    var ValidationResult = valerie.ValidationResult,
+    var FailedValidationResult = valerie.FailedValidationResult,
         // ReSharper restore InconsistentNaming
+        passedValidationResult = valerie.ValidationResult.passed,
         utils = valerie.utils,
         dom = valerie.dom,
         knockout = valerie.knockout,
@@ -1016,7 +1079,7 @@ var valerie = valerie || {};
                 if (enteredValue.length === 0 && settings.required()) {
                     observableOrComputed(null);
 
-                    validationState.boundEntry.result(new ValidationResult(true, settings.missingFailureMessage));
+                    validationState.boundEntry.result(new FailedValidationResult(settings.missingFailureMessage));
 
                     return;
                 }
@@ -1025,12 +1088,12 @@ var valerie = valerie || {};
                 observableOrComputed(parsedValue);
 
                 if (parsedValue == null) {
-                    validationState.boundEntry.result(new ValidationResult(true, settings.invalidEntryFailureMessage));
+                    validationState.boundEntry.result(new FailedValidationResult(settings.invalidEntryFailureMessage));
 
                     return;
                 }
 
-                validationState.boundEntry.result(ValidationResult.success);
+                validationState.boundEntry.result(passedValidationResult);
             },
             textualInputUpdateFunction = function (observableOrComputed, validationState, element) {
                 // Get the value so this function becomes dependent on the observable or computed.
@@ -1041,7 +1104,7 @@ var valerie = valerie || {};
                     return;
                 }
 
-                validationState.boundEntry.result(ValidationResult.success);
+                validationState.boundEntry.result(passedValidationResult);
 
                 element.value = validationState.settings.converter.formatter(value,
                     validationState.settings.entryFormat);
@@ -1202,8 +1265,28 @@ var valerie = valerie || {};
                 }
             };
 
+        // + disabledWhenNotValid binding handler
+        koBindingHandlers.disabledWhenNotValid = isolatedBindingHandler(
+            function (element, valueAccessor, allBindingsAccessor, viewModel) {
+                var functionToApply = function (validationState) {
+                    element.disabled = !validationState.passed();
+                };
+
+                applyForValidationState(functionToApply, element, valueAccessor, allBindingsAccessor, viewModel);
+            });
+
+        // + disabledWhenTouchedAndNotValid binding handler
+        koBindingHandlers.disabledWhenTouchedAndNotValid = isolatedBindingHandler(
+            function (element, valueAccessor, allBindingsAccessor, viewModel) {
+                var functionToApply = function (validationState) {
+                    element.disabled = validationState.touched() && !validationState.passed();
+                };
+
+                applyForValidationState(functionToApply, element, valueAccessor, allBindingsAccessor, viewModel);
+            });
+
         // + enabledWhenApplicable binding handler
-        koBindingHandlers.enableWhenApplicable = isolatedBindingHandler(
+        koBindingHandlers.enabledWhenApplicable = isolatedBindingHandler(
             function (element, valueAccessor, allBindingsAccessor, viewModel) {
                 var functionToApply = function (validationState) {
                     element.disabled = !validationState.settings.applicable();
@@ -1252,16 +1335,18 @@ var valerie = valerie || {};
                         failed = validationState.failed(),
                         focused = false,
                         passed = validationState.passed(),
+                        pending = validationState.pending(),
                         touched = validationState.touched(),
                         untouched = !touched;
 
-                    if(validationState.boundEntry && validationState.boundEntry.focused()) {
+                    if (validationState.boundEntry && validationState.boundEntry.focused()) {
                         focused = true;
                     }
 
                     dictionary[classNames.failed] = failed;
                     dictionary[classNames.focused] = focused;
                     dictionary[classNames.passed] = passed;
+                    dictionary[classNames.pending] = pending;
                     dictionary[classNames.touched] = touched;
                     dictionary[classNames.untouched] = untouched;
 
@@ -1275,6 +1360,7 @@ var valerie = valerie || {};
             "failed": "error",
             "focused": "focused",
             "passed": "success",
+            "pending": "waiting",
             "touched": "touched",
             "untouched": "untouched"
         };
@@ -1292,23 +1378,34 @@ var valerie = valerie || {};
                 applyForValidationState(functionToApply, element, valueAccessor, allBindingsAccessor, viewModel);
             });
 
-        // + invisibleWhenSummaryEmpty binding handler
-        // - makes the bound element invisible if the validation summary is empty, visible otherwise
-        koBindingHandlers.invisibleWhenSummaryEmpty = isolatedBindingHandler(
+        // + visibleWhenFocused binding handler
+        // - makes the bound element visible if the bound element for the value is focused, invisible otherwise
+        koBindingHandlers.visibleWhenFocused = isolatedBindingHandler(
             function (element, valueAccessor, allBindingsAccessor, viewModel) {
                 var functionToApply = function (validationState) {
-                    setElementVisibility(element, validationState.summary().length > 0);
+                    setElementVisibility(element, validationState.focused());
                 };
 
                 applyForValidationState(functionToApply, element, valueAccessor, allBindingsAccessor, viewModel);
             });
 
-        // + invisibleWhenTouched binding handler
-        // - makes the bound element invisible if the value has been touched, visible otherwise
-        koBindingHandlers.visibleWhenTouched = isolatedBindingHandler(
+        // + visibleWhenInvalid binding handler
+        // - makes the bound element visible if the value is invalid, invisible otherwise
+        koBindingHandlers.visibleWhenInvalid = isolatedBindingHandler(
             function (element, valueAccessor, allBindingsAccessor, viewModel) {
                 var functionToApply = function (validationState) {
-                    setElementVisibility(element, !validationState.touched());
+                    setElementVisibility(element, validationState.failed());
+                };
+
+                applyForValidationState(functionToApply, element, valueAccessor, allBindingsAccessor, viewModel);
+            });
+
+        // + visibleWhenSummaryNotEmpty binding handler
+        // - makes the bound element visible if the validation summary is not empty, invisible otherwise
+        koBindingHandlers.visibleWhenSummaryNotEmpty = isolatedBindingHandler(
+            function (element, valueAccessor, allBindingsAccessor, viewModel) {
+                var functionToApply = function (validationState) {
+                    setElementVisibility(element, validationState.summary().length > 0);
                 };
 
                 applyForValidationState(functionToApply, element, valueAccessor, allBindingsAccessor, viewModel);
@@ -1320,6 +1417,17 @@ var valerie = valerie || {};
             function (element, valueAccessor, allBindingsAccessor, viewModel) {
                 var functionToApply = function (validationState) {
                     setElementVisibility(element, validationState.touched());
+                };
+
+                applyForValidationState(functionToApply, element, valueAccessor, allBindingsAccessor, viewModel);
+            });
+
+        // + visibleWhenUntouched binding handler
+        // - makes the bound element visible if the value is untouched, invisible otherwise
+        koBindingHandlers.visibleWhenUntouched = isolatedBindingHandler(
+            function (element, valueAccessor, allBindingsAccessor, viewModel) {
+                var functionToApply = function (validationState) {
+                    setElementVisibility(element, !validationState.touched());
                 };
 
                 applyForValidationState(functionToApply, element, valueAccessor, allBindingsAccessor, viewModel);
@@ -1610,18 +1718,19 @@ var valerie = valerie || {};
 /*jshint eqnull: true */
 /*global valerie: false */
 
-(function () {
+(function() {
     "use strict";
 
     // ReSharper disable InconsistentNaming
-    var ValidationResult = valerie.ValidationResult,
-        // ReSharper restore InconsistentNaming
+    var FailedValidationResult = valerie.FailedValidationResult,
+        // ReSharper restore InconsistentNaming        
+        passedValidationResult = valerie.ValidationResult.passed,
         rules = valerie.rules = valerie.rules || {},
         utils = valerie.utils,
         formatting = valerie.formatting;
 
     // + rules.ArrayLength
-    rules.ArrayLength = function (minimumValueOrFunction, maximumValueOrFunction, options) {
+    rules.ArrayLength = function(minimumValueOrFunction, maximumValueOrFunction, options) {
         if (arguments.length < 2) {
             throw "At least 2 arguments are expected.";
         }
@@ -1640,7 +1749,7 @@ var valerie = valerie || {};
     };
 
     // + rules.During
-    rules.During = function (minimumValueOrFunction, maximumValueOrFunction, options) {
+    rules.During = function(minimumValueOrFunction, maximumValueOrFunction, options) {
         if (arguments.length < 2) {
             throw "At least 2 arguments are expected.";
         }
@@ -1659,7 +1768,7 @@ var valerie = valerie || {};
     };
 
     // + rules.Expression
-    rules.Expression = function (regularExpressionObjectOrString, options) {
+    rules.Expression = function(regularExpressionObjectOrString, options) {
         this.expression = utils.isString(regularExpressionObjectOrString) ?
             new RegExp(regularExpressionObjectOrString) :
             regularExpressionObjectOrString;
@@ -1679,7 +1788,7 @@ var valerie = valerie || {};
 
             if (value != null) {
                 if (this.expresssion.test(value)) {
-                    return ValidationResult.success;
+                    return passedValidationResult;
                 }
             }
 
@@ -1688,10 +1797,10 @@ var valerie = valerie || {};
                     "value": this.settings.valueFormatter(value, this.settings.valueFormat)
                 });
 
-            return new ValidationResult(true, failureMessage);
+            return new FailedValidationResult(failureMessage);
         }
     };
-    
+
     // + rules.Length
     rules.Length = function(minimumValueOrFunction, maximumValueOrFunction, options) {
         if (arguments.length < 2) {
@@ -1724,7 +1833,7 @@ var valerie = valerie || {};
     };
 
     // + rules.Matches
-    rules.Matches = function (permittedValueOrFunction, options) {
+    rules.Matches = function(permittedValueOrFunction, options) {
         options = utils.mergeOptions(rules.Matches.defaultOptions, options);
 
         return new rules.OneOf([permittedValueOrFunction], options);
@@ -1737,7 +1846,7 @@ var valerie = valerie || {};
     };
 
     // + rules.NoneOf
-    rules.NoneOf = function (forbiddenValuesOrFunction, options) {
+    rules.NoneOf = function(forbiddenValuesOrFunction, options) {
         this.forbiddenValues = utils.asFunction(forbiddenValuesOrFunction);
         this.settings = utils.mergeOptions(rules.NoneOf.defaultOptions, options);
     };
@@ -1749,7 +1858,7 @@ var valerie = valerie || {};
     };
 
     rules.NoneOf.prototype = {
-        "test": function (value) {
+        "test": function(value) {
             var failureMessage,
                 index,
                 values = this.forbiddenValues();
@@ -1761,16 +1870,16 @@ var valerie = valerie || {};
                             "value": this.settings.valueFormatter(value, this.settings.valueFormat)
                         });
 
-                    return new ValidationResult(true, failureMessage);
+                    return new FailedValidationResult(failureMessage);
                 }
             }
 
-            return ValidationResult.success;
+            return passedValidationResult;
         }
     };
 
     // + rules.Not
-    rules.Not = function (forbiddenValueOrFunction, options) {
+    rules.Not = function(forbiddenValueOrFunction, options) {
         options = utils.mergeOptions(rules.Not.defaultOptions, options);
 
         return new rules.NoneOf([forbiddenValueOrFunction], options);
@@ -1783,7 +1892,7 @@ var valerie = valerie || {};
     };
 
     // + rules.OneOf
-    rules.OneOf = function (permittedValuesOrFunction, options) {
+    rules.OneOf = function(permittedValuesOrFunction, options) {
         this.permittedValues = utils.asFunction(permittedValuesOrFunction);
         this.settings = utils.mergeOptions(rules.OneOf.defaultOptions, options);
     };
@@ -1795,14 +1904,14 @@ var valerie = valerie || {};
     };
 
     rules.OneOf.prototype = {
-        "test": function (value) {
+        "test": function(value) {
             var failureMessage,
                 index,
                 values = this.permittedValues();
 
             for (index = 0; index < values.length; index++) {
                 if (value === values[index]) {
-                    return ValidationResult.success;
+                    return passedValidationResult;
                 }
             }
 
@@ -1811,12 +1920,12 @@ var valerie = valerie || {};
                     "value": this.settings.valueFormatter(value, this.settings.valueFormat)
                 });
 
-            return new ValidationResult(true, failureMessage);
+            return new FailedValidationResult(failureMessage);
         }
     };
 
     // + rules.Range
-    rules.Range = function (minimumValueOrFunction, maximumValueOrFunction, options) {
+    rules.Range = function(minimumValueOrFunction, maximumValueOrFunction, options) {
         if (arguments.length < 2 || arguments.length > 3) {
             throw "At least 2 arguments are expected.";
         }
@@ -1835,18 +1944,18 @@ var valerie = valerie || {};
     };
 
     rules.Range.prototype = {
-        "test": function (value) {
+        "test": function(value) {
             var failureMessage,
                 failureMessageFormat = this.settings.failureMessageFormat,
                 maximum = this.maximum(),
                 minimum = this.minimum(),
-                haveMaximum = maximum != null ,
+                haveMaximum = maximum != null,
                 haveMinimum = minimum != null,
                 haveValue = value != null,
                 valueInsideRange = true;
 
             if (!haveMaximum && !haveMinimum) {
-                return ValidationResult.success;
+                return passedValidationResult;
             }
 
             if (haveValue) {
@@ -1866,7 +1975,7 @@ var valerie = valerie || {};
             }
 
             if (valueInsideRange) {
-                return ValidationResult.success;
+                return passedValidationResult;
             }
 
             failureMessage = formatting.replacePlaceholders(
@@ -1876,12 +1985,12 @@ var valerie = valerie || {};
                     "value": this.settings.valueFormatter(value, this.settings.valueFormat)
                 });
 
-            return new ValidationResult(true, failureMessage);
+            return new FailedValidationResult(failureMessage);
         }
     };
 
     // + rules.StringLength
-    rules.StringLength = function (minimumValueOrFunction, maximumValueOrFunction, options) {
+    rules.StringLength = function(minimumValueOrFunction, maximumValueOrFunction, options) {
         if (arguments.length < 2) {
             throw "At least 2 arguments are expected.";
         }
@@ -2008,8 +2117,9 @@ var valerie = valerie || {};
     "use strict";
 
     // ReSharper disable InconsistentNaming
-    var ValidationResult = valerie.ValidationResult,
+    var FailedValidationResult = valerie.FailedValidationResult,
         // ReSharper restore InconsistentNaming        
+        passedValidationResult = valerie.ValidationResult.passed,
         prototype = valerie.knockout.PropertyValidationState.prototype,
         rules = valerie.rules;
 
@@ -2115,15 +2225,12 @@ var valerie = valerie || {};
     // + rule
     prototype.rule = function (testFunction, failureMessage) {
         return this.addRule({
+            "settings": {
+            },
             "test": function (value) {
-                if (testFunction(value)) {
-                    return ValidationResult.success;
-                }
-
-                return new ValidationResult(true, failureMessage);
+                return testFunction(value);
             }
         });
     };
 })();
-
 

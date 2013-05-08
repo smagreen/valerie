@@ -20,8 +20,9 @@
     "use strict";
 
     // ReSharper disable InconsistentNaming
-    var ValidationResult = valerie.ValidationResult,
+    var FailedValidationResult = valerie.FailedValidationResult,
         // ReSharper restore InconsistentNaming
+        passedValidationResult = valerie.ValidationResult.passed,
         utils = valerie.utils,
         dom = valerie.dom,
         knockout = valerie.knockout,
@@ -74,7 +75,7 @@
                 if (enteredValue.length === 0 && settings.required()) {
                     observableOrComputed(null);
 
-                    validationState.boundEntry.result(new ValidationResult(true, settings.missingFailureMessage));
+                    validationState.boundEntry.result(new FailedValidationResult(settings.missingFailureMessage));
 
                     return;
                 }
@@ -83,12 +84,12 @@
                 observableOrComputed(parsedValue);
 
                 if (parsedValue == null) {
-                    validationState.boundEntry.result(new ValidationResult(true, settings.invalidEntryFailureMessage));
+                    validationState.boundEntry.result(new FailedValidationResult(settings.invalidEntryFailureMessage));
 
                     return;
                 }
 
-                validationState.boundEntry.result(ValidationResult.success);
+                validationState.boundEntry.result(passedValidationResult);
             },
             textualInputUpdateFunction = function (observableOrComputed, validationState, element) {
                 // Get the value so this function becomes dependent on the observable or computed.
@@ -99,7 +100,7 @@
                     return;
                 }
 
-                validationState.boundEntry.result(ValidationResult.success);
+                validationState.boundEntry.result(passedValidationResult);
 
                 element.value = validationState.settings.converter.formatter(value,
                     validationState.settings.entryFormat);
@@ -260,8 +261,28 @@
                 }
             };
 
+        // + disabledWhenNotValid binding handler
+        koBindingHandlers.disabledWhenNotValid = isolatedBindingHandler(
+            function (element, valueAccessor, allBindingsAccessor, viewModel) {
+                var functionToApply = function (validationState) {
+                    element.disabled = !validationState.passed();
+                };
+
+                applyForValidationState(functionToApply, element, valueAccessor, allBindingsAccessor, viewModel);
+            });
+
+        // + disabledWhenTouchedAndNotValid binding handler
+        koBindingHandlers.disabledWhenTouchedAndNotValid = isolatedBindingHandler(
+            function (element, valueAccessor, allBindingsAccessor, viewModel) {
+                var functionToApply = function (validationState) {
+                    element.disabled = validationState.touched() && !validationState.passed();
+                };
+
+                applyForValidationState(functionToApply, element, valueAccessor, allBindingsAccessor, viewModel);
+            });
+
         // + enabledWhenApplicable binding handler
-        koBindingHandlers.enableWhenApplicable = isolatedBindingHandler(
+        koBindingHandlers.enabledWhenApplicable = isolatedBindingHandler(
             function (element, valueAccessor, allBindingsAccessor, viewModel) {
                 var functionToApply = function (validationState) {
                     element.disabled = !validationState.settings.applicable();
@@ -310,16 +331,18 @@
                         failed = validationState.failed(),
                         focused = false,
                         passed = validationState.passed(),
+                        pending = validationState.pending(),
                         touched = validationState.touched(),
                         untouched = !touched;
 
-                    if(validationState.boundEntry && validationState.boundEntry.focused()) {
+                    if (validationState.boundEntry && validationState.boundEntry.focused()) {
                         focused = true;
                     }
 
                     dictionary[classNames.failed] = failed;
                     dictionary[classNames.focused] = focused;
                     dictionary[classNames.passed] = passed;
+                    dictionary[classNames.pending] = pending;
                     dictionary[classNames.touched] = touched;
                     dictionary[classNames.untouched] = untouched;
 
@@ -333,6 +356,7 @@
             "failed": "error",
             "focused": "focused",
             "passed": "success",
+            "pending": "waiting",
             "touched": "touched",
             "untouched": "untouched"
         };
@@ -350,23 +374,34 @@
                 applyForValidationState(functionToApply, element, valueAccessor, allBindingsAccessor, viewModel);
             });
 
-        // + invisibleWhenSummaryEmpty binding handler
-        // - makes the bound element invisible if the validation summary is empty, visible otherwise
-        koBindingHandlers.invisibleWhenSummaryEmpty = isolatedBindingHandler(
+        // + visibleWhenFocused binding handler
+        // - makes the bound element visible if the bound element for the value is focused, invisible otherwise
+        koBindingHandlers.visibleWhenFocused = isolatedBindingHandler(
             function (element, valueAccessor, allBindingsAccessor, viewModel) {
                 var functionToApply = function (validationState) {
-                    setElementVisibility(element, validationState.summary().length > 0);
+                    setElementVisibility(element, validationState.focused());
                 };
 
                 applyForValidationState(functionToApply, element, valueAccessor, allBindingsAccessor, viewModel);
             });
 
-        // + invisibleWhenTouched binding handler
-        // - makes the bound element invisible if the value has been touched, visible otherwise
-        koBindingHandlers.visibleWhenTouched = isolatedBindingHandler(
+        // + visibleWhenInvalid binding handler
+        // - makes the bound element visible if the value is invalid, invisible otherwise
+        koBindingHandlers.visibleWhenInvalid = isolatedBindingHandler(
             function (element, valueAccessor, allBindingsAccessor, viewModel) {
                 var functionToApply = function (validationState) {
-                    setElementVisibility(element, !validationState.touched());
+                    setElementVisibility(element, validationState.failed());
+                };
+
+                applyForValidationState(functionToApply, element, valueAccessor, allBindingsAccessor, viewModel);
+            });
+
+        // + visibleWhenSummaryNotEmpty binding handler
+        // - makes the bound element visible if the validation summary is not empty, invisible otherwise
+        koBindingHandlers.visibleWhenSummaryNotEmpty = isolatedBindingHandler(
+            function (element, valueAccessor, allBindingsAccessor, viewModel) {
+                var functionToApply = function (validationState) {
+                    setElementVisibility(element, validationState.summary().length > 0);
                 };
 
                 applyForValidationState(functionToApply, element, valueAccessor, allBindingsAccessor, viewModel);
@@ -378,6 +413,17 @@
             function (element, valueAccessor, allBindingsAccessor, viewModel) {
                 var functionToApply = function (validationState) {
                     setElementVisibility(element, validationState.touched());
+                };
+
+                applyForValidationState(functionToApply, element, valueAccessor, allBindingsAccessor, viewModel);
+            });
+
+        // + visibleWhenUntouched binding handler
+        // - makes the bound element visible if the value is untouched, invisible otherwise
+        koBindingHandlers.visibleWhenUntouched = isolatedBindingHandler(
+            function (element, valueAccessor, allBindingsAccessor, viewModel) {
+                var functionToApply = function (validationState) {
+                    setElementVisibility(element, !validationState.touched());
                 };
 
                 applyForValidationState(functionToApply, element, valueAccessor, allBindingsAccessor, viewModel);

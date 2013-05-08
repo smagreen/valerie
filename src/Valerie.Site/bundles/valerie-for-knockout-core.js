@@ -12,14 +12,48 @@ var valerie = valerie || {};
 (function () {
     "use strict";
 
+    var states = {
+        "failed": {},
+        "passed": {},
+        "pending": {}
+    },
+        // ReSharper disable InconsistentNaming
+        ValidationResult;
+    // ReSharper restore InconsistentNaming
+
     // + ValidationResult
     // - the result of a validation test
-    valerie.ValidationResult = function (failed, failureMessage) {
-        this.failed = failed;
-        this.failureMessage = failureMessage;
+    ValidationResult = valerie.ValidationResult = function (state, message) {
+        this.state = state;
+
+        this.failed = state === states.failed;
+        this.passed = state === states.passed;
+        this.pending = state === states.pending;
+
+        this.message = message;
     };
 
-    valerie.ValidationResult.success = new valerie.ValidationResult(false, "");
+    valerie.ValidationResult.states = states;
+
+    // + FailedValidationResult
+    // - a failed result for a validation test
+    valerie.FailedValidationResult = function (message) {
+        return new ValidationResult(states.failed, message);
+    };
+
+    // + PassedValidationResult
+    // - a passed result for a validation test
+    valerie.PassedValidationResult = function (message) {
+        return new ValidationResult(states.passed, message);
+    };
+
+    // + PendingValidationResult
+    // - a pending result for a validation test
+    valerie.PendingValidationResult = function (message) {
+        return new ValidationResult(states.pending, message);
+    };
+
+    valerie.ValidationResult.passed = new valerie.ValidationResult(states.passed, "");
 })();
 
 ///#source 1 1 ../valerie/core/valerie.utils.js
@@ -334,7 +368,8 @@ var valerie = valerie || {};
     "use strict";
 
     var dom = valerie.dom = valerie.dom || {},
-        classNamesSeparatorExpression = /\s+/g;
+        classNamesSeparatorExpression = /\s+/g,
+        trimWhitespaceExpression = /^\s+|\s+$/g;
 
     // + dom.classNamesStringToDictionary
     dom.classNamesStringToDictionary = function (classNames) {
@@ -345,6 +380,8 @@ var valerie = valerie || {};
         if (classNames == null) {
             return dictionary;
         }
+
+        classNames = classNames.replace(trimWhitespaceExpression, "");
 
         array = classNames.split(classNamesSeparatorExpression);
 
@@ -367,6 +404,8 @@ var valerie = valerie || {};
                 }
             }
         }
+
+        array.sort();
 
         return array.join(" ");
     };
@@ -403,8 +442,9 @@ var valerie = valerie || {};
     "use strict";
 
     // ReSharper disable InconsistentNaming
-    var ValidationResult = valerie.ValidationResult,
+    var FailedValidationResult = valerie.FailedValidationResult,
         // ReSharper restore InconsistentNaming
+        passedValidationResult = valerie.PassedValidationResult,
         koObservable = ko.observable,
         koComputed = ko.computed,
         utils = valerie.utils,
@@ -573,7 +613,7 @@ var valerie = valerie || {};
                 return invalidStates;
             },
             messageFunction = function () {
-                return this.result().failureMessage;
+                return this.result().message;
             },
             passedFunction = function () {
                 return !this.result().failed;
@@ -582,10 +622,10 @@ var valerie = valerie || {};
                 var invalidStates = this.invalidStates();
 
                 if (invalidStates.length === 0) {
-                    return ValidationResult.success;
+                    return passedValidationResult;
                 }
 
-                return new ValidationResult(true, this.settings.failureMessageFormat);
+                return new FailedValidationResult(this.settings.failureMessageFormat);
             },
             touchedReadFunction = function () {
                 var index,
@@ -788,14 +828,14 @@ var valerie = valerie || {};
                     }
                 }
 
-                return ValidationResult.success;
+                return passedValidationResult;
             },
             // Functions for computeds.
             failedFunction = function () {
                 return this.result().failed;
             },
             messageFunction = function () {
-                var message = this.result().failureMessage;
+                var message = this.result().message;
 
                 message = formatting.replacePlaceholders(message, { "name": this.settings.name() });
 
@@ -816,10 +856,7 @@ var valerie = valerie || {};
                 missingResult = missingFunction.apply(this);
 
                 if (missingResult === -1) {
-                    return {
-                        "failed": true,
-                        "failureMessage": this.settings.missingFailureMessage
-                    };
+                    return new FailedValidationResult(this.settings.missingFailureMessage);
                 }
 
                 if (missingResult === 0) {
@@ -831,7 +868,7 @@ var valerie = valerie || {};
                     return result;
                 }
 
-                return ValidationResult.success;
+                return passedValidationResult;
             },
             showMessageFunction = function () {
                 if (!this.settings.applicable()) {
@@ -850,7 +887,7 @@ var valerie = valerie || {};
 
             this.boundEntry = {
                 "focused": koObservable(false),
-                "result": koObservable(ValidationResult.success),
+                "result": koObservable(passedValidationResult),
                 "textualInput": false
             };
 
@@ -957,8 +994,9 @@ var valerie = valerie || {};
     "use strict";
 
     // ReSharper disable InconsistentNaming
-    var ValidationResult = valerie.ValidationResult,
+    var FailedValidationResult = valerie.FailedValidationResult,
         // ReSharper restore InconsistentNaming
+        passedValidationResult = valerie.PassedValidationResult,
         utils = valerie.utils,
         dom = valerie.dom,
         knockout = valerie.knockout,
@@ -1011,7 +1049,7 @@ var valerie = valerie || {};
                 if (enteredValue.length === 0 && settings.required()) {
                     observableOrComputed(null);
 
-                    validationState.boundEntry.result(new ValidationResult(true, settings.missingFailureMessage));
+                    validationState.boundEntry.result(new FailedValidationResult(settings.missingFailureMessage));
 
                     return;
                 }
@@ -1020,12 +1058,12 @@ var valerie = valerie || {};
                 observableOrComputed(parsedValue);
 
                 if (parsedValue == null) {
-                    validationState.boundEntry.result(new ValidationResult(true, settings.invalidEntryFailureMessage));
+                    validationState.boundEntry.result(new FailedValidationResult(settings.invalidEntryFailureMessage));
 
                     return;
                 }
 
-                validationState.boundEntry.result(ValidationResult.success);
+                validationState.boundEntry.result(passedValidationResult);
             },
             textualInputUpdateFunction = function (observableOrComputed, validationState, element) {
                 // Get the value so this function becomes dependent on the observable or computed.
@@ -1036,7 +1074,7 @@ var valerie = valerie || {};
                     return;
                 }
 
-                validationState.boundEntry.result(ValidationResult.success);
+                validationState.boundEntry.result(passedValidationResult);
 
                 element.value = validationState.settings.converter.formatter(value,
                     validationState.settings.entryFormat);
@@ -1213,7 +1251,7 @@ var valerie = valerie || {};
                 var bindings = allBindingsAccessor(),
                     observableOrComputedOrValue = valueAccessor(),
                     value = ko.utils.unwrapObservable(observableOrComputedOrValue),
-                    validationState =getValidationState(observableOrComputedOrValue),
+                    validationState = getValidationState(observableOrComputedOrValue),
                     formatter = converters.passThrough.formatter,
                     valueFormat;
 
@@ -1233,29 +1271,34 @@ var valerie = valerie || {};
         // + validationCss binding handler
         // - sets CSS classes on the bound element depending on the validation status of the value:
         //   - error: if validation failed
+        //   - focused: if the bound element is in focus
         //   - passed: if validation passed
         //   - touched: if the bound element has been touched
+        //   - untouched: if the bound element has not been touched
         // - the names of the classes used are held in the bindingHandlers.validationCss.classNames object
-        // - for browser that don't support multiple class selectors, single class names can be specified for:
-        //   - when validation failed and the bound element has been touched
-        //   - when validation passed and the bound element has been touched
         koBindingHandlers.validationCss = isolatedBindingHandler(
             function (element, valueAccessor, allBindingsAccessor, viewModel) {
                 var functionToApply = function (validationState) {
                     var classNames = koBindingHandlers.validationCss.classNames,
                         elementClassNames = element.className,
-                        dictionary = dom.classNamesStringToDictionary(elementClassNames);
+                        dictionary = dom.classNamesStringToDictionary(elementClassNames),
+                        failed = validationState.failed(),
+                        focused = false,
+                        passed = validationState.passed(),
+                        touched = validationState.touched(),
+                        untouched = !touched;
 
-                    dictionary[classNames.failed] = validationState.failed();
-                    dictionary[classNames.passed] = validationState.passed();
-                    dictionary[classNames.touched] = validationState.touched();
+                    if (validationState.boundEntry && validationState.boundEntry.focused()) {
+                        focused = true;
+                    }
 
-                    // Add composite classes for browsers which don't support multi-class selectors.
-                    dictionary[classNames.failedAndTouched] = validationState.failed() && validationState.touched();
-                    dictionary[classNames.passedAndTouched] = validationState.passed() && validationState.touched();
+                    dictionary[classNames.failed] = failed;
+                    dictionary[classNames.focused] = focused;
+                    dictionary[classNames.passed] = passed;
+                    dictionary[classNames.touched] = touched;
+                    dictionary[classNames.untouched] = untouched;
 
-                    elementClassNames = dom.classNamesDictionaryToString(dictionary);
-                    element.className = elementClassNames;
+                    element.className = dom.classNamesDictionaryToString(dictionary);
                 };
 
                 applyForValidationState(functionToApply, element, valueAccessor, allBindingsAccessor, viewModel);
@@ -1263,10 +1306,10 @@ var valerie = valerie || {};
 
         koBindingHandlers.validationCss.classNames = {
             "failed": "error",
+            "focused": "focused",
             "passed": "success",
             "touched": "touched",
-            "failedAndTouched": "",
-            "passedAndTouched": ""
+            "untouched": "untouched"
         };
 
         // + validationMessageFor binding handler
@@ -1282,23 +1325,34 @@ var valerie = valerie || {};
                 applyForValidationState(functionToApply, element, valueAccessor, allBindingsAccessor, viewModel);
             });
 
-        // + invisibleWhenSummaryEmpty binding handler
-        // - makes the bound element invisible if the validation summary is empty, visible otherwise
-        koBindingHandlers.invisibleWhenSummaryEmpty = isolatedBindingHandler(
+        // + visibleWhenFocused binding handler
+        // - makes the bound element visible if the bound element for the value is focused, invisible otherwise
+        koBindingHandlers.visibleWhenFocused = isolatedBindingHandler(
             function (element, valueAccessor, allBindingsAccessor, viewModel) {
                 var functionToApply = function (validationState) {
-                    setElementVisibility(element, validationState.summary().length > 0);
+                    setElementVisibility(element, validationState.focused());
                 };
 
                 applyForValidationState(functionToApply, element, valueAccessor, allBindingsAccessor, viewModel);
             });
 
-        // + invisibleWhenTouched binding handler
-        // - makes the bound element invisible if the value has been touched, visible otherwise
-        koBindingHandlers.visibleWhenTouched = isolatedBindingHandler(
+        // + visibleWhenInvalid binding handler
+        // - makes the bound element visible if the value is invalid, invisible otherwise
+        koBindingHandlers.visibleWhenInvalid = isolatedBindingHandler(
             function (element, valueAccessor, allBindingsAccessor, viewModel) {
                 var functionToApply = function (validationState) {
-                    setElementVisibility(element, !validationState.touched());
+                    setElementVisibility(element, validationState.failed());
+                };
+
+                applyForValidationState(functionToApply, element, valueAccessor, allBindingsAccessor, viewModel);
+            });
+
+        // + visibleWhenSummaryNotEmpty binding handler
+        // - makes the bound element visible if the validation summary is not empty, invisible otherwise
+        koBindingHandlers.visibleWhenSummaryNotEmpty = isolatedBindingHandler(
+            function (element, valueAccessor, allBindingsAccessor, viewModel) {
+                var functionToApply = function (validationState) {
+                    setElementVisibility(element, validationState.summary().length > 0);
                 };
 
                 applyForValidationState(functionToApply, element, valueAccessor, allBindingsAccessor, viewModel);
@@ -1310,6 +1364,17 @@ var valerie = valerie || {};
             function (element, valueAccessor, allBindingsAccessor, viewModel) {
                 var functionToApply = function (validationState) {
                     setElementVisibility(element, validationState.touched());
+                };
+
+                applyForValidationState(functionToApply, element, valueAccessor, allBindingsAccessor, viewModel);
+            });
+
+        // + visibleWhenUntouched binding handler
+        // - makes the bound element visible if the value is untouched, invisible otherwise
+        koBindingHandlers.visibleWhenUntouched = isolatedBindingHandler(
+            function (element, valueAccessor, allBindingsAccessor, viewModel) {
+                var functionToApply = function (validationState) {
+                    setElementVisibility(element, !validationState.touched());
                 };
 
                 applyForValidationState(functionToApply, element, valueAccessor, allBindingsAccessor, viewModel);

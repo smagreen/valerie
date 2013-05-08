@@ -11,18 +11,19 @@
 /*jshint eqnull: true */
 /*global valerie: false */
 
-(function () {
+(function() {
     "use strict";
 
     // ReSharper disable InconsistentNaming
-    var ValidationResult = valerie.ValidationResult,
-        // ReSharper restore InconsistentNaming
+    var FailedValidationResult = valerie.FailedValidationResult,
+        // ReSharper restore InconsistentNaming        
+        passedValidationResult = valerie.ValidationResult.passed,
         rules = valerie.rules = valerie.rules || {},
         utils = valerie.utils,
         formatting = valerie.formatting;
 
     // + rules.ArrayLength
-    rules.ArrayLength = function (minimumValueOrFunction, maximumValueOrFunction, options) {
+    rules.ArrayLength = function(minimumValueOrFunction, maximumValueOrFunction, options) {
         if (arguments.length < 2) {
             throw "At least 2 arguments are expected.";
         }
@@ -41,7 +42,7 @@
     };
 
     // + rules.During
-    rules.During = function (minimumValueOrFunction, maximumValueOrFunction, options) {
+    rules.During = function(minimumValueOrFunction, maximumValueOrFunction, options) {
         if (arguments.length < 2) {
             throw "At least 2 arguments are expected.";
         }
@@ -60,7 +61,7 @@
     };
 
     // + rules.Expression
-    rules.Expression = function (regularExpressionObjectOrString, options) {
+    rules.Expression = function(regularExpressionObjectOrString, options) {
         this.expression = utils.isString(regularExpressionObjectOrString) ?
             new RegExp(regularExpressionObjectOrString) :
             regularExpressionObjectOrString;
@@ -80,7 +81,7 @@
 
             if (value != null) {
                 if (this.expresssion.test(value)) {
-                    return ValidationResult.success;
+                    return passedValidationResult;
                 }
             }
 
@@ -89,10 +90,10 @@
                     "value": this.settings.valueFormatter(value, this.settings.valueFormat)
                 });
 
-            return new ValidationResult(true, failureMessage);
+            return new FailedValidationResult(failureMessage);
         }
     };
-    
+
     // + rules.Length
     rules.Length = function(minimumValueOrFunction, maximumValueOrFunction, options) {
         if (arguments.length < 2) {
@@ -125,7 +126,7 @@
     };
 
     // + rules.Matches
-    rules.Matches = function (permittedValueOrFunction, options) {
+    rules.Matches = function(permittedValueOrFunction, options) {
         options = utils.mergeOptions(rules.Matches.defaultOptions, options);
 
         return new rules.OneOf([permittedValueOrFunction], options);
@@ -138,7 +139,7 @@
     };
 
     // + rules.NoneOf
-    rules.NoneOf = function (forbiddenValuesOrFunction, options) {
+    rules.NoneOf = function(forbiddenValuesOrFunction, options) {
         this.forbiddenValues = utils.asFunction(forbiddenValuesOrFunction);
         this.settings = utils.mergeOptions(rules.NoneOf.defaultOptions, options);
     };
@@ -150,7 +151,7 @@
     };
 
     rules.NoneOf.prototype = {
-        "test": function (value) {
+        "test": function(value) {
             var failureMessage,
                 index,
                 values = this.forbiddenValues();
@@ -162,16 +163,16 @@
                             "value": this.settings.valueFormatter(value, this.settings.valueFormat)
                         });
 
-                    return new ValidationResult(true, failureMessage);
+                    return new FailedValidationResult(failureMessage);
                 }
             }
 
-            return ValidationResult.success;
+            return passedValidationResult;
         }
     };
 
     // + rules.Not
-    rules.Not = function (forbiddenValueOrFunction, options) {
+    rules.Not = function(forbiddenValueOrFunction, options) {
         options = utils.mergeOptions(rules.Not.defaultOptions, options);
 
         return new rules.NoneOf([forbiddenValueOrFunction], options);
@@ -184,7 +185,7 @@
     };
 
     // + rules.OneOf
-    rules.OneOf = function (permittedValuesOrFunction, options) {
+    rules.OneOf = function(permittedValuesOrFunction, options) {
         this.permittedValues = utils.asFunction(permittedValuesOrFunction);
         this.settings = utils.mergeOptions(rules.OneOf.defaultOptions, options);
     };
@@ -196,14 +197,14 @@
     };
 
     rules.OneOf.prototype = {
-        "test": function (value) {
+        "test": function(value) {
             var failureMessage,
                 index,
                 values = this.permittedValues();
 
             for (index = 0; index < values.length; index++) {
                 if (value === values[index]) {
-                    return ValidationResult.success;
+                    return passedValidationResult;
                 }
             }
 
@@ -212,12 +213,12 @@
                     "value": this.settings.valueFormatter(value, this.settings.valueFormat)
                 });
 
-            return new ValidationResult(true, failureMessage);
+            return new FailedValidationResult(failureMessage);
         }
     };
 
     // + rules.Range
-    rules.Range = function (minimumValueOrFunction, maximumValueOrFunction, options) {
+    rules.Range = function(minimumValueOrFunction, maximumValueOrFunction, options) {
         if (arguments.length < 2 || arguments.length > 3) {
             throw "At least 2 arguments are expected.";
         }
@@ -236,18 +237,18 @@
     };
 
     rules.Range.prototype = {
-        "test": function (value) {
+        "test": function(value) {
             var failureMessage,
                 failureMessageFormat = this.settings.failureMessageFormat,
                 maximum = this.maximum(),
                 minimum = this.minimum(),
-                haveMaximum = maximum != null ,
+                haveMaximum = maximum != null,
                 haveMinimum = minimum != null,
                 haveValue = value != null,
                 valueInsideRange = true;
 
             if (!haveMaximum && !haveMinimum) {
-                return ValidationResult.success;
+                return passedValidationResult;
             }
 
             if (haveValue) {
@@ -267,7 +268,7 @@
             }
 
             if (valueInsideRange) {
-                return ValidationResult.success;
+                return passedValidationResult;
             }
 
             failureMessage = formatting.replacePlaceholders(
@@ -277,12 +278,12 @@
                     "value": this.settings.valueFormatter(value, this.settings.valueFormat)
                 });
 
-            return new ValidationResult(true, failureMessage);
+            return new FailedValidationResult(failureMessage);
         }
     };
 
     // + rules.StringLength
-    rules.StringLength = function (minimumValueOrFunction, maximumValueOrFunction, options) {
+    rules.StringLength = function(minimumValueOrFunction, maximumValueOrFunction, options) {
         if (arguments.length < 2) {
             throw "At least 2 arguments are expected.";
         }

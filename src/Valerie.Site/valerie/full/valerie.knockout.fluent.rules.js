@@ -14,8 +14,9 @@
     "use strict";
 
     // ReSharper disable InconsistentNaming
-    var ValidationResult = valerie.ValidationResult,
+    var FailedValidationResult = valerie.FailedValidationResult,
         // ReSharper restore InconsistentNaming        
+        passedValidationResult = valerie.ValidationResult.passed,
         prototype = valerie.knockout.PropertyValidationState.prototype,
         rules = valerie.rules;
 
@@ -121,14 +122,11 @@
     // + rule
     prototype.rule = function (testFunction, failureMessage) {
         return this.addRule({
+            "settings": {
+            },
             "test": function (value) {
-                if (testFunction(value)) {
-                    return ValidationResult.success;
-                }
-
-                return new ValidationResult(true, failureMessage);
+                return testFunction(value);
             }
         });
     };
 })();
-

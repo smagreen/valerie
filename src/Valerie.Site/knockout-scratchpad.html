@@ -13,7 +13,7 @@
         }
 
         input, select {
-            border: 1px solid #ccc;
+            border: 2px solid #ccc;
             padding: 0.25em 0.5em;
         }
 
@@ -64,6 +64,11 @@
         input.untouched, select.untouched {
             border-color: #ccc;
         }
+
+        input.waiting, select.waiting {
+            border-color: #aa3;
+        }
+
     </style>
 </head>
 <body>
@@ -100,7 +105,7 @@
                 </div>
                 <!-- ToDo: Add checklist array for features. -->
                 <!-- ToDo: Add multi-select array for utilities. -->
-                <section data-bind="invisibleWhenSummaryEmpty: houseDetails">
+                <section data-bind="visibleWhenSummaryNotEmpty: houseDetails">
                     <h3>Validation Summary</h3>
                     <ul data-bind="foreach: houseDetails.validation().summary()">
                         <li><span data-bind="text: name"></span>: <span data-bind="text: message"></span></li>
@@ -133,13 +138,13 @@
                 <div>
                     <label>
                         Loan Amount
-                            <input data-bind="value: loanAmount, enableWhenApplicable: true, validationCss: true" name="loanAmount" />
+                            <input data-bind="value: loanAmount, enabledWhenApplicable: true, validationCss: true" name="loanAmount" />
                     </label>
                     <aside data-bind="validationCss: loanAmount">Tooltip for an invalid entry.</aside>
                     <span data-bind="validationMessageFor: loanAmount"></span>
                 </div>
             </section>
-            <section data-bind="invisibleWhenSummaryEmpty: true">
+            <section data-bind="visibleWhenSummaryNotEmpty: true">
                 <h3>Validation Summary</h3>
                 <ul data-bind="foreach: validation().summary()">
                     <li><span data-bind="text: name"></span>: <span data-bind="text: message"></span></li>
@@ -147,7 +152,7 @@
             </section>
             <div>
                 <input type="button" value="Clear Errors" data-bind="click: clearErrors" />
-                <input type="button" value="Submit" data-bind="click: submit" />
+                <input type="button" value="Submit" data-bind="click: submit, disabledWhenTouchedAndNotValid: true" />
             </div>
         </form>
         <section>
@@ -166,6 +171,28 @@
         window.onload = function () {
             var v = valerie,
                 k = v.knockout;
+
+            var longRunningRuleCompleted = ko.observable(false),
+                longRunningRuleTimeout,
+                longRunningRule = function (value) {
+                    if (longRunningRuleTimeout != null) {
+                        window.clearTimeout(longRunningRuleTimeout);
+                    }
+                    
+                    if (longRunningRuleCompleted()) {
+                        longRunningRuleCompleted(false);
+
+                        if (value === 133700) {
+                            return new v.FailedValidationResult("Elite amount not allowed!");
+                        } else {
+                            return v.ValidationResult.passed;
+                        }
+                    }
+
+                    longRunningRuleTimeout = window.setTimeout(function() { longRunningRuleCompleted(true); }, 3000);
+
+                    return v.ValidationResult.pending;
+                };
 
             // Configure valerie
             k.useValidatingBindingHandlers();
@@ -208,7 +235,7 @@
                     .applicable(housePrice.validation().passed)
                     .required()
                     .range(loanAmountMin, loanAmountMax)
-                    .not(133700)
+                    .rule(longRunningRule)
                     .ruleMessage("Elite loan amount forbidden!")
                     .end(),
                 "loanAmountMin": loanAmountMin,

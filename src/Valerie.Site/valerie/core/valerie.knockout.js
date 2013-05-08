@@ -17,8 +17,10 @@
     "use strict";
 
     // ReSharper disable InconsistentNaming
-    var ValidationResult = valerie.ValidationResult,
+    var FailedValidationResult = valerie.FailedValidationResult,
         // ReSharper restore InconsistentNaming
+        passedValidationResult = valerie.ValidationResult.passed,
+        pendingValidationResult = valerie.ValidationResult.pending,
         koObservable = ko.observable,
         koComputed = ko.computed,
         utils = valerie.utils,
@@ -162,11 +164,12 @@
     // - validation state for a model
     // - the model may comprise of simple or complex properties
     (function () {
+        // Functions for computeds.
         var failedFunction = function () {
             return this.result().failed;
         },
-            invalidStatesFunction = function () {
-                var invalidStates = [],
+            failedStatesFunction = function () {
+                var failedStates = [],
                     validationStates = this.validationStates(),
                     validationState,
                     result,
@@ -176,30 +179,51 @@
                     validationState = validationStates[index];
 
                     if (validationState.settings.applicable()) {
-                        result = validationStates[index].result();
+                        result = validationState.result();
 
                         if (result.failed) {
-                            invalidStates.push(validationState);
+                            failedStates.push(validationState);
                         }
                     }
                 }
 
-                return invalidStates;
+                return failedStates;
             },
             messageFunction = function () {
-                return this.result().failureMessage;
+                return this.result().message;
             },
             passedFunction = function () {
-                return !this.result().failed;
+                return this.result().passed;
             },
-            resultFunction = function () {
-                var invalidStates = this.invalidStates();
+            pendingFunction = function () {
+                return this.result().pending;
+            },
+            pendingStatesFunction = function () {
+                var pendingStates = [],
+                    validationStates = this.validationStates(),
+                    validationState,
+                    index;
 
-                if (invalidStates.length === 0) {
-                    return ValidationResult.success;
+                for (index = 0; index < validationStates.length; index++) {
+                    validationState = validationStates[index];
+
+                    if (validationState.result().pending) {
+                        pendingStates.push(validationState);
+                    }
                 }
 
-                return new ValidationResult(true, this.settings.failureMessageFormat);
+                return pendingStates;
+            },
+            resultFunction = function () {
+                if (this.failedStates().length > 0) {
+                    return new FailedValidationResult(this.settings.failureMessageFormat);
+                }
+
+                if (this.pendingStates().length > 0) {
+                    return pendingValidationResult;
+                }
+
+                return passedValidationResult;
             },
             touchedReadFunction = function () {
                 var index,
@@ -227,21 +251,25 @@
             options.applicable = utils.asFunction(options.applicable);
             options.name = utils.asFunction(options.name);
 
-            this.failed = koComputed(failedFunction, this, deferEvaluation);
-            this.invalidStates = koComputed(invalidStatesFunction, this, deferEvaluation);
-            this.message = koComputed(messageFunction, this, deferEvaluation);
             this.model = model;
             this.settings = options;
-            this.passed = koComputed(passedFunction, this, deferEvaluation);
-            this.result = extras.pausableComputed(resultFunction, this, deferEvaluation, options.paused);
             this.summary = koObservable([]);
+            this.validationStates = ko.observableArray();
+
+            // Computeds.
+            this.failed = koComputed(failedFunction, this, deferEvaluation);
+            this.failedStates = koComputed(failedStatesFunction, this, deferEvaluation);
+            this.message = koComputed(messageFunction, this, deferEvaluation);
+            this.passed = koComputed(passedFunction, this, deferEvaluation);
+            this.pending = koComputed(pendingFunction, this, deferEvaluation);
+            this.pendingStates = koComputed(pendingStatesFunction, this, deferEvaluation);
+            this.result = extras.pausableComputed(resultFunction, this, deferEvaluation, options.paused);
             this.touched = koComputed({
                 "read": touchedReadFunction,
                 "write": touchedWriteFunction,
                 "deferEvaluation": true,
                 "owner": this
             });
-            this.validationStates = ko.observableArray();
 
             this.paused = this.result.paused;
             this.refresh = this.result.refresh;
@@ -303,7 +331,7 @@
                 return this;
             },
             "updateSummary": function (updateSubModelSummaries) {
-                var states = this.invalidStates(),
+                var states = this.failedStates(),
                     state,
                     index,
                     failures = [];
@@ -394,29 +422,32 @@
 
                 for (index = 0; index < rules.length; index++) {
                     rule = rules[index];
-                    
+
                     result = rule.test(value);
-                    
-                    if (result.failed) {
+
+                    if (result.failed || result.pending) {
                         return result;
                     }
                 }
 
-                return ValidationResult.success;
+                return passedValidationResult;
             },
             // Functions for computeds.
             failedFunction = function () {
                 return this.result().failed;
             },
             messageFunction = function () {
-                var message = this.result().failureMessage;
+                var message = this.result().message;
 
                 message = formatting.replacePlaceholders(message, { "name": this.settings.name() });
 
                 return message;
             },
             passedFunction = function () {
-                return !this.result().failed;
+                return this.result().passed;
+            },
+            pendingFunction = function () {
+                return this.result().pending;
             },
             resultFunction = function () {
                 var missingResult,
@@ -430,22 +461,14 @@
                 missingResult = missingFunction.apply(this);
 
                 if (missingResult === -1) {
-                    return {
-                        "failed": true,
-                        "failureMessage": this.settings.missingFailureMessage
-                    };
+                    return new FailedValidationResult(this.settings.missingFailureMessage);
                 }
 
                 if (missingResult === 0) {
                     return result;
                 }
 
-                result = rulesResultFunction.apply(this);
-                if (result.failed) {
-                    return result;
-                }
-
-                return ValidationResult.success;
+                return rulesResultFunction.apply(this);
             },
             showMessageFunction = function () {
                 if (!this.settings.applicable()) {
@@ -464,23 +487,26 @@
 
             this.boundEntry = {
                 "focused": koObservable(false),
-                "result": koObservable(ValidationResult.success),
+                "result": koObservable(passedValidationResult),
                 "textualInput": false
             };
 
-            this.failed = koComputed(failedFunction, this, deferEvaluation);
-            this.message = extras.pausableComputed(messageFunction, this, deferEvaluation);
             this.observableOrComputed = observableOrComputed;
             this.settings = options;
+            this.touched = koObservable(false);
+
+            // Computeds.
+            this.failed = koComputed(failedFunction, this, deferEvaluation);
+            this.message = extras.pausableComputed(messageFunction, this, deferEvaluation);
             this.passed = koComputed(passedFunction, this, deferEvaluation);
+            this.pending = koComputed(pendingFunction, this, deferEvaluation);
             this.result = koComputed(resultFunction, this, deferEvaluation);
             this.showMessage = extras.pausableComputed(showMessageFunction, this, deferEvaluation);
-            this.touched = koObservable(false);
         };
 
         definition.prototype = {
             // Validation state methods support a fluent interface.
-            "addRule": function(rule) {
+            "addRule": function (rule) {
                 this.settings.rules.push(rule);
 
                 return this;
@@ -508,7 +534,7 @@
                     ruleSettings.valueFormat = valueFormat;
                     ruleSettings.valueFormatter = valueFormatter;
                 }
-                
+
                 return this.observableOrComputed;
             },
             "name": function (valueOrFunction) {
