@@ -1,6 +1,5 @@
 ﻿// valerie.rules
 // - general purpose rules
-// - used by other parts of the valerie library
 // (c) 2013 egrove Ltd.
 // License: MIT (http://www.opensource.org/licenses/mit-license.php)
 
@@ -20,7 +19,8 @@
         passedValidationResult = valerie.ValidationResult.passed,
         rules = valerie.rules = valerie.rules || {},
         utils = valerie.utils,
-        formatting = valerie.formatting;
+        formatting = valerie.formatting,
+        emailExpression = /^[A-Z0-9._%+-]+@[A-Z0-9.-]+\.[A-Z]{2,4}$/i;
 
     // + rules.ArrayLength
     rules.ArrayLength = function(minimumValueOrFunction, maximumValueOrFunction, options) {
@@ -60,6 +60,19 @@
         "valueFormatter": valerie.converters.passThrough.formatter
     };
 
+    // + rules.Email
+    rules.Email = function (options) {
+        options = utils.mergeOptions(options);
+
+        return new rules.Expression(emailExpression, options);
+    };
+
+    rules.Email.defaultOptions = {
+        "failureMessageFormat": "",
+        "valueFormat": null,
+        "valueFormatter": valerie.converters.passThrough.formatter
+    };        
+    
     // + rules.Expression
     rules.Expression = function(regularExpressionObjectOrString, options) {
         this.expression = utils.isString(regularExpressionObjectOrString) ?
@@ -80,7 +93,7 @@
             var failureMessage;
 
             if (value != null) {
-                if (this.expresssion.test(value)) {
+                if (this.expression.test(value)) {
                     return passedValidationResult;
                 }
             }

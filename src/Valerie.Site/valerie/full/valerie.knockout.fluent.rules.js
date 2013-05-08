@@ -3,7 +3,6 @@
 // (c) 2013 egrove Ltd.
 // License: MIT (http://www.opensource.org/licenses/mit-license.php)
 
-/// <reference path="../core/valerie.validationResult.js"/>
 /// <reference path="../core/valerie.knockout.js"/>
 /// <reference path="valerie.rules.js"/>
 
@@ -14,10 +13,7 @@
     "use strict";
 
     // ReSharper disable InconsistentNaming
-    var FailedValidationResult = valerie.FailedValidationResult,
-        // ReSharper restore InconsistentNaming        
-        passedValidationResult = valerie.ValidationResult.passed,
-        prototype = valerie.knockout.PropertyValidationState.prototype,
+    var prototype = valerie.knockout.PropertyValidationState.prototype,
         rules = valerie.rules;
 
     // + during
@@ -28,6 +24,11 @@
     // + earliest
     prototype.earliest = function (earliestValueOrFunction, options) {
         return this.addRule(new rules.During(earliestValueOrFunction, null, options));
+    };
+
+    // + email
+    prototype.email = function(options) {
+        return this.addRule(new rules.Email(options));
     };
 
     // + expression
@@ -120,7 +121,7 @@
     };
 
     // + rule
-    prototype.rule = function (testFunction, failureMessage) {
+    prototype.rule = function (testFunction) {
         return this.addRule({
             "settings": {
             },

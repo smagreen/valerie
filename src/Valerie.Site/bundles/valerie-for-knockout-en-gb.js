@@ -1589,7 +1589,6 @@ var valerie = valerie || {};
 ///#source 1 1 ../valerie/full/valerie.converters.numeric.js
 // valerie.converters.numeric
 // - converters for numeric values
-// - used by other parts of the valerie library
 // (c) 2013 egrove Ltd.
 // License: MIT (http://www.opensource.org/licenses/mit-license.php)
 
@@ -1707,7 +1706,6 @@ var valerie = valerie || {};
 ///#source 1 1 ../valerie/full/valerie.rules.js
 // valerie.rules
 // - general purpose rules
-// - used by other parts of the valerie library
 // (c) 2013 egrove Ltd.
 // License: MIT (http://www.opensource.org/licenses/mit-license.php)
 
@@ -1727,7 +1725,8 @@ var valerie = valerie || {};
         passedValidationResult = valerie.ValidationResult.passed,
         rules = valerie.rules = valerie.rules || {},
         utils = valerie.utils,
-        formatting = valerie.formatting;
+        formatting = valerie.formatting,
+        emailExpression = /^[A-Z0-9._%+-]+@[A-Z0-9.-]+\.[A-Z]{2,4}$/i;
 
     // + rules.ArrayLength
     rules.ArrayLength = function(minimumValueOrFunction, maximumValueOrFunction, options) {
@@ -1767,6 +1766,19 @@ var valerie = valerie || {};
         "valueFormatter": valerie.converters.passThrough.formatter
     };
 
+    // + rules.Email
+    rules.Email = function (options) {
+        options = utils.mergeOptions(options);
+
+        return new rules.Expression(emailExpression, options);
+    };
+
+    rules.Email.defaultOptions = {
+        "failureMessageFormat": "",
+        "valueFormat": null,
+        "valueFormatter": valerie.converters.passThrough.formatter
+    };        
+    
     // + rules.Expression
     rules.Expression = function(regularExpressionObjectOrString, options) {
         this.expression = utils.isString(regularExpressionObjectOrString) ?
@@ -1787,7 +1799,7 @@ var valerie = valerie || {};
             var failureMessage;
 
             if (value != null) {
-                if (this.expresssion.test(value)) {
+                if (this.expression.test(value)) {
                     return passedValidationResult;
                 }
             }
@@ -2106,7 +2118,6 @@ var valerie = valerie || {};
 // (c) 2013 egrove Ltd.
 // License: MIT (http://www.opensource.org/licenses/mit-license.php)
 
-/// <reference path="../core/valerie.validationResult.js"/>
 /// <reference path="../core/valerie.knockout.js"/>
 /// <reference path="valerie.rules.js"/>
 
@@ -2117,10 +2128,7 @@ var valerie = valerie || {};
     "use strict";
 
     // ReSharper disable InconsistentNaming
-    var FailedValidationResult = valerie.FailedValidationResult,
-        // ReSharper restore InconsistentNaming        
-        passedValidationResult = valerie.ValidationResult.passed,
-        prototype = valerie.knockout.PropertyValidationState.prototype,
+    var prototype = valerie.knockout.PropertyValidationState.prototype,
         rules = valerie.rules;
 
     // + during
@@ -2131,6 +2139,11 @@ var valerie = valerie || {};
     // + earliest
     prototype.earliest = function (earliestValueOrFunction, options) {
         return this.addRule(new rules.During(earliestValueOrFunction, null, options));
+    };
+
+    // + email
+    prototype.email = function(options) {
+        return this.addRule(new rules.Email(options));
     };
 
     // + expression
@@ -2223,7 +2236,7 @@ var valerie = valerie || {};
     };
 
     // + rule
-    prototype.rule = function (testFunction, failureMessage) {
+    prototype.rule = function (testFunction) {
         return this.addRule({
             "settings": {
             },

@@ -76,15 +76,25 @@
     <div id="view">
         <form>
             <section>
+                <h2>Your Details</h2>
+                <div>
+                    <label>
+                        email
+                            <input data-bind="value: email, validationCss: true" />
+                    </label>
+                    <span data-bind="validationMessageFor: email"></span>
+                </div>
+            </section>            
+            <section>
                 <h2>House Details</h2>
                 <div>
                     <label>
                         Location                    
-                            <select data-bind="value: houseDetails.location, validationCss: true">
-                                <option value="">Please Select...</option>
-                                <option>England</option>
-                                <option>Wales</option>
-                            </select>
+                        <select data-bind="value: houseDetails.location, validationCss: true">
+                            <option value="">Please Select...</option>
+                            <option>England</option>
+                            <option>Wales</option>
+                        </select>
                     </label>
                     <span data-bind="validationMessageFor: houseDetails.location"></span>
                 </div>
@@ -117,7 +127,7 @@
                 <div>
                     <label>
                         House Price
-                            <input data-bind="value: housePrice, enableWhenApplicable: true, validationCss: true" />
+                        <input data-bind="value: housePrice, enableWhenApplicable: true, validationCss: true" />
                     </label>
                     <span data-bind="validationMessageFor: housePrice"></span>
                 </div>
@@ -130,15 +140,15 @@
                 <div data-bind="visibleWhenValid: housePrice">
                     <p>
                         You can borrow between:
-                            <strong data-bind="formattedValue: loanAmountMin, formatter: valerie.converters.currencyMajor.formatter, valueFormat: 'C,'"></strong>
+                        <strong data-bind="formattedValue: loanAmountMin, formatter: valerie.converters.currencyMajor.formatter, valueFormat: 'C,'"></strong>
                         &nbsp;and
-                            <strong data-bind="formattedValue: loanAmountMax"></strong>.
+                        <strong data-bind="formattedValue: loanAmountMax"></strong>.
                     </p>
                 </div>
                 <div>
                     <label>
                         Loan Amount
-                            <input data-bind="value: loanAmount, enabledWhenApplicable: true, validationCss: true" name="loanAmount" />
+                        <input data-bind="value: loanAmount, enabledWhenApplicable: true, validationCss: true" name="loanAmount" />
                     </label>
                     <aside data-bind="validationCss: loanAmount">Tooltip for an invalid entry.</aside>
                     <span data-bind="validationMessageFor: loanAmount"></span>
@@ -168,17 +178,17 @@
     <script type="text/javascript" src="bundles/valerie-for-knockout-en-gb.js"></script>
 
     <script type="text/javascript">
-        window.onload = function () {
+        window.onload = function() {
             var v = valerie,
                 k = v.knockout;
 
             var longRunningRuleCompleted = ko.observable(false),
                 longRunningRuleTimeout,
-                longRunningRule = function (value) {
+                longRunningRule = function(value) {
                     if (longRunningRuleTimeout != null) {
                         window.clearTimeout(longRunningRuleTimeout);
                     }
-                    
+
                     if (longRunningRuleCompleted()) {
                         longRunningRuleCompleted(false);
 
@@ -204,16 +214,20 @@
                     .required()
                     .range(75000, 500000)
                     .end(),
-                loanAmountMin = ko.computed(function () { return housePrice() / 4; }),
-                loanAmountMax = ko.computed(function () { return (housePrice() * 3) / 4; })
+                loanAmountMin = ko.computed(function() { return housePrice() / 4; }),
+                loanAmountMax = ko.computed(function() { return (housePrice() * 3) / 4; })
                     .validate()
                     .currencyMajor()
                     .valueFormat("C,.4")
                     .end();
 
             window.viewModel = viewModel = k.validatableModel({
-                "clearErrors": function () { viewModel.validation().touched(false).clearSummary(true); },
-                "submit": function () { viewModel.validation().touched(true).updateSummary(true); },
+                "clearErrors": function() { viewModel.validation().touched(false).clearSummary(true); },
+                "submit": function() { viewModel.validation().touched(true).updateSummary(true); },
+                "email": ko.observable("")
+                    .validate()
+                    .email()
+                    .end(),
                 "houseDetails": k.validatableModel({
                     "houseType": ko.observable()
                         .validate()

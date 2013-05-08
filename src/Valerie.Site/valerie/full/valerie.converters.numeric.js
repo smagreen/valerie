@@ -1,6 +1,5 @@
 ﻿// valerie.converters.numeric
 // - converters for numeric values
-// - used by other parts of the valerie library
 // (c) 2013 egrove Ltd.
 // License: MIT (http://www.opensource.org/licenses/mit-license.php)
 
