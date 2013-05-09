@@ -19,8 +19,7 @@
         passedValidationResult = valerie.ValidationResult.passed,
         rules = valerie.rules = valerie.rules || {},
         utils = valerie.utils,
-        formatting = valerie.formatting,
-        emailExpression = /^[A-Z0-9._%+-]+@[A-Z0-9.-]+\.[A-Z]{2,4}$/i;
+        formatting = valerie.formatting;
 
     // + rules.ArrayLength
     rules.ArrayLength = function(minimumValueOrFunction, maximumValueOrFunction, options) {
@@ -59,20 +58,7 @@
         "valueFormat": null,
         "valueFormatter": valerie.converters.passThrough.formatter
     };
-
-    // + rules.Email
-    rules.Email = function (options) {
-        options = utils.mergeOptions(options);
-
-        return new rules.Expression(emailExpression, options);
-    };
-
-    rules.Email.defaultOptions = {
-        "failureMessageFormat": "",
-        "valueFormat": null,
-        "valueFormatter": valerie.converters.passThrough.formatter
-    };        
-    
+   
     // + rules.Expression
     rules.Expression = function(regularExpressionObjectOrString, options) {
         this.expression = utils.isString(regularExpressionObjectOrString) ?

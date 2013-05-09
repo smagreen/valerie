@@ -1074,26 +1074,25 @@ var valerie = valerie || {};
                 var enteredValue = ko.utils.stringTrim(element.value),
                     parsedValue,
                     validationState = getValidationState(observableOrComputed),
-                    settings = validationState.settings;
+                    settings = validationState.settings,
+                    result = passedValidationResult;
 
-                if (enteredValue.length === 0 && settings.required()) {
+                if (enteredValue.length === 0) {
                     observableOrComputed(null);
 
-                    validationState.boundEntry.result(new FailedValidationResult(settings.missingFailureMessage));
+                    if (settings.required()) {
+                        result = new FailedValidationResult(settings.missingFailureMessage);
+                    }
+                } else {
+                    parsedValue = settings.converter.parser(enteredValue);
+                    observableOrComputed(parsedValue);
 
-                    return;
+                    if (parsedValue == null) {
+                        result = new FailedValidationResult(settings.invalidEntryFailureMessage);
+                    }
                 }
 
-                parsedValue = settings.converter.parser(enteredValue);
-                observableOrComputed(parsedValue);
-
-                if (parsedValue == null) {
-                    validationState.boundEntry.result(new FailedValidationResult(settings.invalidEntryFailureMessage));
-
-                    return;
-                }
-
-                validationState.boundEntry.result(passedValidationResult);
+                validationState.boundEntry.result(result);
             },
             textualInputUpdateFunction = function (observableOrComputed, validationState, element) {
                 // Get the value so this function becomes dependent on the observable or computed.
@@ -1586,9 +1585,9 @@ var valerie = valerie || {};
     };
 })();
 
-///#source 1 1 ../valerie/full/valerie.converters.numeric.js
-// valerie.converters.numeric
-// - converters for numeric values
+///#source 1 1 ../valerie/full/valerie.converters.js
+// valerie.converters
+// - additional converters
 // (c) 2013 egrove Ltd.
 // License: MIT (http://www.opensource.org/licenses/mit-license.php)
 
@@ -1603,7 +1602,8 @@ var valerie = valerie || {};
     "use strict";
 
     var converters = valerie.converters = valerie.converters || {},
-        defaultNumericHelper = new valerie.NumericHelper();
+        defaultNumericHelper = new valerie.NumericHelper(),
+        emailExpression = /^[A-Z0-9._%+-]+@[A-Z0-9.-]+\.[A-Z]{2,4}$/i;
 
     // + converters.defaultNumericHelper
     converters.defaultNumericHelper = defaultNumericHelper;
@@ -1641,6 +1641,28 @@ var valerie = valerie || {};
     };
 
     converters.currency = { "numericHelper": defaultNumericHelper };
+
+    // + converters.email
+    converters.email = {
+        "formatter": function (value) {
+            if (value == null) {
+                return "";
+            }
+
+            return value;
+        },
+        "parser": function (value) {
+            if (value == null) {
+                return null;
+            }
+            
+            if (!emailExpression.test(value)) {
+                return null;
+            }
+
+            return value.toLowerCase();
+        }
+    };
 
     // + converters.float
     converters.float = {
@@ -1725,8 +1747,7 @@ var valerie = valerie || {};
         passedValidationResult = valerie.ValidationResult.passed,
         rules = valerie.rules = valerie.rules || {},
         utils = valerie.utils,
-        formatting = valerie.formatting,
-        emailExpression = /^[A-Z0-9._%+-]+@[A-Z0-9.-]+\.[A-Z]{2,4}$/i;
+        formatting = valerie.formatting;
 
     // + rules.ArrayLength
     rules.ArrayLength = function(minimumValueOrFunction, maximumValueOrFunction, options) {
@@ -1765,20 +1786,7 @@ var valerie = valerie || {};
         "valueFormat": null,
         "valueFormatter": valerie.converters.passThrough.formatter
     };
-
-    // + rules.Email
-    rules.Email = function (options) {
-        options = utils.mergeOptions(options);
-
-        return new rules.Expression(emailExpression, options);
-    };
-
-    rules.Email.defaultOptions = {
-        "failureMessageFormat": "",
-        "valueFormat": null,
-        "valueFormatter": valerie.converters.passThrough.formatter
-    };        
-    
+   
     // + rules.Expression
     rules.Expression = function(regularExpressionObjectOrString, options) {
         this.expression = utils.isString(regularExpressionObjectOrString) ?
@@ -2029,7 +2037,7 @@ var valerie = valerie || {};
 
 /// <reference path="../core/valerie.utils.js"/>
 /// <reference path="../core/valerie.knockout.js"/>
-/// <reference path="valerie.converters.numeric.js"/>
+/// <reference path="valerie.converters.js"/>
 
 /*jshint eqnull: true */
 /*global ko: false, valerie: false */
@@ -2067,6 +2075,13 @@ var valerie = valerie || {};
     prototype.currencyMajorMinor.defaultOptions = {
         "entryFormat": ".c",
         "valueFormat": "C,.c"
+    };
+
+    // + email
+    prototype.email = function () {
+        this.settings.converter = converters.email;
+
+        return this;
     };
 
     // + float
@@ -2139,11 +2154,6 @@ var valerie = valerie || {};
     // + earliest
     prototype.earliest = function (earliestValueOrFunction, options) {
         return this.addRule(new rules.During(earliestValueOrFunction, null, options));
-    };
-
-    // + email
-    prototype.email = function(options) {
-        return this.addRule(new rules.Email(options));
     };
 
     // + expression

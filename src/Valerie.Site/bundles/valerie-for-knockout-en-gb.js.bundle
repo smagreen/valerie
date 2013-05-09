@@ -14,11 +14,13 @@
   <file>../valerie/core/valerie.knockout.bindings.js</file>
   <!-- Full -->
   <file>../valerie/full/valerie.numericHelper.js</file>
-  <file>../valerie/full/valerie.converters.numeric.js</file>
+  <file>../valerie/full/valerie.converters.js</file>
   <file>../valerie/full/valerie.rules.js</file>
   <file>../valerie/full/valerie.knockout.fluent.converters.js</file>
   <file>../valerie/full/valerie.knockout.fluent.rules.js</file>
   <!-- en-gb -->
   <file>../valerie/localisation/en-gb/core.js</file>
   <file>../valerie/localisation/en-gb/full.js</file>
+  <file>../valerie/localisation/en-gb/valerie.converters.en-gb.js</file>
+  <file>../valerie/localisation/en-gb/valerie.knockout.fluent.converters.en-gb.js</file>
 </bundle>

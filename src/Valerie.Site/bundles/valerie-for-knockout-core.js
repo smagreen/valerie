@@ -53,7 +53,9 @@ var valerie = valerie || {};
         return new ValidationResult(states.pending, message);
     };
 
-    valerie.ValidationResult.passed = new valerie.ValidationResult(states.passed, "");
+    valerie.ValidationResult.passed = new ValidationResult(states.passed, "");
+    
+    valerie.ValidationResult.pending = new ValidationResult(states.pending, "");
 })();
 
 ///#source 1 1 ../valerie/core/valerie.utils.js
@@ -444,7 +446,8 @@ var valerie = valerie || {};
     // ReSharper disable InconsistentNaming
     var FailedValidationResult = valerie.FailedValidationResult,
         // ReSharper restore InconsistentNaming
-        passedValidationResult = valerie.PassedValidationResult,
+        passedValidationResult = valerie.ValidationResult.passed,
+        pendingValidationResult = valerie.ValidationResult.pending,
         koObservable = ko.observable,
         koComputed = ko.computed,
         utils = valerie.utils,
@@ -588,11 +591,12 @@ var valerie = valerie || {};
     // - validation state for a model
     // - the model may comprise of simple or complex properties
     (function () {
+        // Functions for computeds.
         var failedFunction = function () {
             return this.result().failed;
         },
-            invalidStatesFunction = function () {
-                var invalidStates = [],
+            failedStatesFunction = function () {
+                var failedStates = [],
                     validationStates = this.validationStates(),
                     validationState,
                     result,
@@ -602,30 +606,51 @@ var valerie = valerie || {};
                     validationState = validationStates[index];
 
                     if (validationState.settings.applicable()) {
-                        result = validationStates[index].result();
+                        result = validationState.result();
 
                         if (result.failed) {
-                            invalidStates.push(validationState);
+                            failedStates.push(validationState);
                         }
                     }
                 }
 
-                return invalidStates;
+                return failedStates;
             },
             messageFunction = function () {
                 return this.result().message;
             },
             passedFunction = function () {
-                return !this.result().failed;
+                return this.result().passed;
             },
-            resultFunction = function () {
-                var invalidStates = this.invalidStates();
+            pendingFunction = function () {
+                return this.result().pending;
+            },
+            pendingStatesFunction = function () {
+                var pendingStates = [],
+                    validationStates = this.validationStates(),
+                    validationState,
+                    index;
 
-                if (invalidStates.length === 0) {
-                    return passedValidationResult;
+                for (index = 0; index < validationStates.length; index++) {
+                    validationState = validationStates[index];
+
+                    if (validationState.result().pending) {
+                        pendingStates.push(validationState);
+                    }
                 }
 
-                return new FailedValidationResult(this.settings.failureMessageFormat);
+                return pendingStates;
+            },
+            resultFunction = function () {
+                if (this.failedStates().length > 0) {
+                    return new FailedValidationResult(this.settings.failureMessageFormat);
+                }
+
+                if (this.pendingStates().length > 0) {
+                    return pendingValidationResult;
+                }
+
+                return passedValidationResult;
             },
             touchedReadFunction = function () {
                 var index,
@@ -653,21 +678,25 @@ var valerie = valerie || {};
             options.applicable = utils.asFunction(options.applicable);
             options.name = utils.asFunction(options.name);
 
-            this.failed = koComputed(failedFunction, this, deferEvaluation);
-            this.invalidStates = koComputed(invalidStatesFunction, this, deferEvaluation);
-            this.message = koComputed(messageFunction, this, deferEvaluation);
             this.model = model;
             this.settings = options;
-            this.passed = koComputed(passedFunction, this, deferEvaluation);
-            this.result = extras.pausableComputed(resultFunction, this, deferEvaluation, options.paused);
             this.summary = koObservable([]);
+            this.validationStates = ko.observableArray();
+
+            // Computeds.
+            this.failed = koComputed(failedFunction, this, deferEvaluation);
+            this.failedStates = koComputed(failedStatesFunction, this, deferEvaluation);
+            this.message = koComputed(messageFunction, this, deferEvaluation);
+            this.passed = koComputed(passedFunction, this, deferEvaluation);
+            this.pending = koComputed(pendingFunction, this, deferEvaluation);
+            this.pendingStates = koComputed(pendingStatesFunction, this, deferEvaluation);
+            this.result = extras.pausableComputed(resultFunction, this, deferEvaluation, options.paused);
             this.touched = koComputed({
                 "read": touchedReadFunction,
                 "write": touchedWriteFunction,
                 "deferEvaluation": true,
                 "owner": this
             });
-            this.validationStates = ko.observableArray();
 
             this.paused = this.result.paused;
             this.refresh = this.result.refresh;
@@ -729,7 +758,7 @@ var valerie = valerie || {};
                 return this;
             },
             "updateSummary": function (updateSubModelSummaries) {
-                var states = this.invalidStates(),
+                var states = this.failedStates(),
                     state,
                     index,
                     failures = [];
@@ -820,10 +849,10 @@ var valerie = valerie || {};
 
                 for (index = 0; index < rules.length; index++) {
                     rule = rules[index];
-                    
+
                     result = rule.test(value);
-                    
-                    if (result.failed) {
+
+                    if (result.failed || result.pending) {
                         return result;
                     }
                 }
@@ -842,7 +871,10 @@ var valerie = valerie || {};
                 return message;
             },
             passedFunction = function () {
-                return !this.result().failed;
+                return this.result().passed;
+            },
+            pendingFunction = function () {
+                return this.result().pending;
             },
             resultFunction = function () {
                 var missingResult,
@@ -863,12 +895,7 @@ var valerie = valerie || {};
                     return result;
                 }
 
-                result = rulesResultFunction.apply(this);
-                if (result.failed) {
-                    return result;
-                }
-
-                return passedValidationResult;
+                return rulesResultFunction.apply(this);
             },
             showMessageFunction = function () {
                 if (!this.settings.applicable()) {
@@ -891,19 +918,22 @@ var valerie = valerie || {};
                 "textualInput": false
             };
 
-            this.failed = koComputed(failedFunction, this, deferEvaluation);
-            this.message = extras.pausableComputed(messageFunction, this, deferEvaluation);
             this.observableOrComputed = observableOrComputed;
             this.settings = options;
+            this.touched = koObservable(false);
+
+            // Computeds.
+            this.failed = koComputed(failedFunction, this, deferEvaluation);
+            this.message = extras.pausableComputed(messageFunction, this, deferEvaluation);
             this.passed = koComputed(passedFunction, this, deferEvaluation);
+            this.pending = koComputed(pendingFunction, this, deferEvaluation);
             this.result = koComputed(resultFunction, this, deferEvaluation);
             this.showMessage = extras.pausableComputed(showMessageFunction, this, deferEvaluation);
-            this.touched = koObservable(false);
         };
 
         definition.prototype = {
             // Validation state methods support a fluent interface.
-            "addRule": function(rule) {
+            "addRule": function (rule) {
                 this.settings.rules.push(rule);
 
                 return this;
@@ -931,7 +961,7 @@ var valerie = valerie || {};
                     ruleSettings.valueFormat = valueFormat;
                     ruleSettings.valueFormatter = valueFormatter;
                 }
-                
+
                 return this.observableOrComputed;
             },
             "name": function (valueOrFunction) {
@@ -996,7 +1026,7 @@ var valerie = valerie || {};
     // ReSharper disable InconsistentNaming
     var FailedValidationResult = valerie.FailedValidationResult,
         // ReSharper restore InconsistentNaming
-        passedValidationResult = valerie.PassedValidationResult,
+        passedValidationResult = valerie.ValidationResult.passed,
         utils = valerie.utils,
         dom = valerie.dom,
         knockout = valerie.knockout,
@@ -1235,8 +1265,28 @@ var valerie = valerie || {};
                 }
             };
 
+        // + disabledWhenNotValid binding handler
+        koBindingHandlers.disabledWhenNotValid = isolatedBindingHandler(
+            function (element, valueAccessor, allBindingsAccessor, viewModel) {
+                var functionToApply = function (validationState) {
+                    element.disabled = !validationState.passed();
+                };
+
+                applyForValidationState(functionToApply, element, valueAccessor, allBindingsAccessor, viewModel);
+            });
+
+        // + disabledWhenTouchedAndNotValid binding handler
+        koBindingHandlers.disabledWhenTouchedAndNotValid = isolatedBindingHandler(
+            function (element, valueAccessor, allBindingsAccessor, viewModel) {
+                var functionToApply = function (validationState) {
+                    element.disabled = validationState.touched() && !validationState.passed();
+                };
+
+                applyForValidationState(functionToApply, element, valueAccessor, allBindingsAccessor, viewModel);
+            });
+
         // + enabledWhenApplicable binding handler
-        koBindingHandlers.enableWhenApplicable = isolatedBindingHandler(
+        koBindingHandlers.enabledWhenApplicable = isolatedBindingHandler(
             function (element, valueAccessor, allBindingsAccessor, viewModel) {
                 var functionToApply = function (validationState) {
                     element.disabled = !validationState.settings.applicable();
@@ -1285,6 +1335,7 @@ var valerie = valerie || {};
                         failed = validationState.failed(),
                         focused = false,
                         passed = validationState.passed(),
+                        pending = validationState.pending(),
                         touched = validationState.touched(),
                         untouched = !touched;
 
@@ -1295,6 +1346,7 @@ var valerie = valerie || {};
                     dictionary[classNames.failed] = failed;
                     dictionary[classNames.focused] = focused;
                     dictionary[classNames.passed] = passed;
+                    dictionary[classNames.pending] = pending;
                     dictionary[classNames.touched] = touched;
                     dictionary[classNames.untouched] = untouched;
 
@@ -1308,6 +1360,7 @@ var valerie = valerie || {};
             "failed": "error",
             "focused": "focused",
             "passed": "success",
+            "pending": "waiting",
             "touched": "touched",
             "untouched": "untouched"
         };

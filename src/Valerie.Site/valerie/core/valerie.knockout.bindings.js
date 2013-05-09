@@ -70,26 +70,25 @@
                 var enteredValue = ko.utils.stringTrim(element.value),
                     parsedValue,
                     validationState = getValidationState(observableOrComputed),
-                    settings = validationState.settings;
+                    settings = validationState.settings,
+                    result = passedValidationResult;
 
-                if (enteredValue.length === 0 && settings.required()) {
+                if (enteredValue.length === 0) {
                     observableOrComputed(null);
 
-                    validationState.boundEntry.result(new FailedValidationResult(settings.missingFailureMessage));
+                    if (settings.required()) {
+                        result = new FailedValidationResult(settings.missingFailureMessage);
+                    }
+                } else {
+                    parsedValue = settings.converter.parser(enteredValue);
+                    observableOrComputed(parsedValue);
 
-                    return;
+                    if (parsedValue == null) {
+                        result = new FailedValidationResult(settings.invalidEntryFailureMessage);
+                    }
                 }
 
-                parsedValue = settings.converter.parser(enteredValue);
-                observableOrComputed(parsedValue);
-
-                if (parsedValue == null) {
-                    validationState.boundEntry.result(new FailedValidationResult(settings.invalidEntryFailureMessage));
-
-                    return;
-                }
-
-                validationState.boundEntry.result(passedValidationResult);
+                validationState.boundEntry.result(result);
             },
             textualInputUpdateFunction = function (observableOrComputed, validationState, element) {
                 // Get the value so this function becomes dependent on the observable or computed.

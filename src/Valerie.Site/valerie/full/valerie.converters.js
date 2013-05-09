@@ -1,5 +1,5 @@
-﻿// valerie.converters.numeric
-// - converters for numeric values
+﻿// valerie.converters
+// - additional converters
 // (c) 2013 egrove Ltd.
 // License: MIT (http://www.opensource.org/licenses/mit-license.php)
 
@@ -14,7 +14,8 @@ var valerie = valerie || {};
     "use strict";
 
     var converters = valerie.converters = valerie.converters || {},
-        defaultNumericHelper = new valerie.NumericHelper();
+        defaultNumericHelper = new valerie.NumericHelper(),
+        emailExpression = /^[A-Z0-9._%+-]+@[A-Z0-9.-]+\.[A-Z]{2,4}$/i;
 
     // + converters.defaultNumericHelper
     converters.defaultNumericHelper = defaultNumericHelper;
@@ -52,6 +53,28 @@ var valerie = valerie || {};
     };
 
     converters.currency = { "numericHelper": defaultNumericHelper };
+
+    // + converters.email
+    converters.email = {
+        "formatter": function (value) {
+            if (value == null) {
+                return "";
+            }
+
+            return value;
+        },
+        "parser": function (value) {
+            if (value == null) {
+                return null;
+            }
+            
+            if (!emailExpression.test(value)) {
+                return null;
+            }
+
+            return value.toLowerCase();
+        }
+    };
 
     // + converters.float
     converters.float = {

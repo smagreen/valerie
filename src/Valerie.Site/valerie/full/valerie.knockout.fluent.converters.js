@@ -5,7 +5,7 @@
 
 /// <reference path="../core/valerie.utils.js"/>
 /// <reference path="../core/valerie.knockout.js"/>
-/// <reference path="valerie.converters.numeric.js"/>
+/// <reference path="valerie.converters.js"/>
 
 /*jshint eqnull: true */
 /*global ko: false, valerie: false */
@@ -43,6 +43,13 @@
     prototype.currencyMajorMinor.defaultOptions = {
         "entryFormat": ".c",
         "valueFormat": "C,.c"
+    };
+
+    // + email
+    prototype.email = function () {
+        this.settings.converter = converters.email;
+
+        return this;
     };
 
     // + float

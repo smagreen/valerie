@@ -26,11 +26,6 @@
         return this.addRule(new rules.During(earliestValueOrFunction, null, options));
     };
 
-    // + email
-    prototype.email = function(options) {
-        return this.addRule(new rules.Email(options));
-    };
-
     // + expression
     prototype.expression = function (regularExpressionObjectOrString, options) {
         return this.addRule(new rules.Expression(regularExpressionObjectOrString, options));
