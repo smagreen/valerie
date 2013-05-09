@@ -45,6 +45,13 @@
         "valueFormat": "C,.c"
     };
 
+    // + date
+    prototype.date = function () {
+        this.settings.converter = converters.date;
+
+        return this;
+    };
+
     // + email
     prototype.email = function () {
         this.settings.converter = converters.email;

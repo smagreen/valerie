@@ -3,6 +3,8 @@
 // (c) 2013 egrove Ltd.
 // License: MIT (http://www.opensource.org/licenses/mit-license.php)
 
+/// <reference path="../../core/valerie.formatting.js"/>
+
 /*jshint eqnull: true */
 /*global valerie: true */
 
@@ -12,8 +14,8 @@ var valerie = valerie || {};
     "use strict";
 
     var converters = valerie.converters = valerie.converters || {},
-        postcodeExpression = /([A-Z][A-Z]?)((?:[0-9][A-Z])|(?:[0-9]{1,2}))\s*([0-9])([A-Z][A-Z])/i;
-
+        postcodeExpression = /^([A-Z][A-Z]?)((?:[0-9][A-Z])|(?:[0-9]{1,2}))\s*([0-9])([A-Z][A-Z])$/i;
+    
     // + converters.postcode
     converters.postcode = {
         "formatter": function (value) {
@@ -29,8 +31,8 @@ var valerie = valerie || {};
             }
 
             var matches = value.match(postcodeExpression);
-            
-            if(matches == null || matches.length < 5) {
+
+            if (matches == null) {
                 return null;
             }
 
@@ -38,4 +40,3 @@ var valerie = valerie || {};
         }
     };
 })();
-

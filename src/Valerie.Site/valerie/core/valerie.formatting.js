@@ -24,7 +24,7 @@ var valerie = valerie || {};
         return wholeAndFractionalParts.join(decimalSeparator);
     };
 
-    // + format.replacePlaceholders
+    // + formatting.replacePlaceholders
     formatting.replacePlaceholders = function (format, replacements) {
         if (replacements == null) {
             replacements = {};
@@ -39,5 +39,16 @@ var valerie = valerie || {};
 
             return replacement.toString();
         });
+    };
+
+    // + formatting.pad
+    formatting.pad = function (value, paddingCharacter, width) {
+        value = value.toString();
+        
+        if (value.length >= width) {
+            return value;
+        }
+
+        return (new Array(width + 1 - value.length)).join(paddingCharacter) + value;
     };
 })();

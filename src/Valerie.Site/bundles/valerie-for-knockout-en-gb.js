@@ -201,7 +201,7 @@ var valerie = valerie || {};
         return wholeAndFractionalParts.join(decimalSeparator);
     };
 
-    // + format.replacePlaceholders
+    // + formatting.replacePlaceholders
     formatting.replacePlaceholders = function (format, replacements) {
         if (replacements == null) {
             replacements = {};
@@ -216,6 +216,17 @@ var valerie = valerie || {};
 
             return replacement.toString();
         });
+    };
+
+    // + formatting.pad
+    formatting.pad = function (value, paddingCharacter, width) {
+        value = value.toString();
+        
+        if (value.length >= width) {
+            return value;
+        }
+
+        return (new Array(width + 1 - value.length)).join(paddingCharacter) + value;
     };
 })();
 
@@ -1591,6 +1602,7 @@ var valerie = valerie || {};
 // (c) 2013 egrove Ltd.
 // License: MIT (http://www.opensource.org/licenses/mit-license.php)
 
+/// <reference path="../core/valerie.formatting.js"/>
 /// <reference path="valerie.numericHelper.js"/>
 
 /*jshint eqnull: true */
@@ -1601,9 +1613,70 @@ var valerie = valerie || {};
 (function () {
     "use strict";
 
-    var converters = valerie.converters = valerie.converters || {},
+    var pad = valerie.formatting.pad,
+        converters = valerie.converters = valerie.converters || {},
         defaultNumericHelper = new valerie.NumericHelper(),
+        dateExpression = /^(\d\d?)(?:\-|\/)(\d\d?)(?:\-|\/)(\d\d\d\d)$/,
         emailExpression = /^[A-Z0-9._%+-]+@[A-Z0-9.-]+\.[A-Z]{2,4}$/i;
+
+    // + converters.date
+    converters.date = {
+        "formatter": function (value) {
+            if (value == null) {
+                return "";
+            }
+
+            var firstPart,
+                secondPart;
+            
+            if (converters.date.monthBeforeDate) {
+                firstPart = value.getMonth() + 1;
+                secondPart = value.getDate();
+            } else {
+                firstPart = value.getDate();
+                secondPart = value.getMonth() + 1;
+            }
+            
+            return pad(firstPart, "0", 2) + "/" + pad(secondPart, "0", 2) + "/" + value.getFullYear();
+        },
+        "parser": function (value) {
+            if (value == null) {
+                return null;
+            }
+
+            var matches = value.match(dateExpression);
+
+            if (matches == null) {
+                return null;
+            }
+
+            var firstPart = parseInt(matches[1], 10),
+                secondPart = parseInt(matches[2], 10),
+                date,
+                month,
+                year = parseInt(matches[3], 10);
+
+            if (converters.date.monthBeforeDate) {
+                date = secondPart;
+                month = firstPart;
+            } else {
+                date = firstPart;
+                month = secondPart;
+            }
+
+            month--;
+
+            value = new Date(year, month, date);
+
+            if (value.getFullYear() !== year || value.getMonth() !== month || value.getDate() !== date) {
+                return null;
+            }
+
+            return value;
+        }
+    };
+
+    converters.date.monthBeforeDate = false;
 
     // + converters.defaultNumericHelper
     converters.defaultNumericHelper = defaultNumericHelper;
@@ -2077,6 +2150,13 @@ var valerie = valerie || {};
         "valueFormat": "C,.c"
     };
 
+    // + date
+    prototype.date = function () {
+        this.settings.converter = converters.date;
+
+        return this;
+    };
+
     // + email
     prototype.email = function () {
         this.settings.converter = converters.email;
@@ -2276,7 +2356,7 @@ var valerie = valerie || {};
 })();
 
 ///#source 1 1 ../valerie/localisation/en-gb/full.js
-/// <reference path="../../full/valerie.converters.numeric.js"/>
+/// <reference path="../../full/valerie.converters.js"/>
 /// <reference path="../../full/valerie.knockout.fluent.rules.js"/>
 
 /*global valerie: false */
@@ -2335,6 +2415,8 @@ var valerie = valerie || {};
 // (c) 2013 egrove Ltd.
 // License: MIT (http://www.opensource.org/licenses/mit-license.php)
 
+/// <reference path="../../core/valerie.formatting.js"/>
+
 /*jshint eqnull: true */
 /*global valerie: true */
 
@@ -2344,8 +2426,8 @@ var valerie = valerie || {};
     "use strict";
 
     var converters = valerie.converters = valerie.converters || {},
-        postcodeExpression = /([A-Z][A-Z]?)((?:[0-9][A-Z])|(?:[0-9]{1,2}))\s*([0-9])([A-Z][A-Z])/i;
-
+        postcodeExpression = /^([A-Z][A-Z]?)((?:[0-9][A-Z])|(?:[0-9]{1,2}))\s*([0-9])([A-Z][A-Z])$/i;
+    
     // + converters.postcode
     converters.postcode = {
         "formatter": function (value) {
@@ -2361,8 +2443,8 @@ var valerie = valerie || {};
             }
 
             var matches = value.match(postcodeExpression);
-            
-            if(matches == null || matches.length < 5) {
+
+            if (matches == null) {
                 return null;
             }
 
@@ -2370,7 +2452,6 @@ var valerie = valerie || {};
         }
     };
 })();
-
 
 ///#source 1 1 ../valerie/localisation/en-gb/valerie.knockout.fluent.converters.en-gb.js
 // valerie.knockout.fluent.converters.en-gb
@@ -2396,7 +2477,5 @@ var valerie = valerie || {};
 
         return this;
     };
-
 })();
-
 

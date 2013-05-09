@@ -83,6 +83,13 @@
                     </label>
                     <span data-bind="validationMessageFor: email"></span>
                 </div>
+                <div>
+                    <label>
+                        Date of Birth
+                        <input data-bind="value: dateOfBirth, validationCss: true" />
+                    </label>
+                    <span data-bind="validationMessageFor: dateOfBirth"></span>
+                </div>
             </section>
             <section>
                 <h2>House Details</h2>
@@ -230,6 +237,10 @@
             window.viewModel = viewModel = k.validatableModel({
                 "clearErrors": function () { viewModel.validation().touched(false).clearSummary(true); },
                 "submit": function () { viewModel.validation().touched(true).updateSummary(true); },
+                "dateOfBirth": ko.observable(new Date(1974, 2, 29))
+                    .validate()
+                    .date()
+                    .end(),
                 "email": ko.observable("")
                     .validate()
                     .email()
