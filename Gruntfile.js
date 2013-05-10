@@ -6,7 +6,7 @@ module.exports = function (grunt) {
             "distribution"
         ],
         "copy": {
-            "build": {
+            "distribute": {
                 "files": [
                     {
                         "expand": true,
@@ -167,8 +167,8 @@ module.exports = function (grunt) {
     ]);
 
     grunt.registerTask("distribute", [
-        "test",
-        "copy",
+        "buildForCommit",
+        "copy:distribute",
         "uglify"
     ]);
 }
