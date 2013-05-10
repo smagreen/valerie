@@ -38,13 +38,9 @@
             "code/tests/built/SpecRunner.html"
         ],
         "browsers": [
-            "ie/6..latest",
             "chrome/latest",
             "firefox/latest",
-            "safari/latest",
-            "opera/latest",
-            "iphone/6",
-            "ipad/6"
+            "ie/6..latest"
         ]
     }
 }
