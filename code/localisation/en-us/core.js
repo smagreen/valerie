@@ -1,4 +1,5 @@
-﻿/// <reference path="../../core/valerie.knockout.js"/>
+﻿/// <reference path="../../core/valerie.js"/>
+/// <reference path="../../core/valerie.knockout.js"/>
 
 /*global valerie: false */
 

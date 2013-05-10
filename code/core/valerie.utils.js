@@ -2,10 +2,10 @@
 // - general purpose utilities
 // - used by other parts of the valerie library
 
-/*global valerie: true */
-/*jshint eqnull: true */
+/// <reference path="valerie.js"/>
 
-var valerie = valerie || {};
+/*jshint eqnull: true */
+/*global valerie: false */
 
 (function () {
     "use strict";

@@ -1,14 +1,11 @@
 ﻿// valerie.converters.en-gb
 // - additional converters for the en-gb locale
-// (c) 2013 egrove Ltd.
-// License: MIT (http://www.opensource.org/licenses/mit-license.php)
 
+/// <reference path="../../core/valerie.js"/>
 /// <reference path="../../core/valerie.formatting.js"/>
 
 /*jshint eqnull: true */
-/*global valerie: true */
-
-var valerie = valerie || {};
+/*global valerie: false */
 
 (function () {
     "use strict";

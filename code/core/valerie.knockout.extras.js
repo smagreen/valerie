@@ -2,12 +2,11 @@
 // - extra functionality for KnockoutJS
 // - used by other parts of the valerie library
 
-/// <reference path="../../dependencies/knockout-2.2.1.debug.js"/>
+/// <reference path="../dependencies/knockout-2.2.1.debug.js"/>
+/// <reference path="valerie.js"/>
 
 /*jshint eqnull: true */
-/*global ko: false, valerie: true */
-
-var valerie = valerie || {};
+/*global ko: false, valerie: false */
 
 (function () {
     "use strict";

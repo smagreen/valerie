@@ -2,9 +2,10 @@
 // - utilities for working with the document object model
 // - used by other parts of the valerie library
 
-/*jshint eqnull: true */
+/// <reference path="valerie.js"/>
 
-var valerie = valerie || {};
+/*jshint eqnull: true */
+/*global valerie: false */
 
 (function () {
     "use strict";

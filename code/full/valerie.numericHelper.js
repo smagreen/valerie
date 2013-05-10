@@ -1,15 +1,12 @@
 ﻿// valerie.numericHelper
 // - helper for parsing and formatting numeric values
 // - used by other parts of the valerie library
-// (c) 2013 egrove Ltd.
-// License: MIT (http://www.opensource.org/licenses/mit-license.php)
 
+/// <reference path="../core/valerie.js"/>
 /// <reference path="../core/valerie.formatting.js"/>
 
 /*jshint eqnull: true */
-/*global valerie: true, boss:true */
-
-var valerie = valerie || {};
+/*global valerie: false */
 
 (function () {
     "use strict";

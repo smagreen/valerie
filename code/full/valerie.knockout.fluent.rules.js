@@ -1,13 +1,12 @@
 ﻿// valerie.knockout.fluent.rules
 // - additional functions for the PropertyValidationState prototype for fluently specifying rules
-// (c) 2013 egrove Ltd.
-// License: MIT (http://www.opensource.org/licenses/mit-license.php)
 
+/// <reference path="../core/valerie.js"/>
 /// <reference path="../core/valerie.knockout.js"/>
 /// <reference path="valerie.rules.js"/>
 
 /*jshint eqnull: true */
-/*global ko: false, valerie: false */
+/*global valerie: false */
 
 (function () {
     "use strict";

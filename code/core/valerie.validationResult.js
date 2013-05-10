@@ -2,9 +2,9 @@
 // - defines the ValidationResult constructor function
 // - used by other parts of the valerie library
 
-/*global valerie: true */
+/// <reference path="valerie.js"/>
 
-var valerie = valerie || {};
+/*global valerie: false */
 
 (function () {
     "use strict";

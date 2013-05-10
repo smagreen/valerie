@@ -1,8 +1,7 @@
 ﻿// valerie.rules
 // - general purpose rules
-// (c) 2013 egrove Ltd.
-// License: MIT (http://www.opensource.org/licenses/mit-license.php)
 
+/// <reference path="../core/valerie.js"/>
 /// <reference path="../core/valerie.validationResult.js"/>
 /// <reference path="../core/valerie.passThroughConverter.js"/>
 /// <reference path="../core/valerie.utils.js"/>

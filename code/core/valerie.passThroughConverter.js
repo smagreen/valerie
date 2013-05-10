@@ -2,10 +2,10 @@
 // - the pass through converter
 // - used by other parts of the valerie library
 
+/// <reference path="valerie.js"/>
+    
 /*jshint eqnull: true */
-/*global valerie: true */
-
-var valerie = valerie || {};
+/*global valerie: false */
 
 (function () {
     "use strict";

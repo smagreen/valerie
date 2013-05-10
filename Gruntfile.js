@@ -1,10 +1,27 @@
 module.exports = function (grunt) {
     grunt.initConfig({
         "pkg": grunt.file.readJSON("package.json"),
+        "clean": [
+            "build",
+            "distribution"
+        ],
+        "copy": {
+            "build": {
+                "files": [
+                    {
+                        "expand": true,
+                        "cwd": "build",
+                        "src": ["*.js"],
+                        "dest": "distribution/"
+                    }
+                ]
+            }
+        },
         "concat": {
             "core": {
                 "src": [
                     "license.js",
+                    "code/core/valerie.js",
                     "code/core/valerie.validationResult.js",
                     "code/core/valerie.utils.js",
                     "code/core/valerie.formatting.js",
@@ -38,33 +55,44 @@ module.exports = function (grunt) {
                 "dest": "build/valerie-for-knockout-en-gb.js"
             }
         },
+        "jshint": {
+            files: {
+                src: [
+                    "build/*.js"
+                ]
+            }
+        },
         "uglify": {
+            "options": {
+                "banner": '/* valeriejs - MIT license - (c) egrove Ltd (egrove.co.uk) */\n'
+            },
             "build": {
-                "options": {
-                    "banner": '/* valeriejs - MIT license - (c) egrove Ltd (egrove.co.uk) */\n'
-                },
-                "files": {
-                    "distribution/valerie-for-knockout-core.min.js": [
-                        "build/valerie-for-knockout-core.js"
-                    ],
-                    "distribution/valerie-for-knockout.min.js": [
-                        "build/valerie-for-knockout.js"
-                    ],
-                    "distribution/valerie-for-knockout-en-gb.min.js": [
-                        "build/valerie-for-knockout-en-gb.js"
-                    ]
-                }
+                "files": [
+                    {
+                        "expand": true,
+                        "cwd": "distribution",
+                        "src": "*.js",
+                        "dest": "distribution/",
+                        "ext": ".min.js"
+                    }
+                ]
             }
         }
     });
 
+    grunt.loadNpmTasks("grunt-contrib-clean");
     grunt.loadNpmTasks("grunt-contrib-concat");
+    grunt.loadNpmTasks('grunt-contrib-jshint');
+    grunt.loadNpmTasks("grunt-contrib-copy");
     grunt.loadNpmTasks("grunt-contrib-uglify");
 
     grunt.registerTask("default", [
+        "clean",
         "concat:core",
         "concat:full",
         "concat:en-gb",
-        "uglify"
+        "copy",
+        "uglify",
+        "jshint"
     ]);
 }

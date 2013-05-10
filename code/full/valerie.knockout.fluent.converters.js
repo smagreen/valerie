@@ -1,14 +1,13 @@
 ﻿// valerie.knockout.fluent.converters
 // - additional functions for the PropertyValidationState prototype for fluently specifying converters
-// (c) 2013 egrove Ltd.
-// License: MIT (http://www.opensource.org/licenses/mit-license.php)
 
+/// <reference path="../core/valerie.js"/>
 /// <reference path="../core/valerie.utils.js"/>
 /// <reference path="../core/valerie.knockout.js"/>
 /// <reference path="valerie.converters.js"/>
 
 /*jshint eqnull: true */
-/*global ko: false, valerie: false */
+/*global valerie: false */
 
 (function () {
     "use strict";

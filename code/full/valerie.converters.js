@@ -1,15 +1,12 @@
 ﻿// valerie.converters
 // - additional converters
-// (c) 2013 egrove Ltd.
-// License: MIT (http://www.opensource.org/licenses/mit-license.php)
 
+/// <reference path="../core/valerie.js"/>
 /// <reference path="../core/valerie.formatting.js"/>
 /// <reference path="valerie.numericHelper.js"/>
 
 /*jshint eqnull: true */
-/*global valerie: true */
-
-var valerie = valerie || {};
+/*global valerie: false */
 
 (function () {
     "use strict";

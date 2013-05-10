@@ -1,4 +1,5 @@
-﻿/// <reference path="../../full/valerie.converters.js"/>
+﻿/// <reference path="../../core/valerie.js"/>
+/// <reference path="../../full/valerie.converters.js"/>
 /// <reference path="../../full/valerie.knockout.fluent.rules.js"/>
 
 /*global valerie: false */

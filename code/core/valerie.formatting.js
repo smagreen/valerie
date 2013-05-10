@@ -2,9 +2,10 @@
 // - general purpose formatting functions
 // - used by other parts of the valerie librar
 
-/*jshint eqnull: true */
+/// <reference path="valerie.js"/>
 
-var valerie = valerie || {};
+/*jshint eqnull: true */
+/*global valerie: false */
 
 (function () {
     "use strict";

@@ -3,7 +3,8 @@
 //   - validating user entries
 //   - showing the validation state of a view-model
 
-/// <reference path="../../dependencies/knockout-2.2.1.debug.js"/>
+/// <reference path="../dependencies/knockout-2.2.1.debug.js"/>
+/// <reference path="valerie.js"/>
 /// <reference path="valerie.validationResult.js"/>
 /// <reference path="valerie.utils.js"/>
 /// <reference path="valerie.dom.js"/>
