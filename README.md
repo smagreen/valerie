@@ -3,7 +3,7 @@ valeriejs
 
 [![Build Status](https://travis-ci.org/egrove/valeriejs.png?branch=master)](https://travis-ci.org/egrove/valeriejs)
 
-[![browser support](https://ci.testling.com/USER/PROJECT.png)](https://ci.testling.com/USER/PROJECT)
+[![browser support](https://ci.testling.com/egrove/valeriejs.png)](https://ci.testling.com/egrove/valeriejs)
 
 A validation library for Knockout.
 
