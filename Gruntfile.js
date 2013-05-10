@@ -55,6 +55,20 @@ module.exports = function (grunt) {
                 "dest": "build/valerie-for-knockout-en-gb.js"
             }
         },
+        "jasmine": {
+            "build": {
+                "src": "build/valerie-for-knockout-en-gb.js",
+                "options": {
+                    "keepRunner": true,
+                    "specs": "code/tests/valerie.formatting.tests.js",
+                    "vendor": [
+                        "code/dependencies/html5shiv.js",
+                        "code/dependencies/json3.min.js",
+                        "code/dependencies/knockout-2.2.1.debug.js"
+                        ]
+                }
+            }
+        },
         "jshint": {
             files: {
                 src: [
@@ -82,6 +96,7 @@ module.exports = function (grunt) {
 
     grunt.loadNpmTasks("grunt-contrib-clean");
     grunt.loadNpmTasks("grunt-contrib-concat");
+    grunt.loadNpmTasks('grunt-contrib-jasmine');
     grunt.loadNpmTasks('grunt-contrib-jshint');
     grunt.loadNpmTasks("grunt-contrib-copy");
     grunt.loadNpmTasks("grunt-contrib-uglify");
@@ -99,7 +114,8 @@ module.exports = function (grunt) {
     ]);
 
     grunt.registerTask("test", [
-        "build"
+        "build",
+        "jasmine"
     ]);
 
     grunt.registerTask("distribute", [
