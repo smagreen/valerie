@@ -1,9 +1,7 @@
 ﻿// valerie.knockout
 // - the class and functions that validate a view-model constructed using knockout observables and computeds
-// (c) 2013 egrove Ltd.
-// License: MIT (http://www.opensource.org/licenses/mit-license.php)
 
-/// <reference path="../../frameworks/knockout-2.2.1.debug.js"/>
+/// <reference path="../../dependencies/knockout-2.2.1.debug.js"/>
 /// <reference path="valerie.validationResult.js"/>
 /// <reference path="valerie.passThroughConverter.js"/>
 /// <reference path="valerie.utils.js"/> 

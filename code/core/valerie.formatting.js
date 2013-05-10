@@ -1,8 +1,6 @@
 ﻿// valerie.formatting
 // - general purpose formatting functions
-// - used by other parts of the valerie library
-// (c) 2013 egrove Ltd.
-// License: MIT (http://www.opensource.org/licenses/mit-license.php)
+// - used by other parts of the valerie librar
 
 /*jshint eqnull: true */
 

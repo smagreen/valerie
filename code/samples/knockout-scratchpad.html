@@ -2,7 +2,7 @@
 <html>
 <head>
     <!--[if lte IE 8]>
-            <script type="text/javascript" src="frameworks/html5shiv.js"></script>
+            <script type="text/javascript" src="../dependencies/html5shiv.js"></script>
         <![endif]-->
     <meta charset="utf-8">
     <title>valerie knockout Scratchpad</title>
@@ -79,14 +79,14 @@
                 <div>
                     <label>
                         Email
-                        <input data-bind="value: email, validationCss: true" />
+                            <input data-bind="value: email, validationCss: true" />
                     </label>
                     <span data-bind="validationMessageFor: email"></span>
                 </div>
                 <div>
                     <label>
                         Date of Birth
-                        <input data-bind="value: dateOfBirth, validationCss: true" />
+                            <input data-bind="value: dateOfBirth, validationCss: true" />
                     </label>
                     <span data-bind="validationMessageFor: dateOfBirth"></span>
                 </div>
@@ -96,18 +96,18 @@
                 <div>
                     <label>
                         Location                    
-                        <select data-bind="value: houseDetails.location, validationCss: true">
-                            <option value="">Please Select...</option>
-                            <option>England</option>
-                            <option>Wales</option>
-                        </select>
+                            <select data-bind="value: houseDetails.location, validationCss: true">
+                                <option value="">Please Select...</option>
+                                <option>England</option>
+                                <option>Wales</option>
+                            </select>
                     </label>
                     <span data-bind="validationMessageFor: houseDetails.location"></span>
                 </div>
                 <div>
                     <label>
                         Postcode
-                        <input data-bind="value: houseDetails.postcode, validationCss: true" />
+                            <input data-bind="value: houseDetails.postcode, validationCss: true" />
                     </label>
                     <span data-bind="validationMessageFor: houseDetails.postcode"></span>
                 </div>
@@ -140,7 +140,7 @@
                 <div>
                     <label>
                         House Price
-                        <input data-bind="value: housePrice, enableWhenApplicable: true, validationCss: true" />
+                            <input data-bind="value: housePrice, enableWhenApplicable: true, validationCss: true" />
                     </label>
                     <span data-bind="validationMessageFor: housePrice"></span>
                 </div>
@@ -153,15 +153,15 @@
                 <div data-bind="visibleWhenValid: housePrice">
                     <p>
                         You can borrow between:
-                        <strong data-bind="formattedValue: loanAmountMin, formatter: valerie.converters.currencyMajor.formatter, valueFormat: 'C,'"></strong>
+                            <strong data-bind="formattedValue: loanAmountMin, formatter: valerie.converters.currencyMajor.formatter, valueFormat: 'C,'"></strong>
                         &nbsp;and
-                        <strong data-bind="formattedValue: loanAmountMax"></strong>.
+                            <strong data-bind="formattedValue: loanAmountMax"></strong>.
                     </p>
                 </div>
                 <div>
                     <label>
                         Loan Amount
-                        <input data-bind="value: loanAmount, enabledWhenApplicable: true, validationCss: true" name="loanAmount" />
+                            <input data-bind="value: loanAmount, enabledWhenApplicable: true, validationCss: true" name="loanAmount" />
                     </label>
                     <aside data-bind="validationCss: loanAmount">Tooltip for an invalid entry.</aside>
                     <span data-bind="validationMessageFor: loanAmount"></span>
@@ -185,10 +185,33 @@
     </div>
 
     <!--[if lt IE 8]>
-            <script type="text/javascript" src="frameworks/json3.min.js"></script>
+            <script type="text/javascript" src="../dependencies/json3.min.js"></script>
         <![endif]-->
-    <script type="text/javascript" src="frameworks/knockout-2.2.1.debug.js"></script>
-    <script type="text/javascript" src="bundles/valerie-for-knockout-en-gb.js"></script>
+    <!-- KnockoutJS -->
+    <script type="text/javascript" src="../dependencies/knockout-2.2.1.debug.js"></script>
+
+    <!-- ValerieJS -->
+    <script type="text/javascript" src="../../distribution/valerie-for-knockout-en-gb.min.js"></script>
+    
+    <!--
+    <script type="text/javascript" src="../core/valerie.validationResult.js"></script>
+    <script type="text/javascript" src="../core/valerie.utils.js"></script>
+    <script type="text/javascript" src="../core/valerie.formatting.js"></script>
+    <script type="text/javascript" src="../core/valerie.passThroughConverter.js"></script>
+    <script type="text/javascript" src="../core/valerie.knockout.extras.js"></script>
+    <script type="text/javascript" src="../core/valerie.dom.js"></script>
+    <script type="text/javascript" src="../core/valerie.knockout.js"></script>
+    <script type="text/javascript" src="../core/valerie.knockout.bindings.js"></script>
+    <script type="text/javascript" src="../full/valerie.numericHelper.js"></script>
+    <script type="text/javascript" src="../full/valerie.converters.js"></script>
+    <script type="text/javascript" src="../full/valerie.rules.js"></script>
+    <script type="text/javascript" src="../full/valerie.knockout.fluent.converters.js"></script>
+    <script type="text/javascript" src="../full/valerie.knockout.fluent.rules.js"></script>
+    <script type="text/javascript" src="../localisation/en-gb/core.js"></script>
+    <script type="text/javascript" src="../localisation/en-gb/full.js"></script>
+    <script type="text/javascript" src="../localisation/en-gb/valerie.converters.en-gb.js"></script>
+    <script type="text/javascript" src="../localisation/en-gb/valerie.knockout.fluent.converters.en-gb.js"></script>
+    -->
 
     <script type="text/javascript">
         window.onload = function () {

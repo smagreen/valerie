@@ -2,10 +2,8 @@
 // - knockout bindings for:
 //   - validating user entries
 //   - showing the validation state of a view-model
-// (c) 2013 egrove Ltd.
-// License: MIT (http://www.opensource.org/licenses/mit-license.php)
 
-/// <reference path="../../frameworks/knockout-2.2.1.debug.js"/>
+/// <reference path="../../dependencies/knockout-2.2.1.debug.js"/>
 /// <reference path="valerie.validationResult.js"/>
 /// <reference path="valerie.utils.js"/>
 /// <reference path="valerie.dom.js"/>

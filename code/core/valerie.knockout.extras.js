@@ -1,10 +1,8 @@
 ﻿// valerie.knockout.extras
 // - extra functionality for KnockoutJS
 // - used by other parts of the valerie library
-// (c) 2013 egrove Ltd.
-// License: MIT (http://www.opensource.org/licenses/mit-license.php)
 
-/// <reference path="../../frameworks/knockout-2.2.1.debug.js"/>
+/// <reference path="../../dependencies/knockout-2.2.1.debug.js"/>
 
 /*jshint eqnull: true */
 /*global ko: false, valerie: true */
