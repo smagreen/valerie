@@ -142,7 +142,7 @@ module.exports = function (grunt) {
     grunt.loadNpmTasks("grunt-sed");
 
     grunt.registerTask("default", [
-        "test"
+        "buildForCommit"
     ]);
 
     grunt.registerTask("build", [
@@ -156,6 +156,10 @@ module.exports = function (grunt) {
     grunt.registerTask("test", [
         "build",
         "jasmine",
+    ]);
+
+    grunt.registerTask("buildForCommit", [
+        "test",
         "copy:updateRunner",
         "sed:updateRunner1",
         "sed:updateRunner2",
