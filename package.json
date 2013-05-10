@@ -39,10 +39,10 @@
         ],
         "browsers": [
             "ie/6..latest",
-            "chrome/20..latest",
-            "firefox/10..latest",
+            "chrome/latest",
+            "firefox/latest",
             "safari/latest",
-            "opera/11.0..latest",
+            "opera/latest",
             "iphone/6",
             "ipad/6"
         ]
