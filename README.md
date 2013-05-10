@@ -1,6 +1,8 @@
 valeriejs
 =========
 
+[![Build Status](https://travis-ci.org/egrove/valeriejs.png?branch=master)](https://travis-ci.org/egrove/valeriejs)
+
 A validation library for Knockout.
 
 Features include:
