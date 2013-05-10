@@ -28,9 +28,12 @@
         "grunt-contrib-uglify": "~0.2.0",
         "tape": "~0.0.4"
     },
+    "scripts": {
+        "test": "grunt test --verbose"
+    },
     "testling": {
         "scripts": [
-            "distribution/valerie-for-knockout-en-gn.js",
+            "distribution/valerie-for-knockout-en-gb.js",
             "code/tests/*.js"
         ],
         "browsers": {

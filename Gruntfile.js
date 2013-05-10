@@ -87,12 +87,24 @@ module.exports = function (grunt) {
     grunt.loadNpmTasks("grunt-contrib-uglify");
 
     grunt.registerTask("default", [
+        "distribute"
+    ]);
+
+    grunt.registerTask("build", [
         "clean",
         "concat:core",
         "concat:full",
         "concat:en-gb",
-        "copy",
-        "uglify",
         "jshint"
+    ]);
+
+    grunt.registerTask("test", [
+        "build"
+    ]);
+
+    grunt.registerTask("distribute", [
+        "test",
+        "copy",
+        "uglify"
     ]);
 }
