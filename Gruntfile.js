@@ -87,7 +87,7 @@ module.exports = function (grunt) {
     grunt.loadNpmTasks("grunt-contrib-uglify");
 
     grunt.registerTask("default", [
-        "distribute"
+        "test"
     ]);
 
     grunt.registerTask("build", [
