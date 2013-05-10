@@ -1,5 +1,5 @@
-(function() {
-    if (! jasmine) {
+(function () {
+    if (!jasmine) {
         throw new Exception("jasmine library does not exist in global namespace!");
     }
 
@@ -15,14 +15,14 @@
      * jasmine.getEnv().addReporter(new jasmine.TapReporter());
      * jasmine.getEnv().execute();
      */
-    var TapReporter = function() {
+    var TapReporter = function () {
         this.started = false;
         this.finished = false;
     };
 
     TapReporter.prototype = {
 
-        reportRunnerStarting: function(runner) {
+        reportRunnerStarting: function (runner) {
             this.started = true;
             this.start_time = (new Date()).getTime();
             this.executed_specs = 0;
@@ -30,14 +30,14 @@
             this.executed_asserts = 0;
             this.passed_asserts = 0;
             // should have at least 1 spec, otherwise it's considered a failure
-            this.log('1..'+ Math.max(runner.specs().length, 1));
+            this.log('1..' + Math.max(runner.specs().length, 1));
         },
 
-        reportSpecStarting: function(spec) {
+        reportSpecStarting: function (spec) {
             this.executed_specs++;
         },
 
-        reportSpecResults: function(spec) {
+        reportSpecResults: function (spec) {
             var resultText = "not ok";
             var errorMessage = '';
 
@@ -59,16 +59,16 @@
                 var expectationResult, stackMessage;
                 while (expectationResult = items[i++]) {
                     if (expectationResult.trace) {
-                        stackMessage = expectationResult.trace.stack? expectationResult.trace.stack : expectationResult.message;
-                        errorMessage += '\n  '+ stackMessage;
+                        stackMessage = expectationResult.trace.stack ? expectationResult.trace.stack : expectationResult.message;
+                        errorMessage += '\n  ' + stackMessage;
                     }
                 }
             }
 
-            this.log(resultText +" "+ (spec.id + 1) +" - "+ spec.suite.description +" : "+ spec.description + errorMessage);
+            this.log(resultText + " " + (spec.id + 1) + " - " + spec.suite.description + " : " + spec.description + errorMessage);
         },
 
-        reportRunnerResults: function(runner) {
+        reportRunnerResults: function (runner) {
             var dur = (new Date()).getTime() - this.start_time;
             var failed = this.executed_specs - this.passed_specs;
             var spec_str = this.executed_specs + (this.executed_specs === 1 ? " spec, " : " specs, ");
@@ -76,14 +76,14 @@
             var assert_str = this.executed_asserts + (this.executed_asserts === 1 ? " assertion, " : " assertions, ");
 
             if (this.executed_asserts) {
-                this.log("# "+ spec_str + assert_str + fail_str + (dur/1000) + "s.");
+                this.log("# " + spec_str + assert_str + fail_str + (dur / 1000) + "s.");
             } else {
                 this.log('not ok 1 - no asserts run.');
             }
             this.finished = true;
         },
 
-        log: function(str) {
+        log: function (str) {
             var console = jasmine.getGlobal().console;
             if (console && console.log) {
                 console.log(str);

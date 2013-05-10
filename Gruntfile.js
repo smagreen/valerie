@@ -15,6 +15,26 @@ module.exports = function (grunt) {
                         "dest": "distribution/"
                     }
                 ]
+            },
+            "updateRunner": {
+                "files": [
+                    {
+                        "expand": true,
+                        "cwd": ".grunt/grunt-contrib-jasmine",
+                        "src": ["*"],
+                        "dest": "code/tests/built/"
+                    },
+                    {
+                        "src": ["_SpecRunner.html"],
+                        "dest": "code/tests/built/SpecRunner.html"
+                    },
+                    {
+                        "expand": true,
+                        "cwd": "build",
+                        "src": ["valerie-*.js"],
+                        "dest": "code/tests/built/"
+                    }
+                ]
             }
         },
         "concat": {
@@ -62,18 +82,37 @@ module.exports = function (grunt) {
                     "keepRunner": true,
                     "specs": "code/tests/valerie.formatting.tests.js",
                     "vendor": [
+                        "code/dependencies/jasmine-tap.js",
+                        "code/dependencies/jasmine-tap-helper.js",
                         "code/dependencies/html5shiv.js",
                         "code/dependencies/json3.min.js",
                         "code/dependencies/knockout-2.2.1.debug.js"
-                        ]
+                    ]
                 }
             }
         },
         "jshint": {
-            files: {
-                src: [
+            "files": {
+                "src": [
                     "build/*.js"
                 ]
+            }
+        },
+        "sed": {
+            "updateRunner1": {
+                "pattern": /(\.\/)?.grunt\/grunt-contrib-jasmine\//g,
+                "replacement": "",
+                "path": "code/tests/built/SpecRunner.html"
+            },
+            "updateRunner2": {
+                "pattern": /\.\/code\//g,
+                "replacement": "../../",
+                "path": "code/tests/built/SpecRunner.html"
+            },
+            "updateRunner3": {
+                "pattern": /\.\/build\//g,
+                "replacement": "",
+                "path": "code/tests/built/SpecRunner.html"
             }
         },
         "uglify": {
@@ -100,6 +139,7 @@ module.exports = function (grunt) {
     grunt.loadNpmTasks('grunt-contrib-jshint');
     grunt.loadNpmTasks("grunt-contrib-copy");
     grunt.loadNpmTasks("grunt-contrib-uglify");
+    grunt.loadNpmTasks("grunt-sed");
 
     grunt.registerTask("default", [
         "test"
@@ -115,7 +155,11 @@ module.exports = function (grunt) {
 
     grunt.registerTask("test", [
         "build",
-        "jasmine"
+        "jasmine",
+        "copy:updateRunner",
+        "sed:updateRunner1",
+        "sed:updateRunner2",
+        "sed:updateRunner3"
     ]);
 
     grunt.registerTask("distribute", [
