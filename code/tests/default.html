@@ -1,35 +1,50 @@
 ﻿<!DOCTYPE html>
 <html>
 <head>
-    <meta charset="utf-8">
-    <title>Valerie Tests</title>
-    <style type="text/css">
-        * {
-            font-family: "Calibri";
-        }
+    <!--[if lte IE 8]>
+    <script type="text/javascript" src="../dependencies/html5shiv.js"></script>
+    <![endif]-->
 
-        div {
-            float: left;
-            margin-right: 2em;
-        }
+    <title>valeriejs Tests</title>
+    <link rel="stylesheet" type="text/css" href="jasmine/jasmine.css">
 
-        iframe {
-            width: 80%;
-            height: 800px;
-        }
-    </style>
+    <!-- Jasmine -->
+    <script type="text/javascript" src="jasmine/jasmine.js"></script>
+    <script type="text/javascript" src="jasmine/jasmine-html.js"></script>
+    <script type="text/javascript" src="jasmine/jasmine-tap.js"></script>
+
+    <!-- Dependencies -->
+    <script type="text/javascript" src="../dependencies/knockout-2.2.1.debug.js"></script>
+
+    <!-- Library to test -->
+    <script type="text/javascript" src="../../build/valerie-for-knockout-en-gb.js"></script>
+
+    <!-- Tests -->
+    <script type="text/javascript" src="valerie.formatting.tests.js"></script>
+
+    <script type="text/javascript">
+        (function () {
+            var jasmineEnv = jasmine.getEnv();
+            jasmineEnv.updateInterval = 1000;
+
+            // HTML reporter
+            var htmlReporter = new jasmine.HtmlReporter();
+
+            jasmineEnv.addReporter(htmlReporter);
+
+            jasmineEnv.specFilter = function (spec) {
+                return htmlReporter.specFilter(spec);
+            };
+
+            // TAP reporter
+            jasmineEnv.addReporter(new jasmine.TapReporter());
+
+            window.onload = function () {
+                jasmineEnv.execute();
+            };
+        })();
+    </script>
 </head>
 <body>
-    <h1>Valerie Tests</h1>
-    <div>
-        <ul>
-            <li><a href="knockout-tests.html" target="tests">Knockout</a></li>
-            <li><a href="rules-tests.html" target="tests">Rules</a></li>
-        </ul>
-        <ul>
-            <li><a href="knockout-scratchpad.html" target="tests">Knockout Scratchpad</a></li>
-        </ul>
-    </div>
-    <iframe name="tests"></iframe>
 </body>
 </html>
