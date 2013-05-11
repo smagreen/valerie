@@ -2,7 +2,7 @@ module.exports = function (grunt) {
     grunt.initConfig({
         "pkg": grunt.file.readJSON("package.json"),
         "clean": [
-            "build",
+            "build"
         ],
         "copy": {
             "updateRunner": {
@@ -70,16 +70,16 @@ module.exports = function (grunt) {
                 "options": {
                     "keepRunner": true,
                     "specs": [
-                        "code/tests/core/valerie.formatting.tests.js",
-                        "code/tests/core/valerie.utils.tests.js",
+                        "code/tests/core/*.tests.js"
                         ],
                     "vendor": [
                         "code/tests/runnerScripts/ddr-ecma5-1.2.1-min.js",
                         "code/tests/runnerScripts/jasmine-tap.js",
                         "code/tests/runnerScripts/jasmine-tap-helper.js",
-                        "code/dependencies/html5shiv.js",
-                        "code/dependencies/json3.min.js",
-                        "code/dependencies/knockout-2.2.1.debug.js"
+                        "code/thirdParty/html5shiv.js",
+                        "code/thirdParty/json3.min.js",
+                        "code/thirdParty/knockout-2.2.1.debug.js",
+                        "code/thirdParty/jquery-1.9.1.min.js"
                     ]
                 }
             }
@@ -148,7 +148,7 @@ module.exports = function (grunt) {
 
     grunt.registerTask("test", [
         "concatAndHint",
-        "jasmine",
+        "jasmine"
     ]);
 
     grunt.registerTask("build", [

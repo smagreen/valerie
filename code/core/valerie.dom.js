@@ -26,6 +26,10 @@
 
         classNames = classNames.replace(trimWhitespaceExpression, "");
 
+        if(classNames.length === 0) {
+            return dictionary;
+        }
+
         array = classNames.split(classNamesSeparatorExpression);
 
         for (index = 0; index < array.length; index++) {
