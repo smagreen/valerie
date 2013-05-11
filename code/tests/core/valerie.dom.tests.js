@@ -33,4 +33,29 @@
              expect(toString({"class2": true, "class1": true, "class_3": false})).toEqual("class1 class2");
         });
     });
+
+    describe("setElementVisibility", function () {
+       var visibility = dom.setElementVisibility,
+           element;
+
+        beforeEach(function () {
+            $(document.body)
+                .empty()
+                .html("<div class='test'></div>");
+
+            element = $(".test")[0];
+        });
+
+        it("should make the element visible if a truthy value is passed in", function () {
+            visibility(element, true);
+            expect($(".test:visible").length).toEqual(1);
+            expect($(".test:hidden").length).toEqual(0);
+        });
+
+        it("should make the element invisible if a falsy value is passed in", function () {
+            visibility(element, false);
+            expect($(".test:hidden").length).toEqual(1);
+            expect($(".test:visible").length).toEqual(0);
+        });
+    });
 });
