@@ -3,19 +3,8 @@ module.exports = function (grunt) {
         "pkg": grunt.file.readJSON("package.json"),
         "clean": [
             "build",
-            "distribution"
         ],
         "copy": {
-            "distribute": {
-                "files": [
-                    {
-                        "expand": true,
-                        "cwd": "build",
-                        "src": ["*.js"],
-                        "dest": "distribution/"
-                    }
-                ]
-            },
             "updateRunner": {
                 "files": [
                     {
@@ -82,8 +71,9 @@ module.exports = function (grunt) {
                     "keepRunner": true,
                     "specs": "code/tests/valerie.formatting.tests.js",
                     "vendor": [
-                        "code/dependencies/jasmine-tap.js",
-                        "code/dependencies/jasmine-tap-helper.js",
+                        "code/tests/runnerScripts/ddr-ecma5-1.2.1-min.js",
+                        "code/tests/runnerScripts/jasmine-tap.js",
+                        "code/tests/runnerScripts/jasmine-tap-helper.js",
                         "code/dependencies/html5shiv.js",
                         "code/dependencies/json3.min.js",
                         "code/dependencies/knockout-2.2.1.debug.js"
@@ -123,9 +113,9 @@ module.exports = function (grunt) {
                 "files": [
                     {
                         "expand": true,
-                        "cwd": "distribution",
+                        "cwd": "build",
                         "src": "*.js",
-                        "dest": "distribution/",
+                        "dest": "build/",
                         "ext": ".min.js"
                     }
                 ]
@@ -142,10 +132,10 @@ module.exports = function (grunt) {
     grunt.loadNpmTasks("grunt-sed");
 
     grunt.registerTask("default", [
-        "buildForCommit"
+        "build"
     ]);
 
-    grunt.registerTask("build", [
+    grunt.registerTask("concatAndHint", [
         "clean",
         "concat:core",
         "concat:full",
@@ -154,21 +144,16 @@ module.exports = function (grunt) {
     ]);
 
     grunt.registerTask("test", [
-        "build",
+        "concatAndHint",
         "jasmine",
     ]);
 
-    grunt.registerTask("buildForCommit", [
+    grunt.registerTask("build", [
         "test",
         "copy:updateRunner",
         "sed:updateRunner1",
         "sed:updateRunner2",
-        "sed:updateRunner3"
-    ]);
-
-    grunt.registerTask("distribute", [
-        "buildForCommit",
-        "copy:distribute",
+        "sed:updateRunner3",
         "uglify"
     ]);
 }

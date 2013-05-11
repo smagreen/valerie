@@ -2,8 +2,8 @@
 <html>
 <head>
     <!--[if lte IE 8]>
-            <script type="text/javascript" src="../dependencies/html5shiv.js"></script>
-        <![endif]-->
+    <script type="text/javascript" src="../dependencies/html5shiv.js"></script>
+    <![endif]-->
     <meta charset="utf-8">
     <title>valerie knockout Scratchpad</title>
     <style type="text/css">
@@ -29,29 +29,29 @@
             margin-top: 1em;
         }
 
-            form div aside {
-                display: none;
-            }
+        form div aside {
+            display: none;
+        }
 
-                form div aside.error {
-                    background-color: #a33;
-                    color: #fff;
-                    padding: 0.25em 0.5em;
-                }
+        form div aside.error {
+            background-color: #a33;
+            color: #fff;
+            padding: 0.25em 0.5em;
+        }
 
-                form div aside.focused {
-                    display: inline-block;
-                }
+        form div aside.focused {
+            display: inline-block;
+        }
 
-                form div aside.success, form div aside.untouched {
-                    display: none !important;
-                }
+        form div aside.success, form div aside.untouched {
+            display: none !important;
+        }
 
-            form div span {
-                color: #a33;
-                display: block;
-                padding: 0.25em 0;
-            }
+        form div span {
+            color: #a33;
+            display: block;
+            padding: 0.25em 0;
+        }
 
         input.error, select.error {
             border-color: #a33;
@@ -71,154 +71,161 @@
     </style>
 </head>
 <body>
-    <h1>knockout Scratchpad</h1>
-    <div id="view">
-        <form>
-            <section>
-                <h2>Your Details</h2>
-                <div>
-                    <label>
-                        Email
-                            <input data-bind="value: email, validationCss: true" />
-                    </label>
-                    <span data-bind="validationMessageFor: email"></span>
-                </div>
-                <div>
-                    <label>
-                        Date of Birth
-                            <input data-bind="value: dateOfBirth, validationCss: true" />
-                    </label>
-                    <span data-bind="validationMessageFor: dateOfBirth"></span>
-                </div>
-            </section>
-            <section>
-                <h2>House Details</h2>
-                <div>
-                    <label>
-                        Location                    
-                            <select data-bind="value: houseDetails.location, validationCss: true">
-                                <option value="">Please Select...</option>
-                                <option>England</option>
-                                <option>Wales</option>
-                            </select>
-                    </label>
-                    <span data-bind="validationMessageFor: houseDetails.location"></span>
-                </div>
-                <div>
-                    <label>
-                        Postcode
-                            <input data-bind="value: houseDetails.postcode, validationCss: true" />
-                    </label>
-                    <span data-bind="validationMessageFor: houseDetails.postcode"></span>
-                </div>
-                <div>
-                    <label>
-                        <input data-bind="checked: houseDetails.houseType" name="houseType" type="radio" value="Terraced" />
-                        Terraced
-                    </label>
-                    <label>
-                        <input data-bind="checked: houseDetails.houseType" name="houseType" type="radio" value="Semi Detached" />
-                        Semi Detached
-                    </label>
-                    <label>
-                        <input data-bind="checked: houseDetails.houseType" name="houseType" type="radio" value="Detached" />
-                        Detached
-                    </label>
-                    <span data-bind="validationMessageFor: houseDetails.houseType"></span>
-                </div>
-                <!-- ToDo: Add checklist array for features. -->
-                <!-- ToDo: Add multi-select array for utilities. -->
-                <section data-bind="visibleWhenSummaryNotEmpty: houseDetails">
-                    <h3>Validation Summary</h3>
-                    <ul data-bind="foreach: houseDetails.validation().summary()">
-                        <li><span data-bind="text: name"></span>: <span data-bind="    text: message"></span></li>
-                    </ul>
-                </section>
-            </section>
-            <section>
-                <h2>Loan Details</h2>
-                <div>
-                    <label>
-                        House Price
-                            <input data-bind="value: housePrice, enableWhenApplicable: true, validationCss: true" />
-                    </label>
-                    <span data-bind="validationMessageFor: housePrice"></span>
-                </div>
-                <div>
-                    <input type="button" value="Small House" data-bind="click: function () { housePrice(125000); }" />
-                    <input type="button" value="Large House" data-bind="click: function () { housePrice(250000); }" />
-                    <input type="button" value="Big House" data-bind="click: function () { housePrice(500000); }" />
-                    <input type="button" value="Too Big a House" data-bind="click: function () { housePrice(750000); }" />
-                </div>
-                <div data-bind="visibleWhenValid: housePrice">
-                    <p>
-                        You can borrow between:
-                            <strong data-bind="formattedValue: loanAmountMin, formatter: valerie.converters.currencyMajor.formatter, valueFormat: 'C,'"></strong>
-                        &nbsp;and
-                            <strong data-bind="formattedValue: loanAmountMax"></strong>.
-                    </p>
-                </div>
-                <div>
-                    <label>
-                        Loan Amount
-                            <input data-bind="value: loanAmount, enabledWhenApplicable: true, validationCss: true" name="loanAmount" />
-                    </label>
-                    <aside data-bind="validationCss: loanAmount">Tooltip for an invalid entry.</aside>
-                    <span data-bind="validationMessageFor: loanAmount"></span>
-                </div>
-            </section>
-            <section data-bind="visibleWhenSummaryNotEmpty: true">
+<h1>knockout Scratchpad</h1>
+
+<div id="view">
+    <form>
+        <section>
+            <h2>Your Details</h2>
+
+            <div>
+                <label>
+                    Email
+                    <input data-bind="value: email, validationCss: true"/>
+                </label>
+                <span data-bind="validationMessageFor: email"></span>
+            </div>
+            <div>
+                <label>
+                    Date of Birth
+                    <input data-bind="value: dateOfBirth, validationCss: true"/>
+                </label>
+                <span data-bind="validationMessageFor: dateOfBirth"></span>
+            </div>
+        </section>
+        <section>
+            <h2>House Details</h2>
+
+            <div>
+                <label>
+                    Location
+                    <select data-bind="value: houseDetails.location, validationCss: true">
+                        <option value="">Please Select...</option>
+                        <option>England</option>
+                        <option>Wales</option>
+                    </select>
+                </label>
+                <span data-bind="validationMessageFor: houseDetails.location"></span>
+            </div>
+            <div>
+                <label>
+                    Postcode
+                    <input data-bind="value: houseDetails.postcode, validationCss: true"/>
+                </label>
+                <span data-bind="validationMessageFor: houseDetails.postcode"></span>
+            </div>
+            <div>
+                <label>
+                    <input data-bind="checked: houseDetails.houseType" name="houseType" type="radio" value="Terraced"/>
+                    Terraced
+                </label>
+                <label>
+                    <input data-bind="checked: houseDetails.houseType" name="houseType" type="radio"
+                           value="Semi Detached"/>
+                    Semi Detached
+                </label>
+                <label>
+                    <input data-bind="checked: houseDetails.houseType" name="houseType" type="radio" value="Detached"/>
+                    Detached
+                </label>
+                <span data-bind="validationMessageFor: houseDetails.houseType"></span>
+            </div>
+            <!-- ToDo: Add checklist array for features. -->
+            <!-- ToDo: Add multi-select array for utilities. -->
+            <section data-bind="visibleWhenSummaryNotEmpty: houseDetails">
                 <h3>Validation Summary</h3>
-                <ul data-bind="foreach: validation().summary()">
+                <ul data-bind="foreach: houseDetails.validation().summary()">
                     <li><span data-bind="text: name"></span>: <span data-bind="    text: message"></span></li>
                 </ul>
             </section>
-            <div>
-                <input type="button" value="Clear Errors" data-bind="click: clearErrors" />
-                <input type="button" value="Submit" data-bind="click: submit, disabledWhenTouchedAndNotValid: true" />
-            </div>
-        </form>
-        <section>
-            <h2>Model State</h2>
-            <pre data-bind="text: JSON.stringify(ko.toJS($data), null, 2)"></pre>
         </section>
-    </div>
+        <section>
+            <h2>Loan Details</h2>
 
-    <!--[if lt IE 8]>
-            <script type="text/javascript" src="../dependencies/json3.min.js"></script>
-        <![endif]-->
-    <!-- KnockoutJS -->
-    <script type="text/javascript" src="../dependencies/knockout-2.2.1.debug.js"></script>
+            <div>
+                <label>
+                    House Price
+                    <input data-bind="value: housePrice, enableWhenApplicable: true, validationCss: true"/>
+                </label>
+                <span data-bind="validationMessageFor: housePrice"></span>
+            </div>
+            <div>
+                <input type="button" value="Small House" data-bind="click: function () { housePrice(125000); }"/>
+                <input type="button" value="Large House" data-bind="click: function () { housePrice(250000); }"/>
+                <input type="button" value="Big House" data-bind="click: function () { housePrice(500000); }"/>
+                <input type="button" value="Too Big a House" data-bind="click: function () { housePrice(750000); }"/>
+            </div>
+            <div data-bind="visibleWhenValid: housePrice">
+                <p>
+                    You can borrow between:
+                    <strong data-bind="formattedValue: loanAmountMin, formatter: valerie.converters.currencyMajor.formatter, valueFormat: 'C,'"></strong>
+                    &nbsp;and
+                    <strong data-bind="formattedValue: loanAmountMax"></strong>.
+                </p>
+            </div>
+            <div>
+                <label>
+                    Loan Amount
+                    <input data-bind="value: loanAmount, enabledWhenApplicable: true, validationCss: true"
+                           name="loanAmount"/>
+                </label>
+                <aside data-bind="validationCss: loanAmount">Tooltip for an invalid entry.</aside>
+                <span data-bind="validationMessageFor: loanAmount"></span>
+            </div>
+        </section>
+        <section data-bind="visibleWhenSummaryNotEmpty: true">
+            <h3>Validation Summary</h3>
+            <ul data-bind="foreach: validation().summary()">
+                <li><span data-bind="text: name"></span>: <span data-bind="    text: message"></span></li>
+            </ul>
+        </section>
+        <div>
+            <input type="button" value="Clear Errors" data-bind="click: clearErrors"/>
+            <input type="button" value="Submit" data-bind="click: submit, disabledWhenTouchedAndNotValid: true"/>
+        </div>
+    </form>
+    <section>
+        <h2>Model State</h2>
+        <pre data-bind="text: JSON.stringify(ko.toJS($data), null, 2)"></pre>
+    </section>
+</div>
 
-    <!-- ValerieJS -->
-    <script type="text/javascript" src="../../distribution/valerie-for-knockout-en-gb.min.js"></script>
-    
-    <!--
-    <script type="text/javascript" src="../core/valerie.validationResult.js"></script>
-    <script type="text/javascript" src="../core/valerie.utils.js"></script>
-    <script type="text/javascript" src="../core/valerie.formatting.js"></script>
-    <script type="text/javascript" src="../core/valerie.passThroughConverter.js"></script>
-    <script type="text/javascript" src="../core/valerie.knockout.extras.js"></script>
-    <script type="text/javascript" src="../core/valerie.dom.js"></script>
-    <script type="text/javascript" src="../core/valerie.knockout.js"></script>
-    <script type="text/javascript" src="../core/valerie.knockout.bindings.js"></script>
-    <script type="text/javascript" src="../full/valerie.numericHelper.js"></script>
-    <script type="text/javascript" src="../full/valerie.converters.js"></script>
-    <script type="text/javascript" src="../full/valerie.rules.js"></script>
-    <script type="text/javascript" src="../full/valerie.knockout.fluent.converters.js"></script>
-    <script type="text/javascript" src="../full/valerie.knockout.fluent.rules.js"></script>
-    <script type="text/javascript" src="../localisation/en-gb/core.js"></script>
-    <script type="text/javascript" src="../localisation/en-gb/full.js"></script>
-    <script type="text/javascript" src="../localisation/en-gb/valerie.converters.en-gb.js"></script>
-    <script type="text/javascript" src="../localisation/en-gb/valerie.knockout.fluent.converters.en-gb.js"></script>
-    -->
+<!--[if lt IE 8]>
+<script type="text/javascript" src="../dependencies/json3.min.js"></script>
+<![endif]-->
 
-    <script type="text/javascript">
-        window.onload = function () {
-            var v = valerie,
+<!-- KnockoutJS -->
+<script type="text/javascript" src="../dependencies/knockout-2.2.1.debug.js"></script>
+
+<!-- ValerieJS -->
+<script type="text/javascript" src="../../build/valerie-for-knockout-en-gb.min.js"></script>
+
+<!--
+<script type="text/javascript" src="../core/valerie.validationResult.js"></script>
+<script type="text/javascript" src="../core/valerie.utils.js"></script>
+<script type="text/javascript" src="../core/valerie.formatting.js"></script>
+<script type="text/javascript" src="../core/valerie.passThroughConverter.js"></script>
+<script type="text/javascript" src="../core/valerie.knockout.extras.js"></script>
+<script type="text/javascript" src="../core/valerie.dom.js"></script>
+<script type="text/javascript" src="../core/valerie.knockout.js"></script>
+<script type="text/javascript" src="../core/valerie.knockout.bindings.js"></script>
+<script type="text/javascript" src="../full/valerie.numericHelper.js"></script>
+<script type="text/javascript" src="../full/valerie.converters.js"></script>
+<script type="text/javascript" src="../full/valerie.rules.js"></script>
+<script type="text/javascript" src="../full/valerie.knockout.fluent.converters.js"></script>
+<script type="text/javascript" src="../full/valerie.knockout.fluent.rules.js"></script>
+<script type="text/javascript" src="../localisation/en-gb/core.js"></script>
+<script type="text/javascript" src="../localisation/en-gb/full.js"></script>
+<script type="text/javascript" src="../localisation/en-gb/valerie.converters.en-gb.js"></script>
+<script type="text/javascript" src="../localisation/en-gb/valerie.knockout.fluent.converters.en-gb.js"></script>
+-->
+
+<script type="text/javascript">
+    window.onload = function () {
+        var v = valerie,
                 k = v.knockout;
 
-            var longRunningRuleCompleted = ko.observable(false),
+        var longRunningRuleCompleted = ko.observable(false),
                 longRunningRuleTimeout,
                 longRunningRule = function (value) {
                     if (longRunningRuleTimeout != null) {
@@ -235,60 +242,70 @@
                         }
                     }
 
-                    longRunningRuleTimeout = window.setTimeout(function () { longRunningRuleCompleted(true); }, 3000);
+                    longRunningRuleTimeout = window.setTimeout(function () {
+                        longRunningRuleCompleted(true);
+                    }, 3000);
 
                     return v.ValidationResult.pending;
                 };
 
-            // Configure valerie
-            k.useValidatingBindingHandlers();
+        // Configure valerie
+        k.useValidatingBindingHandlers();
 
-            var viewModel,
+        var viewModel,
                 housePrice = ko.observable(150000)
-                    .validate()
-                    .currencyMajor()
-                    .required()
-                    .range(75000, 500000)
-                    .end(),
-                loanAmountMin = ko.computed(function () { return housePrice() / 4; }),
-                loanAmountMax = ko.computed(function () { return (housePrice() * 3) / 4; })
-                    .validate()
-                    .currencyMajor()
-                    .valueFormat("C,.4")
-                    .end();
+                        .validate()
+                        .currencyMajor()
+                        .required()
+                        .range(75000, 500000)
+                        .end(),
+                loanAmountMin = ko.computed(function () {
+                    return housePrice() / 4;
+                }),
+                loanAmountMax = ko.computed(function () {
+                    return (housePrice() * 3) / 4;
+                })
+                        .validate()
+                        .currencyMajor()
+                        .valueFormat("C,.4")
+                        .end();
 
-            window.viewModel = viewModel = k.validatableModel({
-                "clearErrors": function () { viewModel.validation().touched(false).clearSummary(true); },
-                "submit": function () { viewModel.validation().touched(true).updateSummary(true); },
-                "dateOfBirth": ko.observable(new Date(1974, 2, 29))
+        window.viewModel = viewModel = k.validatableModel({
+            "clearErrors": function () {
+                viewModel.validation().touched(false).clearSummary(true);
+            },
+            "submit": function () {
+                viewModel.validation().touched(true).updateSummary(true);
+            },
+            "dateOfBirth": ko.observable(new Date(1974, 2, 29))
                     .validate()
                     .date()
                     .end(),
-                "email": ko.observable("")
+            "email": ko.observable("")
                     .validate()
                     .email()
                     .end(),
-                "houseDetails": k.validatableModel({
-                    "postcode": ko.observable("")
+            "houseDetails": k.validatableModel({
+                "postcode": ko.observable("")
                         .validate()
                         .postcode()
                         .required()
                         .end(),
-                    "houseType": ko.observable()
+                "houseType": ko.observable()
                         .validate()
                         .required()
                         .end(),
-                    "location": ko.observable()
+                "location": ko.observable()
                         .validate()
                         .name("Location")
                         .required()
                         .end()
-                })
+            })
                     .name("House Details")
                     .validateMyProperties()
                     .end(),
-                "housePrice": housePrice,
-                "loanAmount": ko.observable(90000)
+            "housePrice": housePrice,
+            "loanAmount": ko.observable(90000)
                     .validate()
                     .currencyMajorMinor()
                     .applicable(housePrice.validation().passed)
@@ -297,16 +314,16 @@
                     .rule(longRunningRule)
                     .ruleMessage("Elite loan amount forbidden!")
                     .end(),
-                "loanAmountMin": loanAmountMin,
-                "loanAmountMax": loanAmountMax
-            })
+            "loanAmountMin": loanAmountMin,
+            "loanAmountMax": loanAmountMax
+        })
                 .name("Whole Form")
                 .validateAll()
                 .end();
 
-            // Apply bindings
-            ko.applyBindings(viewModel, document.getElementById("view"));
-        };
-    </script>
+        // Apply bindings
+        ko.applyBindings(viewModel, document.getElementById("view"));
+    };
+</script>
 </body>
 </html>

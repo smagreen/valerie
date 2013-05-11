@@ -180,7 +180,7 @@ var valerie = {};
 
 // valerie.formatting
 // - general purpose formatting functions
-// - used by other parts of the valerie librar
+// - used by other parts of the valerie library
 
 /// <reference path="valerie.js"/>
 
@@ -203,6 +203,17 @@ var valerie = {};
         return wholeAndFractionalParts.join(decimalSeparator);
     };
 
+    // + formatting.pad
+    formatting.pad = function (value, paddingCharacter, width) {
+        value = value.toString();
+
+        if (value.length >= width) {
+            return value;
+        }
+
+        return (new Array(width + 1 - value.length)).join(paddingCharacter) + value;
+    };
+
     // + formatting.replacePlaceholders
     formatting.replacePlaceholders = function (format, replacements) {
         if (replacements == null) {
@@ -218,17 +229,6 @@ var valerie = {};
 
             return replacement.toString();
         });
-    };
-
-    // + formatting.pad
-    formatting.pad = function (value, paddingCharacter, width) {
-        value = value.toString();
-        
-        if (value.length >= width) {
-            return value;
-        }
-
-        return (new Array(width + 1 - value.length)).join(paddingCharacter) + value;
     };
 })();
 
