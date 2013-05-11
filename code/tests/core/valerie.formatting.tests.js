@@ -75,7 +75,7 @@
                 .toEqual("alpha beta gamma");
         });
 
-        it("should leave placeholders in the formating string if replacements are missing", function () {
+        it("should leave placeholders in the format string if replacements are missing", function () {
             expect(replacePlaceholders(formatStringWithAlphaNumerics, ["alpha", "beta"]))
                 .toEqual("alpha beta {z}");
 

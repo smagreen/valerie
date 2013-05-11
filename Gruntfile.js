@@ -69,7 +69,10 @@ module.exports = function (grunt) {
                 "src": "build/valerie-for-knockout-en-gb.js",
                 "options": {
                     "keepRunner": true,
-                    "specs": "code/tests/valerie.formatting.tests.js",
+                    "specs": [
+                        "code/tests/core/valerie.formatting.tests.js",
+                        "code/tests/core/valerie.utils.tests.js",
+                        ],
                     "vendor": [
                         "code/tests/runnerScripts/ddr-ecma5-1.2.1-min.js",
                         "code/tests/runnerScripts/jasmine-tap.js",
