@@ -361,28 +361,26 @@ var valerie = {};
     };
 })();
 
-// valerie.dom
-// - utilities for working with the document object model
-// - used by other parts of the valerie library
-
-/// <reference path="valerie.js"/>
-
-
-
 (function () {
     "use strict";
 
-    var dom = valerie.dom = valerie.dom || {},
-        classNamesSeparatorExpression = /\s+/g,
+    var classNamesSeparatorExpression = /\s+/g,
         trimWhitespaceExpression = /^\s+|\s+$/g;
+
+    /**
+     * Utilities for working with the HTML document object model.
+     * @namespace valerie.dom
+     * @inner
+     */
+    valerie.dom = {};
 
     /**
      * Builds and returns a dictionary of true values, keyed on the CSS class-names found in the given string.
      * @static
      * @param {string} classNames the CSS class-names
-     * @returns {{}} the dictionary
+     * @return {object} the dictionary
      */
-    dom.classNamesStringToDictionary = function (classNames) {
+    valerie.dom.classNamesStringToDictionary = function (classNames) {
         var array,
             dictionary = {},
             index;
@@ -393,7 +391,7 @@ var valerie = {};
 
         classNames = classNames.replace(trimWhitespaceExpression, "");
 
-        if(classNames.length === 0) {
+        if (classNames.length === 0) {
             return dictionary;
         }
 
@@ -408,10 +406,11 @@ var valerie = {};
 
     /**
      * Builds and returns a CSS class-names string using the keys in the given dictionary which have true values.
-     * @param {{}} dictionary the dictionary of CSS class-names
-     * @returns {string}
+     * @static
+     * @param {object} dictionary the dictionary of CSS class-names
+     * @return {string} the CSS class-names
      */
-    dom.classNamesDictionaryToString = function (dictionary) {
+    valerie.dom.classNamesDictionaryToString = function (dictionary) {
         var name,
             array = [];
 
@@ -430,10 +429,11 @@ var valerie = {};
 
     /**
      * Sets the visibility of the given HTML element.
+     * @static
      * @param {HTMLElement} element the element to set the visibility of
      * @param {boolean} newVisibility
      */
-    dom.setElementVisibility = function (element, newVisibility) {
+    valerie.dom.setElementVisibility = function (element, newVisibility) {
         var currentVisibility = (element.style.display !== "none");
         if (currentVisibility === newVisibility) {
             return;

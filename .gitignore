@@ -1,8 +1,9 @@
 #################
-# Build
+# Build + Docs
 #################
 
 build
+docs
 .grunt
 _SpecRunner.html
 

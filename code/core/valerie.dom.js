@@ -1,18 +1,21 @@
-﻿// valerie.dom
-// - utilities for working with the document object model
-// - used by other parts of the valerie library
-
-(function () {
+﻿(function () {
     "use strict";
 
     var classNamesSeparatorExpression = /\s+/g,
         trimWhitespaceExpression = /^\s+|\s+$/g;
 
     /**
+     * Utilities for working with the HTML document object model.
+     * @namespace valerie.dom
+     * @inner
+     */
+    valerie.dom = {};
+
+    /**
      * Builds and returns a dictionary of true values, keyed on the CSS class-names found in the given string.
      * @static
      * @param {string} classNames the CSS class-names
-     * @returns {{}} the dictionary
+     * @return {object} the dictionary
      */
     valerie.dom.classNamesStringToDictionary = function (classNames) {
         var array,
@@ -41,8 +44,8 @@
     /**
      * Builds and returns a CSS class-names string using the keys in the given dictionary which have true values.
      * @static
-     * @param {{}} dictionary the dictionary of CSS class-names
-     * @returns {string}
+     * @param {object} dictionary the dictionary of CSS class-names
+     * @return {string} the CSS class-names
      */
     valerie.dom.classNamesDictionaryToString = function (dictionary) {
         var name,

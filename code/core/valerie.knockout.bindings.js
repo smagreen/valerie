@@ -12,9 +12,6 @@
 /// <reference path="valerie.knockout.js"/>
 /// <reference path="valerie.passThrough.js"/>
 
-/*jshint eqnull: true */
-/*global ko: false, valerie: false */
-
 (function () {
     "use strict";
 

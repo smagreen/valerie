@@ -66,14 +66,6 @@ module.exports = function (grunt) {
                 "dest": "build/valerie-for-knockout-en-gb.js"
             }
         },
-        "dox": {
-            files: {
-                src: [
-                    "valerie.*.js"
-                ],
-                dest: "docs"
-            }
-        },
         "jasmine": {
             "build": {
                 "src": "build/valerie-for-knockout-en-gb.js",
@@ -99,6 +91,13 @@ module.exports = function (grunt) {
                 "src": [
                     "build/*.js"
                 ]
+            }
+        },
+        "shell": {
+            "docs": {
+                "command": "node_modules/.bin/doxx --debug --source code/core --target docs",
+                "stdout": true,
+                "stderr": true
             }
         },
         "sed": {
@@ -142,7 +141,7 @@ module.exports = function (grunt) {
     grunt.loadNpmTasks('grunt-contrib-jshint');
     grunt.loadNpmTasks("grunt-contrib-copy");
     grunt.loadNpmTasks("grunt-contrib-uglify");
-    grunt.loadNpmTasks("grunt-dox");
+    grunt.loadNpmTasks("grunt-shell");
     grunt.loadNpmTasks("grunt-sed");
 
     grunt.registerTask("default", [
@@ -172,6 +171,6 @@ module.exports = function (grunt) {
     ]);
 
     grunt.registerTask("docs", [
-        "dox"
+        "shell:docs"
     ]);
 }
