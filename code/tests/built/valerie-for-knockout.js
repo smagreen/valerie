@@ -17,7 +17,7 @@ var valerie = {};
     /**
      * The result of a validation activity.
      * @constructor
-     * @property {object} state - the result state
+     * @property {object} state the result state
      * @property {boolean} failed - true if the activity failed validation
      * @property {boolean} passed - true if the activity passed validation
      * @property {boolean} pending - true if the activity hasn't yet completed
@@ -38,6 +38,7 @@ var valerie = {};
 
     /**
      * The possible states of a ValidationResult.
+     * @name ValidationResult.states
      * @static
      */
     states = valerie.ValidationResult.states = {
@@ -69,8 +70,8 @@ var valerie = {};
 
     /**
      * An instance of a PassedValidationResult.
+     * @name PassedValidationResult.instance
      * @static
-     * @type {valerie.PassedValidationResult}
      */
     valerie.PassedValidationResult.instance = new valerie.PassedValidationResult();
 
@@ -86,8 +87,8 @@ var valerie = {};
 
     /**
      * An instance of a PendingValidationResult.
+     * @name PendingValidationResult.instance
      * @static
-     * @type {valerie.PendingValidationResult}
      */
     valerie.PendingValidationResult.instance = new valerie.PendingValidationResult();
 })();
@@ -104,6 +105,7 @@ var valerie = {};
 
     /**
      * Creates a function that returns the given value, or simply returns the given value if it is already a function.
+     * @memberof valerie.utils
      * @param {*|function} valueOrFunction the value or function
      * @return {function} a newly created function, or the function passed in
      */
@@ -117,6 +119,7 @@ var valerie = {};
 
     /**
      * Tests whether the given value is an array.
+     * @memberof valerie.utils
      * @param {*} value the value to test
      * @return {boolean} whether the given value is an array
      */
@@ -126,6 +129,7 @@ var valerie = {};
 
     /**
      * Tests whether the given value is an array or object.
+     * @memberof valerie.utils
      * @param {*} value the value to test
      * @return {boolean} whether the given value is an array or an object
      */
@@ -139,6 +143,7 @@ var valerie = {};
 
     /**
      * Tests whether the given value is a function.
+     * @memberof valerie.utils
      * @param {*} value the value to test
      * @return {boolean} whether the given value is a function
      */
@@ -153,6 +158,7 @@ var valerie = {};
     /**
      * Tests whether the given value is "missing".
      * undefined, null, an empty string or an empty array are considered to be "missing".
+     * @memberof valerie.utils
      * @param {*} value the value to test
      * @return {boolean} whether the value is missing
      */
@@ -170,6 +176,7 @@ var valerie = {};
 
     /**
      * Tests whether the given value is an object.
+     * @memberof valerie.utils
      * @param {*} value the value to test
      * @return {boolean} whether the given value is an object
      */
@@ -187,6 +194,7 @@ var valerie = {};
 
     /**
      * Tests whether the give value is a string.
+     * @memberof valerie.utils
      * @param {*} value the value to test
      * @return {boolean} whether the given value is a string
      */
@@ -196,8 +204,12 @@ var valerie = {};
 
     /**
      * Merges the given default options with the given options.
-     * - either parameter can be omitted and a clone of the other parameter will be returned.
-     * - the merge is shallow. Array properties are shallow cloned.
+     * <ul>
+     *     <li>either parameter can be omitted and a clone of the other parameter will be returned</li>
+     *     <li>the merge is shallow</li>
+     *     <li>array properties are shallow cloned</li>
+     * </ul>
+     * @memberof valerie.utils
      * @param {{}} defaultOptions the default options
      * @param {{}} options the options
      * @return {{}} the merged options
@@ -249,9 +261,10 @@ var valerie = {};
 
     /**
      * Adds thousands separators to the given number string.
-     * @param {string} numberString A string representation of a number
-     * @param {char|string} thousandsSeparator The character to use to separate the thousands
-     * @param {char|string} decimalSeparator The character used to separate the whole part of the number from its fractional part
+     * @memberof valerie.formatting
+     * @param {string} numberString a string representation of a number
+     * @param {char|string} thousandsSeparator the character to use to separate the thousands
+     * @param {char|string} decimalSeparator the character used to separate the whole part of the number from its fractional part
      * @return {string} the number string with separators added if required
      */
     formatting.addThousandsSeparator = function (numberString, thousandsSeparator, decimalSeparator) {
@@ -266,9 +279,10 @@ var valerie = {};
 
     /**
      * Pads the front of the given string to the given width using the given character.
-     * @param {string} stringToPad The string to pad
-     * @param {char|string} paddingCharacter The character to use to pad the string
-     * @param {number} width The width to pad the string to
+     * @memberof valerie.formatting
+     * @param {string} stringToPad the string to pad
+     * @param {char|string} paddingCharacter the character to use to pad the string
+     * @param {number} width the width to pad the string to
      * @return {string} the string padded, if required, to the given width
      */
     formatting.pad = function (stringToPad, paddingCharacter, width) {
@@ -283,8 +297,9 @@ var valerie = {};
 
     /**
      * Replaces placeholders in the given string with the given replacements
-     * @param {string} stringToFormat The string to format
-     * @param {object|[]} replacements A dictionary or array holding the replacements to use
+     * @memberof valerie.formatting
+     * @param {string} stringToFormat the string to format
+     * @param {object|array} replacements a dictionary or array holding the replacements to use
      * @return {string} the formatted string with placeholders replaced where replacements have been specified
      */
     formatting.replacePlaceholders = function (stringToFormat, replacements) {
@@ -436,19 +451,21 @@ var valerie = {};
 (function () {
     "use strict";
 
-    var classNamesSeparatorExpression = /\s+/g,
+    var dom,
+        classNamesSeparatorExpression = /\s+/g,
         trimWhitespaceExpression = /^\s+|\s+$/g;
 
     /**
      * Utilities for working with the HTML document object model.
-     * @namespace valerie.dom
+     * @namespace
      * @inner
      */
-    var dom = valerie.dom = {};
+    valerie.dom = dom = {};
 
     /**
-     * Builds and returns a dictionary of true values, keyed on the CSS class-names found in the given string.
-     * @static
+     * Builds and returns a dictionary of <code>true</code> values, keyed on the CSS class-names found in the given
+     * string.
+     * @memberof valerie.dom
      * @param {string} classNames the CSS class-names
      * @return {object} the dictionary
      */
@@ -477,8 +494,9 @@ var valerie = {};
     };
 
     /**
-     * Builds and returns a CSS class-names string using the keys in the given dictionary which have true values.
-     * @static
+     * Builds and returns a CSS class-names string using the keys in the given dictionary which have <code>true</code>
+     * values.
+     * @memberof valerie.dom
      * @param {object} dictionary the dictionary of CSS class-names
      * @return {string} the CSS class-names
      */
@@ -501,7 +519,7 @@ var valerie = {};
 
     /**
      * Sets the visibility of the given HTML element.
-     * @static
+     * @memberof valerie.dom
      * @param {HTMLElement} element the element to set the visibility of
      * @param {boolean} newVisibility
      */
