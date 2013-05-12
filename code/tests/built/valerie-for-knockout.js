@@ -367,8 +367,7 @@ var valerie = {};
 
 /// <reference path="valerie.js"/>
 
-/*jshint eqnull: true */
-/*global valerie: false */
+
 
 (function () {
     "use strict";
@@ -377,8 +376,12 @@ var valerie = {};
         classNamesSeparatorExpression = /\s+/g,
         trimWhitespaceExpression = /^\s+|\s+$/g;
 
-    // + dom.classNamesStringToDictionary
-    // - builds and returns a dictionary of true values keyed on the CSS class names found in the given string
+    /**
+     * Builds and returns a dictionary of true values, keyed on the CSS class-names found in the given string.
+     * @static
+     * @param {string} classNames the CSS class-names
+     * @returns {{}} the dictionary
+     */
     dom.classNamesStringToDictionary = function (classNames) {
         var array,
             dictionary = {},
@@ -403,8 +406,11 @@ var valerie = {};
         return dictionary;
     };
 
-    // + dom.classNamesDictionaryToString
-    // - builds and returns a CSS class names string using the keys in the given dictionary for true values
+    /**
+     * Builds and returns a CSS class-names string using the keys in the given dictionary which have true values.
+     * @param {{}} dictionary the dictionary of CSS class-names
+     * @returns {string}
+     */
     dom.classNamesDictionaryToString = function (dictionary) {
         var name,
             array = [];
@@ -422,8 +428,11 @@ var valerie = {};
         return array.join(" ");
     };
 
-    // + setElementVisibility
-    // - sets the visibility of the given DOM element
+    /**
+     * Sets the visibility of the given HTML element.
+     * @param {HTMLElement} element the element to set the visibility of
+     * @param {boolean} newVisibility
+     */
     dom.setElementVisibility = function (element, newVisibility) {
         var currentVisibility = (element.style.display !== "none");
         if (currentVisibility === newVisibility) {

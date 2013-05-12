@@ -2,21 +2,19 @@
 // - utilities for working with the document object model
 // - used by other parts of the valerie library
 
-/// <reference path="valerie.js"/>
-
-/*jshint eqnull: true */
-/*global valerie: false */
-
 (function () {
     "use strict";
 
-    var dom = valerie.dom = valerie.dom || {},
-        classNamesSeparatorExpression = /\s+/g,
+    var classNamesSeparatorExpression = /\s+/g,
         trimWhitespaceExpression = /^\s+|\s+$/g;
 
-    // + dom.classNamesStringToDictionary
-    // - builds and returns a dictionary of true values keyed on the CSS class names found in the given string
-    dom.classNamesStringToDictionary = function (classNames) {
+    /**
+     * Builds and returns a dictionary of true values, keyed on the CSS class-names found in the given string.
+     * @static
+     * @param {string} classNames the CSS class-names
+     * @returns {{}} the dictionary
+     */
+    valerie.dom.classNamesStringToDictionary = function (classNames) {
         var array,
             dictionary = {},
             index;
@@ -27,7 +25,7 @@
 
         classNames = classNames.replace(trimWhitespaceExpression, "");
 
-        if(classNames.length === 0) {
+        if (classNames.length === 0) {
             return dictionary;
         }
 
@@ -40,9 +38,13 @@
         return dictionary;
     };
 
-    // + dom.classNamesDictionaryToString
-    // - builds and returns a CSS class names string using the keys in the given dictionary for true values
-    dom.classNamesDictionaryToString = function (dictionary) {
+    /**
+     * Builds and returns a CSS class-names string using the keys in the given dictionary which have true values.
+     * @static
+     * @param {{}} dictionary the dictionary of CSS class-names
+     * @returns {string}
+     */
+    valerie.dom.classNamesDictionaryToString = function (dictionary) {
         var name,
             array = [];
 
@@ -59,9 +61,13 @@
         return array.join(" ");
     };
 
-    // + setElementVisibility
-    // - sets the visibility of the given DOM element
-    dom.setElementVisibility = function (element, newVisibility) {
+    /**
+     * Sets the visibility of the given HTML element.
+     * @static
+     * @param {HTMLElement} element the element to set the visibility of
+     * @param {boolean} newVisibility
+     */
+    valerie.dom.setElementVisibility = function (element, newVisibility) {
         var currentVisibility = (element.style.display !== "none");
         if (currentVisibility === newVisibility) {
             return;

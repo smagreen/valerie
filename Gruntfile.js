@@ -1,9 +1,11 @@
 module.exports = function (grunt) {
     grunt.initConfig({
         "pkg": grunt.file.readJSON("package.json"),
-        "clean": [
-            "build"
-        ],
+        "clean": {
+            "build": [
+                "build"
+            ]
+        },
         "copy": {
             "updateRunner": {
                 "files": [
@@ -64,6 +66,14 @@ module.exports = function (grunt) {
                 "dest": "build/valerie-for-knockout-en-gb.js"
             }
         },
+        "dox": {
+            files: {
+                src: [
+                    "valerie.*.js"
+                ],
+                dest: "docs"
+            }
+        },
         "jasmine": {
             "build": {
                 "src": "build/valerie-for-knockout-en-gb.js",
@@ -71,7 +81,7 @@ module.exports = function (grunt) {
                     "keepRunner": true,
                     "specs": [
                         "code/tests/core/*.tests.js"
-                        ],
+                    ],
                     "vendor": [
                         "code/tests/runnerScripts/ddr-ecma5-1.2.1-min.js",
                         "code/tests/runnerScripts/jasmine-tap.js",
@@ -132,6 +142,7 @@ module.exports = function (grunt) {
     grunt.loadNpmTasks('grunt-contrib-jshint');
     grunt.loadNpmTasks("grunt-contrib-copy");
     grunt.loadNpmTasks("grunt-contrib-uglify");
+    grunt.loadNpmTasks("grunt-dox");
     grunt.loadNpmTasks("grunt-sed");
 
     grunt.registerTask("default", [
@@ -139,7 +150,7 @@ module.exports = function (grunt) {
     ]);
 
     grunt.registerTask("concatAndHint", [
-        "clean",
+        "clean:build",
         "concat:core",
         "concat:full",
         "concat:en-gb",
@@ -158,5 +169,9 @@ module.exports = function (grunt) {
         "sed:updateRunner2",
         "sed:updateRunner3",
         "uglify"
+    ]);
+
+    grunt.registerTask("docs", [
+        "dox"
     ]);
 }
