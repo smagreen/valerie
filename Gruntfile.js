@@ -87,6 +87,9 @@ module.exports = function (grunt) {
             }
         },
         "jshint": {
+            "options": {
+                "eqnull": true
+            },
             "files": {
                 "src": [
                     "build/*.js"
@@ -95,7 +98,7 @@ module.exports = function (grunt) {
         },
         "shell": {
             "docs": {
-                "command": "node_modules/.bin/doxx --debug --source code/core --target docs",
+                "command": "jsdoc -c jsdoc.conf.json",
                 "stdout": true,
                 "stderr": true
             }

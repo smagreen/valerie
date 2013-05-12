@@ -3,83 +3,110 @@
 // (c) 2013 egrove Ltd.
 // License: MIT (http://www.opensource.org/licenses/mit-license.php)
 
-// valerie
-// - defines the valerie namespace
-
+/**
+ * The valerie namespace.
+ * @namespace valerie
+ */
 var valerie = {};
-
-// valerie.validationResult
-// - defines the ValidationResult constructor function
-// - used by other parts of the valerie library
-
-/// <reference path="valerie.js"/>
-
-/*global valerie: false */
 
 (function () {
     "use strict";
 
-    var states = {
-            "failed": {},
-            "passed": {},
-            "pending": {}
-        },
-    // ReSharper disable InconsistentNaming
-        ValidationResult;
-    // ReSharper restore InconsistentNaming
+    var states;
 
-    // + ValidationResult
-    // - the result of a validation test
-    ValidationResult = valerie.ValidationResult = function (state, message) {
+    /**
+     * The result of a validation activity.
+     * @constructor
+     * @property {object} state - the result state
+     * @property {boolean} failed - true if the activity failed validation
+     * @property {boolean} passed - true if the activity passed validation
+     * @property {boolean} pending - true if the activity hasn't yet completed
+     * @property {string} message - a message from the activity
+     */
+    valerie.ValidationResult = function (state, message) {
+        if(message == null) {
+            message = "";
+        }
+
         this.state = state;
+        this.message = message;
 
         this.failed = state === states.failed;
         this.passed = state === states.passed;
         this.pending = state === states.pending;
-
-        this.message = message;
     };
 
-    valerie.ValidationResult.states = states;
+    /**
+     * The possible states of a ValidationResult.
+     * @static
+     */
+    states = valerie.ValidationResult.states = {
+        "failed": {},
+        "passed": {},
+        "pending": {}
+    };
 
-    // + FailedValidationResult
-    // - a failed result for a validation test
+    /**
+     * The result of an activity that failed validation.
+     * @constructor
+     * @param {string} [message] a message from the activity
+     * @returns {valerie.ValidationResult}
+     */
     valerie.FailedValidationResult = function (message) {
-        return new ValidationResult(states.failed, message);
+        return new valerie.ValidationResult(states.failed, message);
     };
 
-    // + PassedValidationResult
-    // - a passed result for a validation test
+
+    /**
+     * The result of an activity that passed validation.
+     * @constructor
+     * @param {string} [message] a message from the activity
+     * @returns {valerie.ValidationResult}
+     */
     valerie.PassedValidationResult = function (message) {
-        return new ValidationResult(states.passed, message);
+        return new valerie.ValidationResult(states.passed, message);
     };
 
-    // + PendingValidationResult
-    // - a pending result for a validation test
+    /**
+     * An instance of a PassedValidationResult.
+     * @static
+     * @type {valerie.PassedValidationResult}
+     */
+    valerie.PassedValidationResult.instance = new valerie.PassedValidationResult();
+
+    /**
+     * The result of an activity which hasn't yet completed.
+     * @constructor
+     * @param {string} [message] a message from the activity
+     * @returns {valerie.ValidationResult}
+     */
     valerie.PendingValidationResult = function (message) {
-        return new ValidationResult(states.pending, message);
+        return new valerie.ValidationResult(states.pending, message);
     };
 
-    valerie.ValidationResult.passed = new ValidationResult(states.passed, "");
-
-    valerie.ValidationResult.pending = new ValidationResult(states.pending, "");
+    /**
+     * An instance of a PendingValidationResult.
+     * @static
+     * @type {valerie.PendingValidationResult}
+     */
+    valerie.PendingValidationResult.instance = new valerie.PendingValidationResult();
 })();
-
-// valerie.utils
-// - general purpose utilities
-// - used by other parts of the valerie library
-
-/// <reference path="valerie.js"/>
-
-/*jshint eqnull: true */
-/*global valerie: false */
 
 (function () {
     "use strict";
 
-    var utils = valerie.utils = valerie.utils || {};
+    /**
+     * General purpose utilities.
+     * @namespace valerie.utils
+     * @inner
+     */
+    var utils = valerie.utils = {};
 
-    // + utils.asFunction
+    /**
+     * Creates a function that returns the given value, or simply returns the given value if it is already a function.
+     * @param {*|function} valueOrFunction the value or function
+     * @return {function} a newly created function, or the function passed in
+     */
     utils.asFunction = function (valueOrFunction) {
         if (utils.isFunction(valueOrFunction)) {
             return valueOrFunction;
@@ -88,12 +115,20 @@ var valerie = {};
         return function () { return valueOrFunction; };
     };
 
-    // + utils.isArray
+    /**
+     * Tests whether the given value is an array.
+     * @param {*} value the value to test
+     * @return {boolean} whether the given value is an array
+     */
     utils.isArray = function (value) {
         return {}.toString.call(value) === "[object Array]";
     };
 
-    // + utils.isArrayOrObject
+    /**
+     * Tests whether the given value is an array or object.
+     * @param {*} value the value to test
+     * @return {boolean} whether the given value is an array or an object
+     */
     utils.isArrayOrObject = function (value) {
         if (value === null) {
             return false;
@@ -102,7 +137,11 @@ var valerie = {};
         return typeof value === "object";
     };
 
-    // + utils.isFunction
+    /**
+     * Tests whether the given value is a function.
+     * @param {*} value the value to test
+     * @return {boolean} whether the given value is a function
+     */
     utils.isFunction = function (value) {
         if (value == null) {
             return false;
@@ -111,7 +150,12 @@ var valerie = {};
         return (typeof value === "function");
     };
 
-    // + utils.isMissing
+    /**
+     * Tests whether the given value is "missing".
+     * undefined, null, an empty string or an empty array are considered to be "missing".
+     * @param {*} value the value to test
+     * @return {boolean} whether the value is missing
+     */
     utils.isMissing = function (value) {
         if (value == null) {
             return true;
@@ -124,7 +168,11 @@ var valerie = {};
         return false;
     };
 
-    // + utils.isObject
+    /**
+     * Tests whether the given value is an object.
+     * @param {*} value the value to test
+     * @return {boolean} whether the given value is an object
+     */
     utils.isObject = function (value) {
         if (value === null) {
             return false;
@@ -137,12 +185,23 @@ var valerie = {};
         return typeof value === "object";
     };
 
-    // + utils.isString
+    /**
+     * Tests whether the give value is a string.
+     * @param {*} value the value to test
+     * @return {boolean} whether the given value is a string
+     */
     utils.isString = function (value) {
         return {}.toString.call(value) === "[object String]";
     };
-    
-    // + utils.mergeOptions
+
+    /**
+     * Merges the given default options with the given options.
+     * - either parameter can be omitted and a clone of the other parameter will be returned.
+     * - the merge is shallow. Array properties are shallow cloned.
+     * @param {{}} defaultOptions the default options
+     * @param {{}} options the options
+     * @return {{}} the merged options
+     */
     utils.mergeOptions = function (defaultOptions, options) {
         var mergedOptions = {},
             name,
@@ -178,21 +237,23 @@ var valerie = {};
     };
 })();
 
-// valerie.formatting
-// - general purpose formatting functions
-// - used by other parts of the valerie library
-
-/// <reference path="valerie.js"/>
-
-/*jshint eqnull: true */
-/*global valerie: false */
-
 (function () {
     "use strict";
 
-    var formatting = valerie.formatting = valerie.formatting || {};
+    /**
+     * Utilities for formatting strings.
+     * @namespace valerie.formatting
+     * @inner
+     */
+    var formatting = valerie.formatting = {};
 
-    // + formatting.addThousandsSeparator
+    /**
+     * Adds thousands separators to the given number string.
+     * @param {string} numberString A string representation of a number
+     * @param {char|string} thousandsSeparator The character to use to separate the thousands
+     * @param {char|string} decimalSeparator The character used to separate the whole part of the number from its fractional part
+     * @return {string} the number string with separators added if required
+     */
     formatting.addThousandsSeparator = function (numberString, thousandsSeparator, decimalSeparator) {
         var wholeAndFractionalParts = numberString.toString().split(decimalSeparator),
             wholePart = wholeAndFractionalParts[0];
@@ -203,24 +264,35 @@ var valerie = {};
         return wholeAndFractionalParts.join(decimalSeparator);
     };
 
-    // + formatting.pad
-    formatting.pad = function (value, paddingCharacter, width) {
-        value = value.toString();
+    /**
+     * Pads the front of the given string to the given width using the given character.
+     * @param {string} stringToPad The string to pad
+     * @param {char|string} paddingCharacter The character to use to pad the string
+     * @param {number} width The width to pad the string to
+     * @return {string} the string padded, if required, to the given width
+     */
+    formatting.pad = function (stringToPad, paddingCharacter, width) {
+        stringToPad = stringToPad.toString();
 
-        if (value.length >= width) {
-            return value;
+        if (stringToPad.length >= width) {
+            return stringToPad;
         }
 
-        return (new Array(width + 1 - value.length)).join(paddingCharacter) + value;
+        return (new Array(width + 1 - stringToPad.length)).join(paddingCharacter) + stringToPad;
     };
 
-    // + formatting.replacePlaceholders
-    formatting.replacePlaceholders = function (format, replacements) {
+    /**
+     * Replaces placeholders in the given string with the given replacements
+     * @param {string} stringToFormat The string to format
+     * @param {object|[]} replacements A dictionary or array holding the replacements to use
+     * @return {string} the formatted string with placeholders replaced where replacements have been specified
+     */
+    formatting.replacePlaceholders = function (stringToFormat, replacements) {
         if (replacements == null) {
             replacements = {};
         }
 
-        return format.replace(/\{(\w+)\}/g, function (match, subMatch) {
+        return stringToFormat.replace(/\{(\w+)\}/g, function (match, subMatch) {
             var replacement = replacements[subMatch];
 
             if (replacement == null) {
@@ -372,7 +444,7 @@ var valerie = {};
      * @namespace valerie.dom
      * @inner
      */
-    valerie.dom = {};
+    var dom = valerie.dom = {};
 
     /**
      * Builds and returns a dictionary of true values, keyed on the CSS class-names found in the given string.
@@ -380,7 +452,7 @@ var valerie = {};
      * @param {string} classNames the CSS class-names
      * @return {object} the dictionary
      */
-    valerie.dom.classNamesStringToDictionary = function (classNames) {
+    dom.classNamesStringToDictionary = function (classNames) {
         var array,
             dictionary = {},
             index;
@@ -410,7 +482,7 @@ var valerie = {};
      * @param {object} dictionary the dictionary of CSS class-names
      * @return {string} the CSS class-names
      */
-    valerie.dom.classNamesDictionaryToString = function (dictionary) {
+    dom.classNamesDictionaryToString = function (dictionary) {
         var name,
             array = [];
 
@@ -433,7 +505,7 @@ var valerie = {};
      * @param {HTMLElement} element the element to set the visibility of
      * @param {boolean} newVisibility
      */
-    valerie.dom.setElementVisibility = function (element, newVisibility) {
+    dom.setElementVisibility = function (element, newVisibility) {
         var currentVisibility = (element.style.display !== "none");
         if (currentVisibility === newVisibility) {
             return;
@@ -463,8 +535,8 @@ var valerie = {};
     // ReSharper disable InconsistentNaming
     var FailedValidationResult = valerie.FailedValidationResult,
         // ReSharper restore InconsistentNaming
-        passedValidationResult = valerie.ValidationResult.passed,
-        pendingValidationResult = valerie.ValidationResult.pending,
+        passedValidationResult = valerie.PassedValidationResult.instance,
+        pendingValidationResult = valerie.PendingValidationResult.instance,
         koObservable = ko.observable,
         koComputed = ko.computed,
         utils = valerie.utils,
@@ -1031,9 +1103,6 @@ var valerie = {};
 /// <reference path="valerie.knockout.extras.js"/>
 /// <reference path="valerie.knockout.js"/>
 /// <reference path="valerie.passThrough.js"/>
-
-/*jshint eqnull: true */
-/*global ko: false, valerie: false */
 
 (function () {
     "use strict";

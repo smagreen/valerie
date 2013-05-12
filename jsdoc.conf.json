@@ -1,0 +1,17 @@
+{
+    "opts": {
+        "destination": "apidocs"
+    },
+    "source": {
+        "include": [
+            "code/core",
+            "code/full"
+        ],
+        "includePattern": ".+\\.js(doc)?$"
+    },
+    "templates": {
+        "default": {
+            "outputSourceFiles": true
+        }
+    }
+}

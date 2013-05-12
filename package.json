@@ -20,7 +20,7 @@
         "knockoutjs"
     ],
     "devDependencies": {
-        "doxx": "~0.6.0",
+        "git://github.com/jsdoc3/jsdoc.git": "~3.2.0",
         "grunt": "~0.4.1",
         "grunt-cli": "~0.1.8",
         "grunt-contrib-clean": "~0.4.1",

@@ -18,8 +18,8 @@
     // ReSharper disable InconsistentNaming
     var FailedValidationResult = valerie.FailedValidationResult,
         // ReSharper restore InconsistentNaming
-        passedValidationResult = valerie.ValidationResult.passed,
-        pendingValidationResult = valerie.ValidationResult.pending,
+        passedValidationResult = valerie.PassedValidationResult.instance,
+        pendingValidationResult = valerie.PendingValidationResult.instance,
         koObservable = ko.observable,
         koComputed = ko.computed,
         utils = valerie.utils,

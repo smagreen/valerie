@@ -1,4 +1,5 @@
-﻿// valerie
-// - defines the valerie namespace
-
+﻿/**
+ * The valerie namespace.
+ * @namespace valerie
+ */
 var valerie = {};
