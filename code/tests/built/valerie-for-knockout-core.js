@@ -20,11 +20,11 @@ var valerie = {};
     "use strict";
 
     var states = {
-        "failed": {},
-        "passed": {},
-        "pending": {}
-    },
-        // ReSharper disable InconsistentNaming
+            "failed": {},
+            "passed": {},
+            "pending": {}
+        },
+    // ReSharper disable InconsistentNaming
         ValidationResult;
     // ReSharper restore InconsistentNaming
 
@@ -61,7 +61,7 @@ var valerie = {};
     };
 
     valerie.ValidationResult.passed = new ValidationResult(states.passed, "");
-    
+
     valerie.ValidationResult.pending = new ValidationResult(states.pending, "");
 })();
 
@@ -378,6 +378,7 @@ var valerie = {};
         trimWhitespaceExpression = /^\s+|\s+$/g;
 
     // + dom.classNamesStringToDictionary
+    // - builds and returns a dictionary of true values keyed on the CSS class names found in the given string
     dom.classNamesStringToDictionary = function (classNames) {
         var array,
             dictionary = {},
@@ -403,6 +404,7 @@ var valerie = {};
     };
 
     // + dom.classNamesDictionaryToString
+    // - builds and returns a CSS class names string using the keys in the given dictionary for true values
     dom.classNamesDictionaryToString = function (dictionary) {
         var name,
             array = [];

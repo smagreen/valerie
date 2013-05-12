@@ -15,6 +15,7 @@
         trimWhitespaceExpression = /^\s+|\s+$/g;
 
     // + dom.classNamesStringToDictionary
+    // - builds and returns a dictionary of true values keyed on the CSS class names found in the given string
     dom.classNamesStringToDictionary = function (classNames) {
         var array,
             dictionary = {},
@@ -40,6 +41,7 @@
     };
 
     // + dom.classNamesDictionaryToString
+    // - builds and returns a CSS class names string using the keys in the given dictionary for true values
     dom.classNamesDictionaryToString = function (dictionary) {
         var name,
             array = [];

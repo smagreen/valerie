@@ -10,11 +10,11 @@
     "use strict";
 
     var states = {
-        "failed": {},
-        "passed": {},
-        "pending": {}
-    },
-        // ReSharper disable InconsistentNaming
+            "failed": {},
+            "passed": {},
+            "pending": {}
+        },
+    // ReSharper disable InconsistentNaming
         ValidationResult;
     // ReSharper restore InconsistentNaming
 
@@ -51,6 +51,6 @@
     };
 
     valerie.ValidationResult.passed = new ValidationResult(states.passed, "");
-    
+
     valerie.ValidationResult.pending = new ValidationResult(states.pending, "");
 })();
