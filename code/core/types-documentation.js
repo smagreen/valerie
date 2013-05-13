@@ -1,6 +1,6 @@
 /**
- * A converter, a singleton, which can parse string representations of a value type and format values of a value
- * type as a string.
+ * The constructor for a converter, always a singleton, which can parse string representations of a value type and
+ * format values of a value type as a string.
  * @class
  */
 valerie.converters.Converter = function () {
