@@ -33,12 +33,12 @@ module.exports = function (grunt) {
                 "src": [
                     "license.js",
                     "code/core/valerie.js",
-                    "code/core/valerie.validationResult.js",
                     "code/core/valerie.utils.js",
                     "code/core/valerie.formatting.js",
-                    "code/core/valerie.passThroughConverter.js",
-                    "code/core/valerie.knockout.extras.js",
                     "code/core/valerie.dom.js",
+                    "code/core/valerie.validationResult.js",
+                    "code/core/valerie.converters.passThrough.js",
+                    "code/core/valerie.knockout.extras.js",
                     "code/core/valerie.knockout.js",
                     "code/core/valerie.knockout.bindings.js"
                 ],

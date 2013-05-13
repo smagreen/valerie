@@ -2,8 +2,8 @@
 # Build + Docs
 #################
 
+apidocs
 build
-docs
 .grunt
 _SpecRunner.html
 

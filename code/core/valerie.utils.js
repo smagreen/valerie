@@ -2,7 +2,7 @@
     "use strict";
 
     /**
-     * General purpose utilities.
+     * Contains general purpose utilities.
      * @namespace valerie.utils
      * @inner
      */
@@ -135,7 +135,7 @@
         for (name in defaultOptions) {
             if (defaultOptions.hasOwnProperty(name)) {
                 value = defaultOptions[name];
-                
+
                 if (utils.isArray(value)) {
                     value = value.slice(0);
                 }

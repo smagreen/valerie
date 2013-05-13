@@ -2,7 +2,7 @@
     "use strict";
 
     /**
-     * Utilities for formatting strings.
+     * Contains utilities for formatting strings.
      * @namespace valerie.formatting
      * @inner
      */

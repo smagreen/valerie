@@ -6,7 +6,7 @@
         trimWhitespaceExpression = /^\s+|\s+$/g;
 
     /**
-     * Utilities for working with the HTML document object model.
+     * Contains utilities for working with the HTML document object model.
      * @namespace
      * @inner
      */
