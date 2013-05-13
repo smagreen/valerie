@@ -6,6 +6,8 @@
     /**
      * The result of a validation activity.
      * @constructor
+     * @param {object} state the result state
+     * @param {string} [message] a message from the activity
      * @property {object} state the result state
      * @property {boolean} failed - true if the activity failed validation
      * @property {boolean} passed - true if the activity passed validation

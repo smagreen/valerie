@@ -12,11 +12,324 @@ var valerie = {};
 (function () {
     "use strict";
 
+    /**
+     * Contains general purpose utilities.
+     * @namespace valerie.utils
+     * @inner
+     */
+    var utils = valerie.utils = {};
+
+    /**
+     * Creates a function that returns the given value, or simply returns the given value if it is already a function.
+     * @memberof valerie.utils
+     * @param {*|function} valueOrFunction the value or function
+     * @return {function} a newly created function, or the function passed in
+     */
+    utils.asFunction = function (valueOrFunction) {
+        if (utils.isFunction(valueOrFunction)) {
+            return valueOrFunction;
+        }
+
+        return function () { return valueOrFunction; };
+    };
+
+    /**
+     * Tests whether the given value is an array.
+     * @memberof valerie.utils
+     * @param {*} value the value to test
+     * @return {boolean} whether the given value is an array
+     */
+    utils.isArray = function (value) {
+        return {}.toString.call(value) === "[object Array]";
+    };
+
+    /**
+     * Tests whether the given value is an array or object.
+     * @memberof valerie.utils
+     * @param {*} value the value to test
+     * @return {boolean} whether the given value is an array or an object
+     */
+    utils.isArrayOrObject = function (value) {
+        if (value === null) {
+            return false;
+        }
+
+        return typeof value === "object";
+    };
+
+    /**
+     * Tests whether the given value is a function.
+     * @memberof valerie.utils
+     * @param {*} value the value to test
+     * @return {boolean} whether the given value is a function
+     */
+    utils.isFunction = function (value) {
+        if (value == null) {
+            return false;
+        }
+
+        return (typeof value === "function");
+    };
+
+    /**
+     * Tests whether the given value is "missing".
+     * <code>undefined</code>, <code>null</code>, an empty string or an empty array are considered to be "missing".
+     * @memberof valerie.utils
+     * @param {*} value the value to test
+     * @return {boolean} whether the value is missing
+     */
+    utils.isMissing = function (value) {
+        if (value == null) {
+            return true;
+        }
+
+        if (value.length === 0) {
+            return true;
+        }
+
+        return false;
+    };
+
+    /**
+     * Tests whether the given value is an object.
+     * @memberof valerie.utils
+     * @param {*} value the value to test
+     * @return {boolean} whether the given value is an object
+     */
+    utils.isObject = function (value) {
+        if (value === null) {
+            return false;
+        }
+
+        if (utils.isArray(value)) {
+            return false;
+        }
+
+        return typeof value === "object";
+    };
+
+    /**
+     * Tests whether the give value is a string.
+     * @memberof valerie.utils
+     * @param {*} value the value to test
+     * @return {boolean} whether the given value is a string
+     */
+    utils.isString = function (value) {
+        return {}.toString.call(value) === "[object String]";
+    };
+
+    /**
+     * Merges the given default options with the given options.
+     * <ul>
+     *     <li>either parameter can be omitted and a clone of the other parameter will be returned</li>
+     *     <li>the merge is shallow</li>
+     *     <li>array properties are shallow cloned</li>
+     * </ul>
+     * @memberof valerie.utils
+     * @param {{}} defaultOptions the default options
+     * @param {{}} options the options
+     * @return {{}} the merged options
+     */
+    utils.mergeOptions = function (defaultOptions, options) {
+        var mergedOptions = {},
+            name,
+            value;
+
+        if (defaultOptions == null) {
+            defaultOptions = {};
+        }
+
+        if (options == null) {
+            options = {};
+        }
+
+        for (name in defaultOptions) {
+            if (defaultOptions.hasOwnProperty(name)) {
+                value = defaultOptions[name];
+
+                if (utils.isArray(value)) {
+                    value = value.slice(0);
+                }
+
+                mergedOptions[name] = value;
+            }
+        }
+
+        for (name in options) {
+            if (options.hasOwnProperty(name)) {
+                mergedOptions[name] = options[name];
+            }
+        }
+
+        return mergedOptions;
+    };
+})();
+
+(function () {
+    "use strict";
+
+    /**
+     * Contains utilities for formatting strings.
+     * @namespace valerie.formatting
+     * @inner
+     */
+    var formatting = valerie.formatting = {};
+
+    /**
+     * Adds thousands separators to the given number string.
+     * @memberof valerie.formatting
+     * @param {string} numberString a string representation of a number
+     * @param {char|string} thousandsSeparator the character to use to separate the thousands
+     * @param {char|string} decimalSeparator the character used to separate the whole part of the number from its fractional part
+     * @return {string} the number string with separators added if required
+     */
+    formatting.addThousandsSeparator = function (numberString, thousandsSeparator, decimalSeparator) {
+        var wholeAndFractionalParts = numberString.toString().split(decimalSeparator),
+            wholePart = wholeAndFractionalParts[0];
+
+        wholePart = wholePart.replace(/\B(?=(\d{3})+(?!\d))/g, thousandsSeparator);
+        wholeAndFractionalParts[0] = wholePart;
+
+        return wholeAndFractionalParts.join(decimalSeparator);
+    };
+
+    /**
+     * Pads the front of the given string to the given width using the given character.
+     * @memberof valerie.formatting
+     * @param {string} stringToPad the string to pad
+     * @param {char|string} paddingCharacter the character to use to pad the string
+     * @param {number} width the width to pad the string to
+     * @return {string} the string padded, if required, to the given width
+     */
+    formatting.pad = function (stringToPad, paddingCharacter, width) {
+        stringToPad = stringToPad.toString();
+
+        if (stringToPad.length >= width) {
+            return stringToPad;
+        }
+
+        return (new Array(width + 1 - stringToPad.length)).join(paddingCharacter) + stringToPad;
+    };
+
+    /**
+     * Replaces placeholders in the given string with the given replacements.
+     * @memberof valerie.formatting
+     * @param {string} stringToFormat the string to format
+     * @param {object|array} replacements a dictionary or array holding the replacements to use
+     * @return {string} the formatted string with placeholders replaced where replacements have been specified
+     */
+    formatting.replacePlaceholders = function (stringToFormat, replacements) {
+        if (replacements == null) {
+            replacements = {};
+        }
+
+        return stringToFormat.replace(/\{(\w+)\}/g, function (match, subMatch) {
+            var replacement = replacements[subMatch];
+
+            if (replacement == null) {
+                return match;
+            }
+
+            return replacement.toString();
+        });
+    };
+})();
+
+(function () {
+    "use strict";
+
+    var dom,
+        classNamesSeparatorExpression = /\s+/g,
+        trimWhitespaceExpression = /^\s+|\s+$/g;
+
+    /**
+     * Contains utilities for working with the HTML document object model.
+     * @namespace
+     * @inner
+     */
+    valerie.dom = dom = {};
+
+    /**
+     * Builds and returns a dictionary of <code>true</code> values, keyed on the CSS class-names found in the given
+     * string.
+     * @memberof valerie.dom
+     * @param {string} classNames the CSS class-names
+     * @return {object} the dictionary
+     */
+    dom.classNamesStringToDictionary = function (classNames) {
+        var array,
+            dictionary = {},
+            index;
+
+        if (classNames == null) {
+            return dictionary;
+        }
+
+        classNames = classNames.replace(trimWhitespaceExpression, "");
+
+        if (classNames.length === 0) {
+            return dictionary;
+        }
+
+        array = classNames.split(classNamesSeparatorExpression);
+
+        for (index = 0; index < array.length; index++) {
+            dictionary[array[index]] = true;
+        }
+
+        return dictionary;
+    };
+
+    /**
+     * Builds and returns a CSS class-names string using the keys in the given dictionary which have <code>true</code>
+     * values.
+     * @memberof valerie.dom
+     * @param {object} dictionary the dictionary of CSS class-names
+     * @return {string} the CSS class-names
+     */
+    dom.classNamesDictionaryToString = function (dictionary) {
+        var name,
+            array = [];
+
+        for (name in dictionary) {
+            if (dictionary.hasOwnProperty(name)) {
+                if (dictionary[name]) {
+                    array.push(name);
+                }
+            }
+        }
+
+        array.sort();
+
+        return array.join(" ");
+    };
+
+    /**
+     * Sets the visibility of the given HTML element.
+     * @memberof valerie.dom
+     * @param {HTMLElement} element the element to set the visibility of
+     * @param {boolean} newVisibility
+     */
+    dom.setElementVisibility = function (element, newVisibility) {
+        var currentVisibility = (element.style.display !== "none");
+        if (currentVisibility === newVisibility) {
+            return;
+        }
+
+        element.style.display = (newVisibility) ? "" : "none";
+    };
+})();
+
+(function () {
+    "use strict";
+
     var states;
 
     /**
      * The result of a validation activity.
      * @constructor
+     * @param {object} state the result state
+     * @param {string} [message] a message from the activity
      * @property {object} state the result state
      * @property {boolean} failed - true if the activity failed validation
      * @property {boolean} passed - true if the activity passed validation
@@ -97,244 +410,18 @@ var valerie = {};
     "use strict";
 
     /**
-     * General purpose utilities.
-     * @namespace valerie.utils
+     * Contains converters. A converter is a static object which can parse string representations of a value type and
+     * format values of a value type as a string.
+     * @namespace
      * @inner
      */
-    var utils = valerie.utils = {};
+    valerie.converters = valerie.converters || {};
 
     /**
-     * Creates a function that returns the given value, or simply returns the given value if it is already a function.
-     * @memberof valerie.utils
-     * @param {*|function} valueOrFunction the value or function
-     * @return {function} a newly created function, or the function passed in
+     * A converter which formats and parses strings.
+     * Used as the default converter in numerous places throughout the library.
      */
-    utils.asFunction = function (valueOrFunction) {
-        if (utils.isFunction(valueOrFunction)) {
-            return valueOrFunction;
-        }
-
-        return function () { return valueOrFunction; };
-    };
-
-    /**
-     * Tests whether the given value is an array.
-     * @memberof valerie.utils
-     * @param {*} value the value to test
-     * @return {boolean} whether the given value is an array
-     */
-    utils.isArray = function (value) {
-        return {}.toString.call(value) === "[object Array]";
-    };
-
-    /**
-     * Tests whether the given value is an array or object.
-     * @memberof valerie.utils
-     * @param {*} value the value to test
-     * @return {boolean} whether the given value is an array or an object
-     */
-    utils.isArrayOrObject = function (value) {
-        if (value === null) {
-            return false;
-        }
-
-        return typeof value === "object";
-    };
-
-    /**
-     * Tests whether the given value is a function.
-     * @memberof valerie.utils
-     * @param {*} value the value to test
-     * @return {boolean} whether the given value is a function
-     */
-    utils.isFunction = function (value) {
-        if (value == null) {
-            return false;
-        }
-
-        return (typeof value === "function");
-    };
-
-    /**
-     * Tests whether the given value is "missing".
-     * undefined, null, an empty string or an empty array are considered to be "missing".
-     * @memberof valerie.utils
-     * @param {*} value the value to test
-     * @return {boolean} whether the value is missing
-     */
-    utils.isMissing = function (value) {
-        if (value == null) {
-            return true;
-        }
-
-        if (value.length === 0) {
-            return true;
-        }
-
-        return false;
-    };
-
-    /**
-     * Tests whether the given value is an object.
-     * @memberof valerie.utils
-     * @param {*} value the value to test
-     * @return {boolean} whether the given value is an object
-     */
-    utils.isObject = function (value) {
-        if (value === null) {
-            return false;
-        }
-
-        if (utils.isArray(value)) {
-            return false;
-        }
-
-        return typeof value === "object";
-    };
-
-    /**
-     * Tests whether the give value is a string.
-     * @memberof valerie.utils
-     * @param {*} value the value to test
-     * @return {boolean} whether the given value is a string
-     */
-    utils.isString = function (value) {
-        return {}.toString.call(value) === "[object String]";
-    };
-
-    /**
-     * Merges the given default options with the given options.
-     * <ul>
-     *     <li>either parameter can be omitted and a clone of the other parameter will be returned</li>
-     *     <li>the merge is shallow</li>
-     *     <li>array properties are shallow cloned</li>
-     * </ul>
-     * @memberof valerie.utils
-     * @param {{}} defaultOptions the default options
-     * @param {{}} options the options
-     * @return {{}} the merged options
-     */
-    utils.mergeOptions = function (defaultOptions, options) {
-        var mergedOptions = {},
-            name,
-            value;
-
-        if (defaultOptions == null) {
-            defaultOptions = {};
-        }
-
-        if (options == null) {
-            options = {};
-        }
-
-        for (name in defaultOptions) {
-            if (defaultOptions.hasOwnProperty(name)) {
-                value = defaultOptions[name];
-                
-                if (utils.isArray(value)) {
-                    value = value.slice(0);
-                }
-
-                mergedOptions[name] = value;
-            }
-        }
-
-        for (name in options) {
-            if (options.hasOwnProperty(name)) {
-                mergedOptions[name] = options[name];
-            }
-        }
-
-        return mergedOptions;
-    };
-})();
-
-(function () {
-    "use strict";
-
-    /**
-     * Utilities for formatting strings.
-     * @namespace valerie.formatting
-     * @inner
-     */
-    var formatting = valerie.formatting = {};
-
-    /**
-     * Adds thousands separators to the given number string.
-     * @memberof valerie.formatting
-     * @param {string} numberString a string representation of a number
-     * @param {char|string} thousandsSeparator the character to use to separate the thousands
-     * @param {char|string} decimalSeparator the character used to separate the whole part of the number from its fractional part
-     * @return {string} the number string with separators added if required
-     */
-    formatting.addThousandsSeparator = function (numberString, thousandsSeparator, decimalSeparator) {
-        var wholeAndFractionalParts = numberString.toString().split(decimalSeparator),
-            wholePart = wholeAndFractionalParts[0];
-
-        wholePart = wholePart.replace(/\B(?=(\d{3})+(?!\d))/g, thousandsSeparator);
-        wholeAndFractionalParts[0] = wholePart;
-
-        return wholeAndFractionalParts.join(decimalSeparator);
-    };
-
-    /**
-     * Pads the front of the given string to the given width using the given character.
-     * @memberof valerie.formatting
-     * @param {string} stringToPad the string to pad
-     * @param {char|string} paddingCharacter the character to use to pad the string
-     * @param {number} width the width to pad the string to
-     * @return {string} the string padded, if required, to the given width
-     */
-    formatting.pad = function (stringToPad, paddingCharacter, width) {
-        stringToPad = stringToPad.toString();
-
-        if (stringToPad.length >= width) {
-            return stringToPad;
-        }
-
-        return (new Array(width + 1 - stringToPad.length)).join(paddingCharacter) + stringToPad;
-    };
-
-    /**
-     * Replaces placeholders in the given string with the given replacements
-     * @memberof valerie.formatting
-     * @param {string} stringToFormat the string to format
-     * @param {object|array} replacements a dictionary or array holding the replacements to use
-     * @return {string} the formatted string with placeholders replaced where replacements have been specified
-     */
-    formatting.replacePlaceholders = function (stringToFormat, replacements) {
-        if (replacements == null) {
-            replacements = {};
-        }
-
-        return stringToFormat.replace(/\{(\w+)\}/g, function (match, subMatch) {
-            var replacement = replacements[subMatch];
-
-            if (replacement == null) {
-                return match;
-            }
-
-            return replacement.toString();
-        });
-    };
-})();
-
-// valerie.passThroughConverter
-// - the pass through converter
-// - used by other parts of the valerie library
-
-/// <reference path="valerie.js"/>
-    
-/*jshint eqnull: true */
-/*global valerie: false */
-
-(function () {
-    "use strict";
-
-    var converters = valerie.converters = valerie.converters || {};
-
-    // + converters.passThrough
-    converters.passThrough = {
+    valerie.converters.passThrough = {
         "formatter": function (value) {
             if (value == null) {
                 return "";
@@ -348,29 +435,32 @@ var valerie = {};
     };
 })();
 
-// valerie.knockout.extras
-// - extra functionality for KnockoutJS
-// - used by other parts of the valerie library
-
-/// <reference path="../dependencies/knockout-2.2.1.debug.js"/>
-/// <reference path="valerie.js"/>
-
-/*jshint eqnull: true */
-/*global ko: false, valerie: false */
-
 (function () {
     "use strict";
 
-    var knockout = valerie.knockout = valerie.knockout || {},
-        extras = knockout.extras = knockout.extras || {};
+    valerie.knockout = valerie.knockout || {};
 
-    // + isolatedBindingHandler factory function
-    // - creates a binding handler in which update is called only when a dependency changes and not when another
-    //   binding changes
+    var extras;
+
+    /**
+     * Contains functions that add extra functionality to KnockoutJS.
+     * @namespace
+     */
+    valerie.knockout.extras = extras = valerie.knockout.extras || {};
+
+    /**
+     * Creates a binding handler where the <code>update</code> method is only invoked if one of its observable
+     * or computed dependencies is updated. Unlike normal bindings, the <code>update</code> method is not invoked if a
+     * sibling binding is updated.
+     * @memberof valerie.knockout.extras
+     * @param {function} initOrUpdateFunction the function to initialise or update the binding
+     * @param {function} updateFunction the function to update the binding
+     * @returns {{}} an isolated binding handler
+     */
     extras.isolatedBindingHandler = function (initOrUpdateFunction, updateFunction) {
         var initFunction = (arguments.length === 1) ? function () {
         } : initOrUpdateFunction;
-        
+
         updateFunction = (arguments.length === 2) ? updateFunction : initOrUpdateFunction;
 
         return {
@@ -388,8 +478,18 @@ var valerie = {};
         };
     };
 
-    // + pausableComputed factory function
-    // - creates a computed whose evaluation can be paused and unpaused
+    /**
+     * Creates a Knockout computed whose computation can be paused and resumed.
+     * @memberof valerie.knockout.extras
+     * @param {function} evaluatorFunction the function to be evaluated as the computed
+     * @param {object} [evaluatorFunctionTarget] the object which will act as <code>this</code> when the function is
+     * executed
+     * @param {object} [options] options to use when creating the computed
+     * @param {function} [pausedValueOrObservableOrComputed] a value, observable or computed used to control whether
+     * the computed is paused. This parameter could be used to control the state of numerous pausable computeds using
+     * a single observable or computed.
+     * @returns {function} the computed
+     */
     extras.pausableComputed = function (evaluatorFunction, evaluatorFunctionTarget, options,
         pausedValueOrObservableOrComputed) {
 
@@ -413,6 +513,9 @@ var valerie = {};
             return evaluatorFunction.call(evaluatorFunctionTarget);
         }, evaluatorFunctionTarget, options);
 
+        /**
+         * Gets and sets whether the computed is paused.
+         */
         computed.paused = ko.computed({
             "read": function () {
                 return paused();
@@ -434,6 +537,9 @@ var valerie = {};
             }
         });
 
+        /**
+         * Refreshes the value of a pausable computed, but leaves the computed's paused state in its original state.
+         */
         computed.refresh = function () {
             if (!paused()) {
                 return;
@@ -445,91 +551,6 @@ var valerie = {};
         };
 
         return computed;
-    };
-})();
-
-(function () {
-    "use strict";
-
-    var dom,
-        classNamesSeparatorExpression = /\s+/g,
-        trimWhitespaceExpression = /^\s+|\s+$/g;
-
-    /**
-     * Utilities for working with the HTML document object model.
-     * @namespace
-     * @inner
-     */
-    valerie.dom = dom = {};
-
-    /**
-     * Builds and returns a dictionary of <code>true</code> values, keyed on the CSS class-names found in the given
-     * string.
-     * @memberof valerie.dom
-     * @param {string} classNames the CSS class-names
-     * @return {object} the dictionary
-     */
-    dom.classNamesStringToDictionary = function (classNames) {
-        var array,
-            dictionary = {},
-            index;
-
-        if (classNames == null) {
-            return dictionary;
-        }
-
-        classNames = classNames.replace(trimWhitespaceExpression, "");
-
-        if (classNames.length === 0) {
-            return dictionary;
-        }
-
-        array = classNames.split(classNamesSeparatorExpression);
-
-        for (index = 0; index < array.length; index++) {
-            dictionary[array[index]] = true;
-        }
-
-        return dictionary;
-    };
-
-    /**
-     * Builds and returns a CSS class-names string using the keys in the given dictionary which have <code>true</code>
-     * values.
-     * @memberof valerie.dom
-     * @param {object} dictionary the dictionary of CSS class-names
-     * @return {string} the CSS class-names
-     */
-    dom.classNamesDictionaryToString = function (dictionary) {
-        var name,
-            array = [];
-
-        for (name in dictionary) {
-            if (dictionary.hasOwnProperty(name)) {
-                if (dictionary[name]) {
-                    array.push(name);
-                }
-            }
-        }
-
-        array.sort();
-
-        return array.join(" ");
-    };
-
-    /**
-     * Sets the visibility of the given HTML element.
-     * @memberof valerie.dom
-     * @param {HTMLElement} element the element to set the visibility of
-     * @param {boolean} newVisibility
-     */
-    dom.setElementVisibility = function (element, newVisibility) {
-        var currentVisibility = (element.style.display !== "none");
-        if (currentVisibility === newVisibility) {
-            return;
-        }
-
-        element.style.display = (newVisibility) ? "" : "none";
     };
 })();
 
@@ -1128,7 +1149,7 @@ var valerie = {};
     // ReSharper disable InconsistentNaming
     var FailedValidationResult = valerie.FailedValidationResult,
         // ReSharper restore InconsistentNaming
-        passedValidationResult = valerie.ValidationResult.passed,
+        passedValidationResult = valerie.PassedValidationResult.instance,
         utils = valerie.utils,
         dom = valerie.dom,
         knockout = valerie.knockout,

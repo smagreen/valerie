@@ -45,7 +45,7 @@
     };
 
     /**
-     * Replaces placeholders in the given string with the given replacements
+     * Replaces placeholders in the given string with the given replacements.
      * @memberof valerie.formatting
      * @param {string} stringToFormat the string to format
      * @param {object|array} replacements a dictionary or array holding the replacements to use

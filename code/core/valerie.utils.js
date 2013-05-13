@@ -62,7 +62,7 @@
 
     /**
      * Tests whether the given value is "missing".
-     * undefined, null, an empty string or an empty array are considered to be "missing".
+     * <code>undefined</code>, <code>null</code>, an empty string or an empty array are considered to be "missing".
      * @memberof valerie.utils
      * @param {*} value the value to test
      * @return {boolean} whether the value is missing
