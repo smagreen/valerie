@@ -18,7 +18,7 @@
     // ReSharper disable InconsistentNaming
     var FailedValidationResult = valerie.FailedValidationResult,
         // ReSharper restore InconsistentNaming
-        passedValidationResult = valerie.ValidationResult.passed,
+        passedValidationResult = valerie.PassedValidationResult.instance,
         utils = valerie.utils,
         dom = valerie.dom,
         knockout = valerie.knockout,

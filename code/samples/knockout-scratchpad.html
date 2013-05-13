@@ -198,9 +198,9 @@
 <script type="text/javascript" src="../thirdParty/knockout-2.2.1.debug.js"></script>
 
 <!-- ValerieJS -->
-<script type="text/javascript" src="../../build/valerie-for-knockout-en-gb.js"></script>
+<!-- <script type="text/javascript" src="../../build/valerie-for-knockout-en-gb.js"></script> -->
 
-<!--
+<script type="text/javascript" src="../core/valerie.js"></script>
 <script type="text/javascript" src="../core/valerie.validationResult.js"></script>
 <script type="text/javascript" src="../core/valerie.utils.js"></script>
 <script type="text/javascript" src="../core/valerie.formatting.js"></script>
@@ -218,7 +218,6 @@
 <script type="text/javascript" src="../localisation/en-gb/full.js"></script>
 <script type="text/javascript" src="../localisation/en-gb/valerie.converters.en-gb.js"></script>
 <script type="text/javascript" src="../localisation/en-gb/valerie.knockout.fluent.converters.en-gb.js"></script>
--->
 
 <script type="text/javascript">
     window.onload = function () {
@@ -238,7 +237,7 @@
                         if (value === 133700) {
                             return new v.FailedValidationResult("Elite amount not allowed!");
                         } else {
-                            return v.ValidationResult.passed;
+                            return v.PassedValidationResult.instance;
                         }
                     }
 
@@ -246,7 +245,7 @@
                         longRunningRuleCompleted(true);
                     }, 3000);
 
-                    return v.ValidationResult.pending;
+                    return v.PendingValidationResult.instance;
                 };
 
         // Configure valerie
