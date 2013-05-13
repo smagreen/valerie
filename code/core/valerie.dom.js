@@ -1,16 +1,41 @@
 ﻿(function () {
     "use strict";
 
-    var dom,
-        classNamesSeparatorExpression = /\s+/g,
-        trimWhitespaceExpression = /^\s+|\s+$/g;
-
     /**
      * Contains utilities for working with the HTML document object model.
      * @namespace
      * @inner
      */
-    valerie.dom = dom = {};
+    valerie.dom = {};
+
+    var classNamesSeparatorExpression = /\s+/g,
+        trimWhitespaceExpression = /^\s+|\s+$/g,
+    // Shortcuts.
+        dom = valerie.dom;
+
+    /**
+     * Builds and returns a CSS class-names string using the keys in the given dictionary which have <code>true</code>
+     * values.
+     * @memberof valerie.dom
+     * @param {object} dictionary the dictionary of CSS class-names
+     * @return {string} the CSS class-names
+     */
+    dom.classNamesDictionaryToString = function (dictionary) {
+        var name,
+            array = [];
+
+        for (name in dictionary) {
+            if (dictionary.hasOwnProperty(name)) {
+                if (dictionary[name]) {
+                    array.push(name);
+                }
+            }
+        }
+
+        array.sort();
+
+        return array.join(" ");
+    };
 
     /**
      * Builds and returns a dictionary of <code>true</code> values, keyed on the CSS class-names found in the given
@@ -41,30 +66,6 @@
         }
 
         return dictionary;
-    };
-
-    /**
-     * Builds and returns a CSS class-names string using the keys in the given dictionary which have <code>true</code>
-     * values.
-     * @memberof valerie.dom
-     * @param {object} dictionary the dictionary of CSS class-names
-     * @return {string} the CSS class-names
-     */
-    dom.classNamesDictionaryToString = function (dictionary) {
-        var name,
-            array = [];
-
-        for (name in dictionary) {
-            if (dictionary.hasOwnProperty(name)) {
-                if (dictionary[name]) {
-                    array.push(name);
-                }
-            }
-        }
-
-        array.sort();
-
-        return array.join(" ");
     };
 
     /**

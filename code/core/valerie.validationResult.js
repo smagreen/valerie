@@ -42,7 +42,7 @@
      * The result of an activity that failed validation.
      * @constructor
      * @param {string} [message] a message from the activity
-     * @returns {valerie.ValidationResult}
+     * @return {valerie.ValidationResult}
      */
     valerie.FailedValidationResult = function (message) {
         return new valerie.ValidationResult(states.failed, message);
@@ -53,7 +53,7 @@
      * The result of an activity that passed validation.
      * @constructor
      * @param {string} [message] a message from the activity
-     * @returns {valerie.ValidationResult}
+     * @return {valerie.ValidationResult}
      */
     valerie.PassedValidationResult = function (message) {
         return new valerie.ValidationResult(states.passed, message);
@@ -61,7 +61,7 @@
 
     /**
      * An instance of a PassedValidationResult.
-     * @name PassedValidationResult.instance
+     * @memberof valerie.PassedValidationResult
      * @static
      */
     valerie.PassedValidationResult.instance = new valerie.PassedValidationResult();
@@ -70,7 +70,7 @@
      * The result of an activity which hasn't yet completed.
      * @constructor
      * @param {string} [message] a message from the activity
-     * @returns {valerie.ValidationResult}
+     * @return {valerie.ValidationResult}
      */
     valerie.PendingValidationResult = function (message) {
         return new valerie.ValidationResult(states.pending, message);
@@ -78,7 +78,7 @@
 
     /**
      * An instance of a PendingValidationResult.
-     * @name PendingValidationResult.instance
+     * @memberof valerie.PendingValidationResult
      * @static
      */
     valerie.PendingValidationResult.instance = new valerie.PendingValidationResult();

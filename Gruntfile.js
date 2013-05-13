@@ -37,7 +37,7 @@ module.exports = function (grunt) {
                     "code/core/valerie.formatting.js",
                     "code/core/valerie.dom.js",
                     "code/core/valerie.validationResult.js",
-                    "code/core/valerie.converters.passThrough.js",
+                    "code/core/valerie.converters.js",
                     "code/core/valerie.knockout.extras.js",
                     "code/core/valerie.knockout.js",
                     "code/core/valerie.knockout.bindings.js"
@@ -49,7 +49,7 @@ module.exports = function (grunt) {
                     "build/valerie-for-knockout-core.js",
                     "code/full/valerie.numericHelper.js",
                     "code/full/valerie.converters.js",
-                    "code/full/valerie.rules.js",
+                    "code/full/valerie.rulesjs",
                     "code/full/valerie.knockout.fluent.converters.js",
                     "code/full/valerie.knockout.fluent.rules.js"
                 ],

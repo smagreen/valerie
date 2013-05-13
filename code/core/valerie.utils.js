@@ -6,7 +6,10 @@
      * @namespace valerie.utils
      * @inner
      */
-    var utils = valerie.utils = {};
+    valerie.utils = {};
+
+    // Shortcuts.
+    var utils = valerie.utils;
 
     /**
      * Creates a function that returns the given value, or simply returns the given value if it is already a function.

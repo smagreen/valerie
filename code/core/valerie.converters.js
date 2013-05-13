@@ -2,16 +2,17 @@
     "use strict";
 
     /**
-     * Contains converters. A converter is a static object which can parse string representations of a value type and
-     * format values of a value type as a string.
+     * Contains the <code>passThrough</code> converter.
      * @namespace
-     * @inner
      */
-    valerie.converters = valerie.converters || {};
+    valerie.converters = {};
 
     /**
      * A converter which formats and parses strings.
      * Used as the default converter in numerous places throughout the library.
+     * @class
+     * @static
+     * @see valerie.converters.Converter
      */
     valerie.converters.passThrough = {
         "formatter": function (value) {

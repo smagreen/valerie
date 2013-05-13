@@ -1,23 +1,18 @@
-﻿// valerie.knockout
-// - the class and functions that validate a view-model constructed using knockout observables and computeds
-
-/// <reference path="../dependencies/knockout-2.2.1.debug.js"/>
-/// <reference path="valerie.js"/>
-/// <reference path="valerie.validationResult.js"/>
-/// <reference path="valerie.passThroughConverter.js"/>
-/// <reference path="valerie.utils.js"/> 
-/// <reference path="valerie.formatting.js"/> 
-/// <reference path="valerie.extras.js"/>
-
-/*jshint eqnull: true */
-/*global ko: false, valerie: false */
-
-(function () {
+﻿(function () {
     "use strict";
 
-    // ReSharper disable InconsistentNaming
-    var FailedValidationResult = valerie.FailedValidationResult,
-        // ReSharper restore InconsistentNaming
+    /**
+     * Contains the classes and functions that validate a view-model constructed using Knockout observables and
+     * computeds.
+     * @namespace
+     */
+    valerie.knockout = valerie.knockout || {};
+
+    var deferEvaluation = { "deferEvaluation": true },
+        definition,
+        getValidationStateMethodName = "validation",
+    // Shortcuts.
+        FailedValidationResult = valerie.FailedValidationResult,
         passedValidationResult = valerie.PassedValidationResult.instance,
         pendingValidationResult = valerie.PendingValidationResult.instance,
         koObservable = ko.observable,
@@ -25,18 +20,32 @@
         utils = valerie.utils,
         formatting = valerie.formatting,
         knockout = valerie.knockout,
-        extras = knockout.extras,
-        deferEvaluation = { "deferEvaluation": true },
-        getValidationStateMethodName = "validation",
-        definition;
+        extras = knockout.extras;
 
-    // + findValidationStates
-    // - finds and returns the validation states of:
-    //   - properties for the given model
-    //   - sub-models of the given model, if permitted
-    //   - descendant properties and sub-models of the given model, if requested
+    /**
+     * @typedef {object} ValidationState
+     * @type object
+     * @memberof valerie.knockout
+     */
+
+    /**
+     * Finds and returns the validation states of:
+     * <ul>
+     *     <li>immediate properties of the given model</li>
+     *     <li>immediate sub-models of the given model, if specified</li>
+     *     <li>descendant properties of the given model, if specified</li>
+     *     <li>descendant sub-models of the given model, if specified</li>
+     * </ul>
+     * @memberof valerie.knockout
+     * @param {object} model the model to find validation states in
+     * @param {boolean} [includeSubModels = true] whether to return the validation states of child
+     * sub-models
+     * @param {boolean} [recurse = false] whether to inspect the descendant properties and, if specified,
+     * descendant sub-models of child sub-models
+     * @param {ValidationState[]} [validationStates] the already inspected validation states; this parameter is used
+     * in recursive invocations
+     */
     knockout.findValidationStates = function (model, includeSubModels, recurse, validationStates) {
-
         if (!(1 in arguments)) {
             includeSubModels = true;
         }
@@ -90,9 +99,14 @@
         return validationStates;
     };
 
-    // + getValidationState
-    // - gets the validation state from a model, observable or computed
-    // - for use when developing bindings
+    /**
+     * Gets the validation state for the given model, observable or computed.
+     * This function is useful when developing binding handlers.
+     * @member of valerie.knockout
+     * @param modelOrObservableOrComputed the thing to get the validation state for
+     * @return {null|ValidationState} the validation state or <code>null</code> if the given thing does not have a
+     * validation state.
+     */
     knockout.getValidationState = function (modelOrObservableOrComputed) {
         if (modelOrObservableOrComputed == null) {
             return null;
@@ -105,9 +119,13 @@
         return modelOrObservableOrComputed[getValidationStateMethodName]();
     };
 
-    // + hasValidationState
-    // - determines if the given model, observable or computed has a validation state
-    // - for use when developing bindings
+    /**
+     * Informs if the given model, observable or computed has a validation state.
+     * This function is useful when developing binding handlers.
+     * @member of valerie.knockout
+     * @param modelOrObservableOrComputed the thing to test
+     * @return {boolean} whether the given thing has a validation state
+     */
     knockout.hasValidationState = function (modelOrObservableOrComputed) {
         if (modelOrObservableOrComputed == null) {
             return false;
@@ -165,8 +183,8 @@
     (function () {
         // Functions for computeds.
         var failedFunction = function () {
-            return this.result().failed;
-        },
+                return this.result().failed;
+            },
             failedStatesFunction = function () {
                 var failedStates = [],
                     validationStates = this.validationStates(),
@@ -398,20 +416,20 @@
     // - validation state for a single, simple, observable or computed property
     (function () {
         var missingFunction = function () {
-            var value = this.observableOrComputed(),
-                missing = this.settings.missingTest(value),
-                required = this.settings.required();
+                var value = this.observableOrComputed(),
+                    missing = this.settings.missingTest(value),
+                    required = this.settings.required();
 
-            if (missing && required) {
-                return -1;
-            }
+                if (missing && required) {
+                    return -1;
+                }
 
-            if (missing && !required) {
-                return 0;
-            }
+                if (missing && !required) {
+                    return 0;
+                }
 
-            return 1;
-        },
+                return 1;
+            },
             rulesResultFunction = function () {
                 var value = this.observableOrComputed(),
                     rules = this.settings.rules,
@@ -431,7 +449,7 @@
 
                 return passedValidationResult;
             },
-            // Functions for computeds.
+        // Functions for computeds.
             failedFunction = function () {
                 return this.result().failed;
             },

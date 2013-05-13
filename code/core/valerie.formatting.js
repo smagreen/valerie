@@ -4,16 +4,19 @@
     /**
      * Contains utilities for formatting strings.
      * @namespace valerie.formatting
-     * @inner
      */
-    var formatting = valerie.formatting = {};
+    valerie.formatting = {};
+
+    // Shortcuts.
+    var formatting = valerie.formatting;
 
     /**
      * Adds thousands separators to the given number string.
      * @memberof valerie.formatting
      * @param {string} numberString a string representation of a number
      * @param {char|string} thousandsSeparator the character to use to separate the thousands
-     * @param {char|string} decimalSeparator the character used to separate the whole part of the number from its fractional part
+     * @param {char|string} decimalSeparator the character used to separate the whole part of the number from its
+     * fractional part
      * @return {string} the number string with separators added if required
      */
     formatting.addThousandsSeparator = function (numberString, thousandsSeparator, decimalSeparator) {

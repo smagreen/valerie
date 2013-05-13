@@ -3,13 +3,14 @@
 
     valerie.knockout = valerie.knockout || {};
 
-    var extras;
-
     /**
      * Contains functions that add extra functionality to KnockoutJS.
      * @namespace
      */
-    valerie.knockout.extras = extras = valerie.knockout.extras || {};
+    valerie.knockout.extras = valerie.knockout.extras || {};
+
+    // Shortcuts.
+    var extras = valerie.knockout.extras;
 
     /**
      * Creates a binding handler where the <code>update</code> method is only invoked if one of its observable
@@ -18,7 +19,7 @@
      * @memberof valerie.knockout.extras
      * @param {function} initOrUpdateFunction the function to initialise or update the binding
      * @param {function} updateFunction the function to update the binding
-     * @returns {{}} an isolated binding handler
+     * @return {{}} an isolated binding handler
      */
     extras.isolatedBindingHandler = function (initOrUpdateFunction, updateFunction) {
         var initFunction = (arguments.length === 1) ? function () {
@@ -51,7 +52,7 @@
      * @param {function} [pausedValueOrObservableOrComputed] a value, observable or computed used to control whether
      * the computed is paused. This parameter could be used to control the state of numerous pausable computeds using
      * a single observable or computed.
-     * @returns {function} the computed
+     * @return {function} the computed
      */
     extras.pausableComputed = function (evaluatorFunction, evaluatorFunctionTarget, options,
         pausedValueOrObservableOrComputed) {

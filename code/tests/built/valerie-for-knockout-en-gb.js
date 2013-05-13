@@ -17,7 +17,10 @@ var valerie = {};
      * @namespace valerie.utils
      * @inner
      */
-    var utils = valerie.utils = {};
+    valerie.utils = {};
+
+    // Shortcuts.
+    var utils = valerie.utils;
 
     /**
      * Creates a function that returns the given value, or simply returns the given value if it is already a function.
@@ -173,14 +176,19 @@ var valerie = {};
      * @namespace valerie.formatting
      * @inner
      */
-    var formatting = valerie.formatting = {};
+    valerie.formatting = {};
+
+    // Shortcuts.
+    var formatting = valerie.formatting;
+
 
     /**
      * Adds thousands separators to the given number string.
      * @memberof valerie.formatting
      * @param {string} numberString a string representation of a number
      * @param {char|string} thousandsSeparator the character to use to separate the thousands
-     * @param {char|string} decimalSeparator the character used to separate the whole part of the number from its fractional part
+     * @param {char|string} decimalSeparator the character used to separate the whole part of the number from its
+     * fractional part
      * @return {string} the number string with separators added if required
      */
     formatting.addThousandsSeparator = function (numberString, thousandsSeparator, decimalSeparator) {
@@ -238,16 +246,17 @@ var valerie = {};
 (function () {
     "use strict";
 
-    var dom,
-        classNamesSeparatorExpression = /\s+/g,
-        trimWhitespaceExpression = /^\s+|\s+$/g;
-
     /**
      * Contains utilities for working with the HTML document object model.
      * @namespace
      * @inner
      */
-    valerie.dom = dom = {};
+    valerie.dom = {};
+
+    var classNamesSeparatorExpression = /\s+/g,
+        trimWhitespaceExpression = /^\s+|\s+$/g,
+    // Shortcuts.
+        dom = valerie.dom;
 
     /**
      * Builds and returns a dictionary of <code>true</code> values, keyed on the CSS class-names found in the given
@@ -364,7 +373,7 @@ var valerie = {};
      * The result of an activity that failed validation.
      * @constructor
      * @param {string} [message] a message from the activity
-     * @returns {valerie.ValidationResult}
+     * @return {valerie.ValidationResult}
      */
     valerie.FailedValidationResult = function (message) {
         return new valerie.ValidationResult(states.failed, message);
@@ -375,7 +384,7 @@ var valerie = {};
      * The result of an activity that passed validation.
      * @constructor
      * @param {string} [message] a message from the activity
-     * @returns {valerie.ValidationResult}
+     * @return {valerie.ValidationResult}
      */
     valerie.PassedValidationResult = function (message) {
         return new valerie.ValidationResult(states.passed, message);
@@ -392,7 +401,7 @@ var valerie = {};
      * The result of an activity which hasn't yet completed.
      * @constructor
      * @param {string} [message] a message from the activity
-     * @returns {valerie.ValidationResult}
+     * @return {valerie.ValidationResult}
      */
     valerie.PendingValidationResult = function (message) {
         return new valerie.ValidationResult(states.pending, message);
@@ -440,13 +449,14 @@ var valerie = {};
 
     valerie.knockout = valerie.knockout || {};
 
-    var extras;
-
     /**
      * Contains functions that add extra functionality to KnockoutJS.
      * @namespace
      */
     valerie.knockout.extras = extras = valerie.knockout.extras || {};
+
+    // Shortcuts.
+    var extras = valerie.knockout.extras;
 
     /**
      * Creates a binding handler where the <code>update</code> method is only invoked if one of its observable
@@ -455,7 +465,7 @@ var valerie = {};
      * @memberof valerie.knockout.extras
      * @param {function} initOrUpdateFunction the function to initialise or update the binding
      * @param {function} updateFunction the function to update the binding
-     * @returns {{}} an isolated binding handler
+     * @return {{}} an isolated binding handler
      */
     extras.isolatedBindingHandler = function (initOrUpdateFunction, updateFunction) {
         var initFunction = (arguments.length === 1) ? function () {
@@ -488,7 +498,7 @@ var valerie = {};
      * @param {function} [pausedValueOrObservableOrComputed] a value, observable or computed used to control whether
      * the computed is paused. This parameter could be used to control the state of numerous pausable computeds using
      * a single observable or computed.
-     * @returns {function} the computed
+     * @return {function} the computed
      */
     extras.pausableComputed = function (evaluatorFunction, evaluatorFunctionTarget, options,
         pausedValueOrObservableOrComputed) {
@@ -554,26 +564,21 @@ var valerie = {};
     };
 })();
 
-// valerie.knockout
-// - the class and functions that validate a view-model constructed using knockout observables and computeds
-
-/// <reference path="../dependencies/knockout-2.2.1.debug.js"/>
-/// <reference path="valerie.js"/>
-/// <reference path="valerie.validationResult.js"/>
-/// <reference path="valerie.passThroughConverter.js"/>
-/// <reference path="valerie.utils.js"/> 
-/// <reference path="valerie.formatting.js"/> 
-/// <reference path="valerie.extras.js"/>
-
-/*jshint eqnull: true */
-/*global ko: false, valerie: false */
-
 (function () {
     "use strict";
 
-    // ReSharper disable InconsistentNaming
-    var FailedValidationResult = valerie.FailedValidationResult,
-        // ReSharper restore InconsistentNaming
+    /**
+     * Contains the classes and functions that validate a view-model constructed using Knockout observables and
+     * computeds.
+     * @namespace
+     */
+    valerie.knockout = valerie.knockout || {};
+
+    var deferEvaluation = { "deferEvaluation": true },
+        definition,
+        getValidationStateMethodName = "validation",
+    // Shortcuts.
+        FailedValidationResult = valerie.FailedValidationResult,
         passedValidationResult = valerie.PassedValidationResult.instance,
         pendingValidationResult = valerie.PendingValidationResult.instance,
         koObservable = ko.observable,
@@ -581,16 +586,25 @@ var valerie = {};
         utils = valerie.utils,
         formatting = valerie.formatting,
         knockout = valerie.knockout,
-        extras = knockout.extras,
-        deferEvaluation = { "deferEvaluation": true },
-        getValidationStateMethodName = "validation",
-        definition;
+        extras = knockout.extras;
 
-    // + findValidationStates
-    // - finds and returns the validation states of:
-    //   - properties for the given model
-    //   - sub-models of the given model, if permitted
-    //   - descendant properties and sub-models of the given model, if requested
+    /**
+     * Finds and returns the validation states of:
+     * <ul>
+     *     <li>immediate properties of the given model</li>
+     *     <li>immediate sub-models of the given model, if specified</li>
+     *     <li>descendant properties of the given model, if specified</li>
+     *     <li>descendant sub-models of the given model, if specified</li>
+     * </ul>
+     * @memberof valerie.knockout
+     * @param {object} model the model to find validation states in
+     * @param {boolean} [includeSubModels = <code>true</code>] whether to return the validation states of child
+     * sub-models
+     * @param {boolean} [recurse = <code>false</code>] whether to inspect the descendant properties and, if specified,
+     * descendant sub-models of child sub-models
+     * @param {[ModelValidationState,PropertyValidationState = []]} validationStates the already inspected validation
+     * states; this parameter is used in recursive calls
+     */
     knockout.findValidationStates = function (model, includeSubModels, recurse, validationStates) {
 
         if (!(1 in arguments)) {
@@ -721,8 +735,8 @@ var valerie = {};
     (function () {
         // Functions for computeds.
         var failedFunction = function () {
-            return this.result().failed;
-        },
+                return this.result().failed;
+            },
             failedStatesFunction = function () {
                 var failedStates = [],
                     validationStates = this.validationStates(),
@@ -954,20 +968,20 @@ var valerie = {};
     // - validation state for a single, simple, observable or computed property
     (function () {
         var missingFunction = function () {
-            var value = this.observableOrComputed(),
-                missing = this.settings.missingTest(value),
-                required = this.settings.required();
+                var value = this.observableOrComputed(),
+                    missing = this.settings.missingTest(value),
+                    required = this.settings.required();
 
-            if (missing && required) {
-                return -1;
-            }
+                if (missing && required) {
+                    return -1;
+                }
 
-            if (missing && !required) {
-                return 0;
-            }
+                if (missing && !required) {
+                    return 0;
+                }
 
-            return 1;
-        },
+                return 1;
+            },
             rulesResultFunction = function () {
                 var value = this.observableOrComputed(),
                     rules = this.settings.rules,
@@ -987,7 +1001,7 @@ var valerie = {};
 
                 return passedValidationResult;
             },
-            // Functions for computeds.
+        // Functions for computeds.
             failedFunction = function () {
                 return this.result().failed;
             },
