@@ -1,13 +1,6 @@
 ﻿// valerie.converters
 // - additional converters
 
-/// <reference path="../core/valerie.js"/>
-/// <reference path="../core/valerie.formatting.js"/>
-/// <reference path="valerie.numericHelper.js"/>
-
-/*jshint eqnull: true */
-/*global valerie: false */
-
 (function () {
     "use strict";
 

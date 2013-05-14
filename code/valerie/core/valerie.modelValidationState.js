@@ -22,7 +22,7 @@
             for (index = 0; index < validationStates.length; index++) {
                 validationState = validationStates[index];
 
-                if (validationState.settings.applicable()) {
+                if (validationState.isApplicable()) {
                     result = validationState.result();
 
                     if (result.failed) {
@@ -51,7 +51,7 @@
             for (index = 0; index < validationStates.length; index++) {
                 validationState = validationStates[index];
 
-                if (validationState.result().pending) {
+                if (validationState.isApplicable() && validationState.result().pending) {
                     pendingStates.push(validationState);
                 }
             }
@@ -92,14 +92,14 @@
 
     /**
      * An item in a model validation state summary.
-     * @typedef valerie.ModelValidationState.summaryItem
+     * @typedef {object} valerie.ModelValidationState.summaryItem
      * @property {string} name the name of the property or sub-model which has failed validation
      * @property {string} message a message describing why validation failed
      */
 
     /**
      * Construction options for a model validation state.
-     * @typedef valerie.ModelValidationState.options
+     * @typedef {object} valerie.ModelValidationState.options
      * @property {function} applicable the function used to determine if the model is applicable
      * @property {string} failureMessage the message shown when the model is in an invalid state
      * @property {function} name the function used to determine the name of the model; used in failure messages
@@ -130,9 +130,9 @@
         this.failed = koComputed(failedFunction, this, deferEvaluation);
 
         /**
-         * Gets the validation states that belong to this model that are in a failure state.
+         * Gets the validation states that belong to the model that are in a failure state.
          * @method
-         * @return {IValidationState[]} the states that are in failure state
+         * @return {array.<valerie.IValidationState>} the states that are in failure state
          */
         this.failedStates = koComputed(failedStatesFunction, this, deferEvaluation);
 
@@ -157,16 +157,16 @@
         this.passed = koComputed(passedFunction, this, deferEvaluation);
 
         /**
-         * Gets whether validation for the model hasn't yet completed.
+         * Gets whether validation for the model is pending.
          * @method
          * @return {boolean} <code>true</code> is validation is pending, <code>false</code> otherwise
          */
         this.pending = koComputed(pendingFunction, this, deferEvaluation);
 
         /**
-         * Gets the validation states that belong to this model where validation hasn't yet completed.
+         * Gets the validation states that belong to the model that are in a pending state.
          * @method
-         * @return {IValidationState[]} the states that are in pending state
+         * @return {array.<valerie.IValidationState>} the states that are in pending state
          */
         this.pendingStates = koComputed(pendingStatesFunction, this, deferEvaluation);
 
@@ -176,10 +176,11 @@
          * @method
          * @return {valerie.ValidationResult} the result
          */
-        this.result = extras.pausableComputed(resultFunction, this, deferEvaluation, options.paused);
+        this.result = valerie.koExtras.pausableComputed(resultFunction, this, deferEvaluation, options.paused);
 
         /**
-         * Gets or sets whether the computation that updates the result of this validation state has been paused.
+         * Gets or sets whether the computation that updates the validation result has been paused.
+         * @method
          * @param {boolean} [value] <code>true</code> if the computation should be paused, <code>false</code> if the
          * computation should not be paused
          * @return {boolean} <code>true</code> if the computation is paused, <code>false</code> otherwise
@@ -187,7 +188,7 @@
         this.paused = this.result.paused;
 
         /**
-         * Refreshes the result of this validation state.
+         * Refreshes the validation result.
          * @method
          */
         this.refresh = this.result.refresh;
@@ -199,9 +200,24 @@
         this.settings = options;
 
         /**
-         * Gets a static summary of the validation states that belong to this model that are in failure state.
+         * Gets the name of the model.
          * @method
-         * @return {valerie.ModelValidationState.summaryItem[]} the summary
+         * @return {string} the name of the model
+         */
+        this.getName = this.settings.name;
+
+        /**
+         * Gets whether the model is applicable.
+         * @method
+         * @return {boolean} <code>true</code> if the model is applicable, <code>false</code> otherwise
+         */
+        this.isApplicable = this.settings.applicable;
+
+        //noinspection JSValidateJSDoc
+        /**
+         * Gets a static summary of the validation states are in a failure state.
+         * @method
+         * @return {array.<valerie.ModelValidationState.summaryItem>} the summary
          */
         this.summary = koObservable([]);
 
@@ -222,7 +238,7 @@
         /**
          * Gets the validation states that belong to this model.
          * @method
-         * @return {IValidationState[]} the validation states
+         * @return {array.<valerie.IValidationState>} the validation states
          */
         this.validationStates = ko.observableArray();
     };
@@ -233,10 +249,11 @@
          * <br/><b>fluent</b>
          * @name valerie.ModelValidationState#addValidationStates
          * @fluent
-         * @param {IValidationStates[]} validationStates the validation states to add
+         * @param {array.<valerie.IValidationState>} validationStates the validation states to add
          * @return {valerie.ModelValidationState}
          */
         "addValidationStates": function (validationStates) {
+            //noinspection JSValidateTypes
             this.validationStates.push.apply(this.validationStates, validationStates);
 
             return this;
@@ -263,8 +280,7 @@
          * <br/><b>fluent</b>
          * @name valerie.ModelValidationState#clearSummary
          * @fluent
-         * @param {boolean} [clearSubModelSummaries = false] whether to clear the static summaries for sub-models that
-         * belong to the model this validation state is for
+         * @param {boolean} [clearSubModelSummaries = false] whether to clear the static summaries for sub-models
          * @return {valerie.ModelValidationState}
          */
         "clearSummary": function (clearSubModelSummaries) {
@@ -289,7 +305,8 @@
             return this;
         },
         /**
-         * Ends a chain of fluent method calls on a model validation state.<br/>
+         * Ends a chain of fluent method calls on this model validation state.
+         * <br/>
          * @fluent
          * @return {function} the model the validation state is for
          */
@@ -309,10 +326,10 @@
             return this;
         },
         /**
-         * Removes validation states from this validation state.
+         * Removes validation states.
          * <br/><b>fluent</b>
          * @fluent
-         * @param {IValidationStates[]} validationStates the validation states to remove
+         * @param {array.<valerie.IValidationState>} validationStates the validation states to remove
          * @return {valerie.ModelValidationState}
          */
         "removeValidationStates": function (validationStates) {
@@ -321,8 +338,7 @@
             return this;
         },
         /**
-         * Stops validating the given sub-model by removing, from this validation state, the validation states that
-         * belong to it.
+         * Stops validating the given sub-model by removing the validation states that belong to it.
          * @param {*} validatableSubModel the sub-model to stop validating
          * @return {valerie.ModelValidationState}
          */
@@ -335,8 +351,7 @@
          * Updates the static summary of validation states that are in a failure state.
          * <br/><b>fluent</b>
          * @fluent
-         * @param {boolean} [updateSubModelSummaries = false] whether to update the static summaries for sub-models that
-         * belong to the model this validation state is for
+         * @param {boolean} [updateSubModelSummaries = false] whether to update the static summaries for sub-models
          * @return {valerie.ModelValidationState}
          */
         "updateSummary": function (updateSubModelSummaries) {
@@ -349,7 +364,7 @@
                 state = states[index];
 
                 failures.push({
-                    "name": state.settings.name(),
+                    "name": state.getName(),
                     "message": state.message()
                 });
             }
@@ -371,8 +386,7 @@
             return this;
         },
         /**
-         * Adds the validation states for all the descendant properties and sub-models that belong to the model this
-         * validation state is for.
+         * Adds the validation states for all the descendant properties and sub-models that belong to the model.
          * <br/><b>fluent</b>
          * @fluent
          * @return {valerie.ModelValidationState}
@@ -384,8 +398,7 @@
             return this;
         },
         /**
-         * Adds the validation states for all the descendant properties that belong to the model this validation state
-         * is for.
+         * Adds the validation states for all the descendant properties that belong to the model.
          * <br/><b>fluent</b>
          * @fluent
          * @return {valerie.ModelValidationState}
@@ -397,8 +410,7 @@
             return this;
         },
         /**
-         * Adds the validation states for all the child properties that belong to the model this validation state is
-         * for.
+         * Adds the validation states for all the child properties that belong to the model.
          * <br/><b>fluent</b>
          * @fluent
          * @return {valerie.ModelValidationState}
@@ -410,8 +422,7 @@
             return this;
         },
         /**
-         * Adds the validation states for all the child properties and sub-models that belong to the model this
-         * validation state is for.
+         * Adds the validation states for all the child properties and sub-models that belong to the model.
          * <br/><b>fluent</b>
          * @fluent
          * @return {valerie.ModelValidationState}
@@ -425,7 +436,7 @@
     };
 
     /**
-     * The default options used when constructing a property validation state.
+     * The default options used when constructing a model validation state.
      * @name valerie.ModelValidationState.defaultOptions
      * @lends valerie.ModelValidationState.options
      */
@@ -440,7 +451,8 @@
      * Makes the passed-in model validatable. After invocation the model will have a validation state.
      * <br/><b>fluent</b>
      * @param {object|function} model the model to make validatable
-     * @param {object} [options] the options to use when creating the model's validation state
+     * @param {valerie.ModelValidationState.options} [options] the options to use when creating the model's validation
+     * state
      * @returns {valerie.ModelValidationState} the validation state belonging to the model
      */
     valerie.validatableModel = function (model, options) {

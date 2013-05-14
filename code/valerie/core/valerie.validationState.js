@@ -23,8 +23,8 @@
      * sub-models
      * @param {boolean} [recurse = false] whether to inspect the descendant properties and, if specified,
      * descendant sub-models of child sub-models
-     * @param {IValidationState[]} [validationStates] the already inspected validation states; this parameter is used
-     * in recursive invocations
+     * @param {array.<valerie.IValidationState>} [validationStates] the already inspected validation states; this
+     * parameter is used in recursive invocations
      */
     valerie.validationState.findIn = function (model, includeSubModels, recurse, validationStates) {
         if (!(1 in arguments)) {
@@ -36,6 +36,7 @@
         }
 
         if (!(3 in arguments)) {
+            //noinspection JSValidateTypes
             validationStates = [];
         }
 
@@ -63,14 +64,17 @@
 
                 if (utils.isArrayOrObject(value)) {
                     if (includeSubModels && validationState) {
+                        //noinspection JSUnresolvedFunction
                         validationStates.push(validationState);
                     }
 
                     if (recurse) {
+                        //noinspection JSValidateTypes
                         valerie.validationState.findIn(value, includeSubModels, true, validationStates);
                     }
                 } else {
                     if (validationState) {
+                        //noinspection JSUnresolvedFunction
                         validationStates.push(validationState);
                     }
                 }

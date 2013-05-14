@@ -57,5 +57,5 @@
      */
     valerie.ValidationResult.createFailedResult = function (message) {
         return new valerie.ValidationResult(states.failed, message);
-    }
+    };
 })();

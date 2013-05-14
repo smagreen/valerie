@@ -1,20 +1,12 @@
 ﻿// valerie.knockout.fluent.converters
 // - additional functions for the PropertyValidationState prototype for fluently specifying converters
 
-/// <reference path="../core/valerie.js"/>
-/// <reference path="../core/valerie.utils.js"/>
-/// <reference path="../core/valerie.knockout.js"/>
-/// <reference path="valerie.converters.js"/>
-
-/*jshint eqnull: true */
-/*global valerie: false */
-
 (function () {
     "use strict";
 
     var utils = valerie.utils,
         converters = valerie.converters,
-        prototype = valerie.knockout.PropertyValidationState.prototype;
+        prototype = valerie.PropertyValidationState.prototype;
 
     // + currencyMajor
     prototype.currencyMajor = function (options) {

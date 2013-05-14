@@ -1,18 +1,11 @@
 ﻿// valerie.knockout.fluent.rules
 // - additional functions for the PropertyValidationState prototype for fluently specifying rules
 
-/// <reference path="../core/valerie.js"/>
-/// <reference path="../core/valerie.knockout.js"/>
-/// <reference path="valerie.rules.js"/>
-
-/*jshint eqnull: true */
-/*global valerie: false */
-
 (function () {
     "use strict";
 
     // ReSharper disable InconsistentNaming
-    var prototype = valerie.knockout.PropertyValidationState.prototype,
+    var prototype = valerie.PropertyValidationState.prototype,
         rules = valerie.rules;
 
     // + during

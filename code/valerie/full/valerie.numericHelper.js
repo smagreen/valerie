@@ -2,12 +2,6 @@
 // - helper for parsing and formatting numeric values
 // - used by other parts of the valerie library
 
-/// <reference path="../core/valerie.js"/>
-/// <reference path="../core/valerie.formatting.js"/>
-
-/*jshint eqnull: true */
-/*global valerie: false */
-
 (function () {
     "use strict";
 

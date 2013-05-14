@@ -11,7 +11,7 @@
      * Creates a binding handler where the <code>update</code> method is only invoked if one of its observable
      * or computed dependencies is updated. Unlike normal bindings, the <code>update</code> method is not invoked if a
      * sibling binding is updated.
-     * @memberof valerie.knockout.extras
+     * @memberof valerie.koExtras
      * @param {function} initOrUpdateFunction the function to initialise or update the binding
      * @param {function} updateFunction the function to update the binding
      * @return {{}} an isolated binding handler
@@ -40,7 +40,7 @@
 
     /**
      * Creates a Knockout computed whose computation can be paused and resumed.
-     * @memberof valerie.knockout.extras
+     * @memberof valerie.koExtras
      * @param {function} evaluatorFunction the function to be evaluated as the computed
      * @param {object} [evaluatorFunctionTarget] the object which will act as <code>this</code> when the function is
      * executed

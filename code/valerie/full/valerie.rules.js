@@ -1,21 +1,11 @@
 ﻿// valerie.rules
 // - general purpose rules
 
-/// <reference path="../core/valerie.js"/>
-/// <reference path="../core/valerie.validationResult.js"/>
-/// <reference path="../core/valerie.passThroughConverter.js"/>
-/// <reference path="../core/valerie.utils.js"/>
-
-/*jshint eqnull: true */
-/*global valerie: false */
-
 (function() {
     "use strict";
 
-    // ReSharper disable InconsistentNaming
-    var FailedValidationResult = valerie.FailedValidationResult,
-        // ReSharper restore InconsistentNaming        
-        passedValidationResult = valerie.PassedValidationResult.instance,
+    var // ReSharper restore InconsistentNaming
+        passedValidationResult = valerie.ValidationResult.passedInstance,
         rules = valerie.rules = valerie.rules || {},
         utils = valerie.utils,
         formatting = valerie.formatting;
@@ -88,7 +78,7 @@
                     "value": this.settings.valueformat(value, this.settings.valueFormat)
                 });
 
-            return new FailedValidationResult(failureMessage);
+            return new valerie.ValidationResult.createFailedResult(failureMessage);
         }
     };
 
@@ -161,7 +151,7 @@
                             "value": this.settings.valueformat(value, this.settings.valueFormat)
                         });
 
-                    return new FailedValidationResult(failureMessage);
+                    return new valerie.ValidationResult.createFailedResult(failureMessage);
                 }
             }
 
@@ -211,7 +201,7 @@
                     "value": this.settings.valueformat(value, this.settings.valueFormat)
                 });
 
-            return new FailedValidationResult(failureMessage);
+            return new valerie.ValidationResult.createFailedResult(failureMessage);
         }
     };
 
@@ -276,7 +266,7 @@
                     "value": this.settings.valueformat(value, this.settings.valueFormat)
                 });
 
-            return new FailedValidationResult(failureMessage);
+            return new valerie.ValidationResult.createFailedResult(failureMessage);
         }
     };
 

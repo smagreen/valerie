@@ -1,17 +1,11 @@
-﻿/// <reference path="../../core/valerie.js"/>
-/// <reference path="../../core/valerie.knockout.js"/>
-
-/*global valerie: false */
-
-(function () {
+﻿(function () {
     "use strict";
     
-    var knockout = valerie.knockout,
-        defaultOptions;
+    var defaultOptions;
 
-    knockout.ModelValidationState.defaultOptions.failureMessageFormat = "There are validation errors.";
+    valerie.ModelValidationState.defaultOptions.failureMessageFormat = "There are validation errors.";
 
-    defaultOptions = knockout.PropertyValidationState.defaultOptions;
+    defaultOptions = valerie.PropertyValidationState.defaultOptions;
     defaultOptions.invalidEntryFailureMessage = "The value entered is invalid.";
     defaultOptions.missingFailureMessage = "A value is required.";
 })();

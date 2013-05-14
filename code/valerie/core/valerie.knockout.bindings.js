@@ -3,31 +3,19 @@
 //   - validating user entries
 //   - showing the validation state of a view-model
 
-/// <reference path="../dependencies/knockout-2.2.1.debug.js"/>
-/// <reference path="valerie.js"/>
-/// <reference path="valerie.validationResult.js"/>
-/// <reference path="valerie.utils.js"/>
-/// <reference path="valerie.dom.js"/>
-/// <reference path="valerie.knockout.extras.js"/>
-/// <reference path="valerie.knockout.js"/>
-/// <reference path="valerie.passThrough.js"/>
-
 (function () {
     "use strict";
 
-    // ReSharper disable InconsistentNaming
-    var FailedValidationResult = valerie.FailedValidationResult,
-        // ReSharper restore InconsistentNaming
-        passedValidationResult = valerie.PassedValidationResult.instance,
+    var passedValidationResult = valerie.ValidationResult.passedInstance,
         utils = valerie.utils,
         dom = valerie.dom,
-        knockout = valerie.knockout,
         converters = valerie.converters,
         koBindingHandlers = ko.bindingHandlers,
         koRegisterEventHandler = ko.utils.registerEventHandler,
         setElementVisibility = dom.setElementVisibility,
-        getValidationState = knockout.getValidationState,
-        isolatedBindingHandler = valerie.knockout.extras.isolatedBindingHandler;
+        getValidationState = valerie.validationState.getFor,
+        isolatedBindingHandler = valerie.koExtras.isolatedBindingHandler,
+        knockout = valerie.knockout= {};
 
     // Define validatedChecked and validatedValue binding handlers.
     (function () {
@@ -73,14 +61,14 @@
                     observableOrComputed(null);
 
                     if (settings.required()) {
-                        result = new FailedValidationResult(settings.missingFailureMessage);
+                        result = new valerie.ValidationResult.createFailedResult(settings.missingFailureMessage);
                     }
                 } else {
                     parsedValue = settings.converter.parse(enteredValue);
                     observableOrComputed(parsedValue);
 
                     if (parsedValue == null) {
-                        result = new FailedValidationResult(settings.invalidEntryFailureMessage);
+                        result = new valerie.ValidationResult.createFailedResult(settings.invalidEntryFailureMessage);
                     }
                 }
 
@@ -152,7 +140,7 @@
                     blurHandler(element, observableOrComputed);
                 });
 
-                tagName = ko.utils.tagNameLower(element),
+                tagName = ko.utils.tagNameLower(element);
                 textualInput = (tagName === "input" && element.type.toLowerCase() === "text") || tagName === "textarea";
 
                 if (!textualInput) {
@@ -179,6 +167,7 @@
                 // Rather than update the textual input in the "update" method we use a computed to ensure the textual
                 // input's value is changed only when the observable or computed is changed, not when another binding is
                 // changed.
+                //noinspection JSCheckFunctionSignatures
                 ko.computed({
                     "read": function () {
                         textualInputUpdateFunction(observableOrComputed, validationState, element);
@@ -301,6 +290,7 @@
                     valueFormat = validationState.settings.valueFormat;
                 }
 
+                //noinspection JSUnresolvedVariable
                 formatter = bindings.formatter || formatter;
                 if (valueFormat == null) {
                     valueFormat = bindings.valueFormat;

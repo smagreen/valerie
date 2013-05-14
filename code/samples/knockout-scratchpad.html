@@ -203,7 +203,7 @@
 <script type="text/javascript">
     window.onload = function () {
         var v = valerie,
-                k = v.knockout;
+                k = valerie.knockout;
 
         var longRunningRuleCompleted = ko.observable(false),
                 longRunningRuleTimeout,
@@ -216,9 +216,9 @@
                         longRunningRuleCompleted(false);
 
                         if (value === 133700) {
-                            return new v.FailedValidationResult("Elite amount not allowed!");
+                            return new v.ValidationResult.createFailedResult("Elite amount not allowed!");
                         } else {
-                            return v.PassedValidationResult.instance;
+                            return v.ValidationResult.passedInstance;
                         }
                     }
 
@@ -226,7 +226,7 @@
                         longRunningRuleCompleted(true);
                     }, 3000);
 
-                    return v.PendingValidationResult.instance;
+                    return v.ValidationResult.pendingInstance;
                 };
 
         // Configure valerie
@@ -250,7 +250,7 @@
                         .valueFormat("C,.4")
                         .end();
 
-        window.viewModel = viewModel = k.validatableModel({
+        window.viewModel = viewModel = v.validatableModel({
             "clearErrors": function () {
                 viewModel.validation().touched(false).clearSummary(true);
             },
@@ -265,7 +265,7 @@
                     .validate()
                     .email()
                     .end(),
-            "houseDetails": k.validatableModel({
+            "houseDetails": v.validatableModel({
                 "postcode": ko.observable("")
                         .validate()
                         .postcode()
@@ -282,7 +282,7 @@
                         .end()
             })
                     .name("House Details")
-                    .validateMyProperties()
+                    .validateChildProperties()
                     .end(),
             "housePrice": housePrice,
             "loanAmount": ko.observable(90000)

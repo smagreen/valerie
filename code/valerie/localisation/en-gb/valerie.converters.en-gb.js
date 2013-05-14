@@ -1,12 +1,5 @@
 ﻿// valerie.converters.en-gb
 // - additional converters for the en-gb locale
-
-/// <reference path="../../core/valerie.js"/>
-/// <reference path="../../core/valerie.formatting.js"/>
-
-/*jshint eqnull: true */
-/*global valerie: false */
-
 (function () {
     "use strict";
 

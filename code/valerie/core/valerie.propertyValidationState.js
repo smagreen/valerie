@@ -77,7 +77,7 @@
                 return valerie.ValidationResult.createFailedResult(this.settings.missingFailureMessage);
             }
 
-            if (missingResult == 0) {
+            if (missingResult === 0) {
                 return result;
             }
 
@@ -94,7 +94,7 @@
 
     /**
      * Construction options for a property validation state.
-     * @typedef valerie.PropertyValidationState.options
+     * @typedef {object} valerie.PropertyValidationState.options
      * @property {function} applicable the function used to determine if the property is applicable
      * @property {valerie.IConverter} converter the converter used to parse user
      * entries and format display of the property's value
@@ -103,7 +103,7 @@
      * @property {string} missingFailureMessage the message shown when a value is required but is missing
      * @property {function} name the function used to determine the name of the property; used in failure messages
      * @property {function} required the function used to determine if a value is required
-     * @property {valerie.IRule[]} rules the chain of rules used to validate the property's value
+     * @property {valerie.array<IRule>} rules the chain of rules used to validate the property's value
      * @property {string} valueFormat the string use to format the property's value for display in a message
      */
 
@@ -179,6 +179,20 @@
         this.settings = options;
 
         /**
+         * Gets the name of the property.
+         * @method
+         * @return {string} the name of the property
+         */
+        this.getName = this.settings.name;
+
+        /**
+         * Gets whether the property is applicable.
+         * @method
+         * @return {boolean} <code>true</code> if the property is applicable, <code>false</code> otherwise
+         */
+        this.isApplicable = this.settings.applicable;
+
+        /**
          * Gets whether the message describing the validation state should be shown.
          * @method
          * @return {boolean} <code>true</code> if the message should be shown, <code>false</code> otherwise
@@ -227,7 +241,7 @@
             return this;
         },
         /**
-         * Ends a chain of fluent method calls on a property validation state.<br/>
+         * Ends a chain of fluent method calls on this property validation state.<br/>
          * Applies the <b>options.valueFormat</b> format string to all the rules in the rule chain.
          * <br/><b>fluent</b>
          * @fluent

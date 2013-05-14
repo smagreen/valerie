@@ -34,7 +34,7 @@ module.exports = function (grunt) {
         "concat": {
             "core": {
                 "src": [
-                    "code/valerie/core/valerie.js",
+                    "code/valerie/core/valerie.namespace.js",
                     "code/valerie/core/valerie.utils.js",
                     "code/valerie/core/valerie.formatting.js",
                     "code/valerie/core/valerie.dom.js",
