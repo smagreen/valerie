@@ -4,8 +4,8 @@
     },
     "source": {
         "include": [
-            "code/core",
-            "code/full"
+            "code/valerie/core",
+            "code/valerie/full"
         ],
         "includePattern": ".+\\.js(doc)?$"
     },

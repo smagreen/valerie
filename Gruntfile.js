@@ -31,37 +31,36 @@ module.exports = function (grunt) {
         "concat": {
             "core": {
                 "src": [
-                    "license.js",
-                    "code/core/valerie.js",
-                    "code/core/valerie.utils.js",
-                    "code/core/valerie.formatting.js",
-                    "code/core/valerie.dom.js",
-                    "code/core/valerie.validationResult.js",
-                    "code/core/valerie.converters.js",
-                    "code/core/valerie.knockout.extras.js",
-                    "code/core/valerie.knockout.js",
-                    "code/core/valerie.knockout.bindings.js"
+                    "code/valerie/core/valerie.js",
+                    "code/valerie/core/valerie.utils.js",
+                    "code/valerie/core/valerie.formatting.js",
+                    "code/valerie/core/valerie.dom.js",
+                    "code/valerie/core/valerie.validationResult.js",
+                    "code/valerie/core/valerie.converters.js",
+                    "code/valerie/core/valerie.knockout.extras.js",
+                    "code/valerie/core/valerie.knockout.js",
+                    "code/valerie/core/valerie.knockout.bindings.js"
                 ],
                 "dest": "build/valerie-for-knockout-core.js"
             },
             "full": {
                 "src": [
                     "build/valerie-for-knockout-core.js",
-                    "code/full/valerie.numericHelper.js",
-                    "code/full/valerie.converters.js",
-                    "code/full/valerie.rulesjs",
-                    "code/full/valerie.knockout.fluent.converters.js",
-                    "code/full/valerie.knockout.fluent.rules.js"
+                    "code/valerie/full/valerie.numericHelper.js",
+                    "code/valerie/full/valerie.converters.js",
+                    "code/valerie/full/valerie.rules.js",
+                    "code/valerie/full/valerie.knockout.fluent.converters.js",
+                    "code/valerie/full/valerie.knockout.fluent.rules.js"
                 ],
                 "dest": "build/valerie-for-knockout.js"
             },
             "en-gb": {
                 "src": [
                     "build/valerie-for-knockout.js",
-                    "code/localisation/en-gb/core.js",
-                    "code/localisation/en-gb/full.js",
-                    "code/localisation/en-gb/valerie.converters.en-gb.js",
-                    "code/localisation/en-gb/valerie.knockout.fluent.converters.en-gb.js"
+                    "code/valerie/localisation/en-gb/core.js",
+                    "code/valerie/localisation/en-gb/full.js",
+                    "code/valerie/localisation/en-gb/valerie.converters.en-gb.js",
+                    "code/valerie/localisation/en-gb/valerie.knockout.fluent.converters.en-gb.js"
                 ],
                 "dest": "build/valerie-for-knockout-en-gb.js"
             }

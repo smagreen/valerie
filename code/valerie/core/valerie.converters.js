@@ -2,7 +2,7 @@
     "use strict";
 
     /**
-     * Contains the <code>passThrough</code> converter.
+     * Contains converters, always singletons.
      * @namespace
      */
     valerie.converters = {};
@@ -15,9 +15,9 @@
      */
     valerie.converters.passThrough = {
         /**
-         * @see valerie.converters.Converter#formatter
+         * @see valerie.converters.Converter#format
          */
-        "formatter": function (value) {
+        "format": function (value) {
             if (value == null) {
                 return "";
             }
@@ -25,9 +25,9 @@
             return value.toString();
         },
         /**
-         * @see valerie.converters.Converter#parser
+         * @see valerie.converters.Converter#parse
          */
-        "parser": function (value) {
+        "parse": function (value) {
             return value;
         }
     };

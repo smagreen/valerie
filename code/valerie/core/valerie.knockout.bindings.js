@@ -52,7 +52,7 @@
                 }
 
                 value = observableOrComputed.peek();
-                element.value = validationState.settings.converter.formatter(value,
+                element.value = validationState.settings.converter.format(value,
                     validationState.settings.entryFormat);
             },
             textualInputFocusHandler = function (element, observableOrComputed) {
@@ -76,7 +76,7 @@
                         result = new FailedValidationResult(settings.missingFailureMessage);
                     }
                 } else {
-                    parsedValue = settings.converter.parser(enteredValue);
+                    parsedValue = settings.converter.parse(enteredValue);
                     observableOrComputed(parsedValue);
 
                     if (parsedValue == null) {
@@ -97,7 +97,7 @@
 
                 validationState.boundEntry.result(passedValidationResult);
 
-                element.value = validationState.settings.converter.formatter(value,
+                element.value = validationState.settings.converter.format(value,
                     validationState.settings.entryFormat);
             };
 
@@ -293,20 +293,20 @@
                     observableOrComputedOrValue = valueAccessor(),
                     value = ko.utils.unwrapObservable(observableOrComputedOrValue),
                     validationState = getValidationState(observableOrComputedOrValue),
-                    formatter = converters.passThrough.formatter,
+                    format = converters.passThrough.format,
                     valueFormat;
 
                 if (validationState) {
-                    formatter = validationState.settings.converter.formatter;
+                    format = validationState.settings.converter.format;
                     valueFormat = validationState.settings.valueFormat;
                 }
 
-                formatter = bindings.formatter || formatter;
+                format = bindings.format || format;
                 if (valueFormat == null) {
                     valueFormat = bindings.valueFormat;
                 }
 
-                ko.utils.setTextContent(element, formatter(value, valueFormat));
+                ko.utils.setTextContent(element, format(value, valueFormat));
             });
 
         // + validationCss binding handler

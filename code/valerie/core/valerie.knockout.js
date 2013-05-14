@@ -541,7 +541,7 @@
                 var index,
                     settings = this.settings,
                     valueFormat = settings.valueFormat,
-                    valueFormatter = settings.converter.formatter,
+                    valueformat = settings.converter.format,
                     rules = settings.rules,
                     ruleSettings;
 
@@ -549,7 +549,7 @@
                     ruleSettings = rules[index].settings;
 
                     ruleSettings.valueFormat = valueFormat;
-                    ruleSettings.valueFormatter = valueFormatter;
+                    ruleSettings.valueformat = valueformat;
                 }
 
                 return this.observableOrComputed;

@@ -1,8 +1,3 @@
-// valeriejs
-// A validation library for KnockoutJS.
-// (c) 2013 egrove Ltd.
-// License: MIT (http://www.opensource.org/licenses/mit-license.php)
-
 /**
  * The valerie namespace.
  * @namespace valerie
@@ -174,13 +169,11 @@ var valerie = {};
     /**
      * Contains utilities for formatting strings.
      * @namespace valerie.formatting
-     * @inner
      */
     valerie.formatting = {};
 
     // Shortcuts.
     var formatting = valerie.formatting;
-
 
     /**
      * Adds thousands separators to the given number string.
@@ -259,6 +252,30 @@ var valerie = {};
         dom = valerie.dom;
 
     /**
+     * Builds and returns a CSS class-names string using the keys in the given dictionary which have <code>true</code>
+     * values.
+     * @memberof valerie.dom
+     * @param {object} dictionary the dictionary of CSS class-names
+     * @return {string} the CSS class-names
+     */
+    dom.classNamesDictionaryToString = function (dictionary) {
+        var name,
+            array = [];
+
+        for (name in dictionary) {
+            if (dictionary.hasOwnProperty(name)) {
+                if (dictionary[name]) {
+                    array.push(name);
+                }
+            }
+        }
+
+        array.sort();
+
+        return array.join(" ");
+    };
+
+    /**
      * Builds and returns a dictionary of <code>true</code> values, keyed on the CSS class-names found in the given
      * string.
      * @memberof valerie.dom
@@ -287,30 +304,6 @@ var valerie = {};
         }
 
         return dictionary;
-    };
-
-    /**
-     * Builds and returns a CSS class-names string using the keys in the given dictionary which have <code>true</code>
-     * values.
-     * @memberof valerie.dom
-     * @param {object} dictionary the dictionary of CSS class-names
-     * @return {string} the CSS class-names
-     */
-    dom.classNamesDictionaryToString = function (dictionary) {
-        var name,
-            array = [];
-
-        for (name in dictionary) {
-            if (dictionary.hasOwnProperty(name)) {
-                if (dictionary[name]) {
-                    array.push(name);
-                }
-            }
-        }
-
-        array.sort();
-
-        return array.join(" ");
     };
 
     /**
@@ -392,7 +385,7 @@ var valerie = {};
 
     /**
      * An instance of a PassedValidationResult.
-     * @name PassedValidationResult.instance
+     * @memberof valerie.PassedValidationResult
      * @static
      */
     valerie.PassedValidationResult.instance = new valerie.PassedValidationResult();
@@ -409,7 +402,7 @@ var valerie = {};
 
     /**
      * An instance of a PendingValidationResult.
-     * @name PendingValidationResult.instance
+     * @memberof valerie.PendingValidationResult
      * @static
      */
     valerie.PendingValidationResult.instance = new valerie.PendingValidationResult();
@@ -419,26 +412,32 @@ var valerie = {};
     "use strict";
 
     /**
-     * Contains converters. A converter is a static object which can parse string representations of a value type and
-     * format values of a value type as a string.
+     * Contains converters, always singletons.
      * @namespace
-     * @inner
      */
-    valerie.converters = valerie.converters || {};
+    valerie.converters = {};
 
     /**
      * A converter which formats and parses strings.
      * Used as the default converter in numerous places throughout the library.
+     * @namespace
+     * @see valerie.converters.Converter
      */
     valerie.converters.passThrough = {
-        "formatter": function (value) {
+        /**
+         * @see valerie.converters.Converter#format
+         */
+        "format": function (value) {
             if (value == null) {
                 return "";
             }
 
             return value.toString();
         },
-        "parser": function (value) {
+        /**
+         * @see valerie.converters.Converter#parse
+         */
+        "parse": function (value) {
             return value;
         }
     };
@@ -453,7 +452,7 @@ var valerie = {};
      * Contains functions that add extra functionality to KnockoutJS.
      * @namespace
      */
-    valerie.knockout.extras = extras = valerie.knockout.extras || {};
+    valerie.knockout.extras = valerie.knockout.extras || {};
 
     // Shortcuts.
     var extras = valerie.knockout.extras;
@@ -589,6 +588,12 @@ var valerie = {};
         extras = knockout.extras;
 
     /**
+     * @typedef {object} ValidationState
+     * @type object
+     * @memberof valerie.knockout
+     */
+
+    /**
      * Finds and returns the validation states of:
      * <ul>
      *     <li>immediate properties of the given model</li>
@@ -598,15 +603,14 @@ var valerie = {};
      * </ul>
      * @memberof valerie.knockout
      * @param {object} model the model to find validation states in
-     * @param {boolean} [includeSubModels = <code>true</code>] whether to return the validation states of child
+     * @param {boolean} [includeSubModels = true] whether to return the validation states of child
      * sub-models
-     * @param {boolean} [recurse = <code>false</code>] whether to inspect the descendant properties and, if specified,
+     * @param {boolean} [recurse = false] whether to inspect the descendant properties and, if specified,
      * descendant sub-models of child sub-models
-     * @param {[ModelValidationState,PropertyValidationState = []]} validationStates the already inspected validation
-     * states; this parameter is used in recursive calls
+     * @param {ValidationState[]} [validationStates] the already inspected validation states; this parameter is used
+     * in recursive invocations
      */
     knockout.findValidationStates = function (model, includeSubModels, recurse, validationStates) {
-
         if (!(1 in arguments)) {
             includeSubModels = true;
         }
@@ -660,9 +664,14 @@ var valerie = {};
         return validationStates;
     };
 
-    // + getValidationState
-    // - gets the validation state from a model, observable or computed
-    // - for use when developing bindings
+    /**
+     * Gets the validation state for the given model, observable or computed.
+     * This function is useful when developing binding handlers.
+     * @member of valerie.knockout
+     * @param modelOrObservableOrComputed the thing to get the validation state for
+     * @return {null|ValidationState} the validation state or <code>null</code> if the given thing does not have a
+     * validation state.
+     */
     knockout.getValidationState = function (modelOrObservableOrComputed) {
         if (modelOrObservableOrComputed == null) {
             return null;
@@ -675,9 +684,13 @@ var valerie = {};
         return modelOrObservableOrComputed[getValidationStateMethodName]();
     };
 
-    // + hasValidationState
-    // - determines if the given model, observable or computed has a validation state
-    // - for use when developing bindings
+    /**
+     * Informs if the given model, observable or computed has a validation state.
+     * This function is useful when developing binding handlers.
+     * @member of valerie.knockout
+     * @param modelOrObservableOrComputed the thing to test
+     * @return {boolean} whether the given thing has a validation state
+     */
     knockout.hasValidationState = function (modelOrObservableOrComputed) {
         if (modelOrObservableOrComputed == null) {
             return false;
@@ -1093,7 +1106,7 @@ var valerie = {};
                 var index,
                     settings = this.settings,
                     valueFormat = settings.valueFormat,
-                    valueFormatter = settings.converter.formatter,
+                    valueformat = settings.converter.format,
                     rules = settings.rules,
                     ruleSettings;
 
@@ -1101,7 +1114,7 @@ var valerie = {};
                     ruleSettings = rules[index].settings;
 
                     ruleSettings.valueFormat = valueFormat;
-                    ruleSettings.valueFormatter = valueFormatter;
+                    ruleSettings.valueformat = valueformat;
                 }
 
                 return this.observableOrComputed;
@@ -1197,7 +1210,7 @@ var valerie = {};
                 }
 
                 value = observableOrComputed.peek();
-                element.value = validationState.settings.converter.formatter(value,
+                element.value = validationState.settings.converter.format(value,
                     validationState.settings.entryFormat);
             },
             textualInputFocusHandler = function (element, observableOrComputed) {
@@ -1221,7 +1234,7 @@ var valerie = {};
                         result = new FailedValidationResult(settings.missingFailureMessage);
                     }
                 } else {
-                    parsedValue = settings.converter.parser(enteredValue);
+                    parsedValue = settings.converter.parse(enteredValue);
                     observableOrComputed(parsedValue);
 
                     if (parsedValue == null) {
@@ -1242,7 +1255,7 @@ var valerie = {};
 
                 validationState.boundEntry.result(passedValidationResult);
 
-                element.value = validationState.settings.converter.formatter(value,
+                element.value = validationState.settings.converter.format(value,
                     validationState.settings.entryFormat);
             };
 
@@ -1438,20 +1451,20 @@ var valerie = {};
                     observableOrComputedOrValue = valueAccessor(),
                     value = ko.utils.unwrapObservable(observableOrComputedOrValue),
                     validationState = getValidationState(observableOrComputedOrValue),
-                    formatter = converters.passThrough.formatter,
+                    format = converters.passThrough.format,
                     valueFormat;
 
                 if (validationState) {
-                    formatter = validationState.settings.converter.formatter;
+                    format = validationState.settings.converter.format;
                     valueFormat = validationState.settings.valueFormat;
                 }
 
-                formatter = bindings.formatter || formatter;
+                format = bindings.format || format;
                 if (valueFormat == null) {
                     valueFormat = bindings.valueFormat;
                 }
 
-                ko.utils.setTextContent(element, formatter(value, valueFormat));
+                ko.utils.setTextContent(element, format(value, valueFormat));
             });
 
         // + validationCss binding handler

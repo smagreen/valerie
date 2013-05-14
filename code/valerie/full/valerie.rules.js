@@ -36,7 +36,7 @@
         "failureMessageFormatForMinimumOnly": "",
         "failureMessageFormatForMaximumOnly": "",
         "valueFormat": null,
-        "valueFormatter": valerie.converters.passThrough.formatter
+        "valueformat": valerie.converters.passThrough.format
     };
 
     // + rules.During
@@ -55,7 +55,7 @@
         "failureMessageFormatForMinimumOnly": "",
         "failureMessageFormatForMaximumOnly": "",
         "valueFormat": null,
-        "valueFormatter": valerie.converters.passThrough.formatter
+        "valueformat": valerie.converters.passThrough.format
     };
    
     // + rules.Expression
@@ -70,7 +70,7 @@
     rules.Expression.defaultOptions = {
         "failureMessageFormat": "",
         "valueFormat": null,
-        "valueFormatter": valerie.converters.passThrough.formatter
+        "valueformat": valerie.converters.passThrough.format
     };
 
     rules.Expression.prototype = {
@@ -85,7 +85,7 @@
 
             failureMessage = formatting.replacePlaceholders(
                 this.settings.failureMessageFormat, {
-                    "value": this.settings.valueFormatter(value, this.settings.valueFormat)
+                    "value": this.settings.valueformat(value, this.settings.valueFormat)
                 });
 
             return new FailedValidationResult(failureMessage);
@@ -120,7 +120,7 @@
         "failureMessageFormatForMinimumOnly": "",
         "failureMessageFormatForMaximumOnly": "",
         "valueFormat": null,
-        "valueFormatter": valerie.converters.passThrough.formatter
+        "valueformat": valerie.converters.passThrough.format
     };
 
     // + rules.Matches
@@ -133,7 +133,7 @@
     rules.Matches.defaultOptions = {
         "failureMessageFormat": "",
         "valueFormat": null,
-        "valueFormatter": valerie.converters.passThrough.formatter
+        "valueformat": valerie.converters.passThrough.format
     };
 
     // + rules.NoneOf
@@ -145,7 +145,7 @@
     rules.NoneOf.defaultOptions = {
         "failureMessageFormat": "",
         "valueFormat": null,
-        "valueFormatter": valerie.converters.passThrough.formatter
+        "valueformat": valerie.converters.passThrough.format
     };
 
     rules.NoneOf.prototype = {
@@ -158,7 +158,7 @@
                 if (value === values[index]) {
                     failureMessage = formatting.replacePlaceholders(
                         this.settings.failureMessageFormat, {
-                            "value": this.settings.valueFormatter(value, this.settings.valueFormat)
+                            "value": this.settings.valueformat(value, this.settings.valueFormat)
                         });
 
                     return new FailedValidationResult(failureMessage);
@@ -179,7 +179,7 @@
     rules.Not.defaultOptions = {
         "failureMessageFormat": "",
         "valueFormat": null,
-        "valueFormatter": valerie.converters.passThrough.formatter
+        "valueformat": valerie.converters.passThrough.format
     };
 
     // + rules.OneOf
@@ -191,7 +191,7 @@
     rules.OneOf.defaultOptions = {
         "failureMessageFormat": "",
         "valueFormat": null,
-        "valueFormatter": valerie.converters.passThrough.formatter
+        "valueformat": valerie.converters.passThrough.format
     };
 
     rules.OneOf.prototype = {
@@ -208,7 +208,7 @@
 
             failureMessage = formatting.replacePlaceholders(
                 this.settings.failureMessageFormat, {
-                    "value": this.settings.valueFormatter(value, this.settings.valueFormat)
+                    "value": this.settings.valueformat(value, this.settings.valueFormat)
                 });
 
             return new FailedValidationResult(failureMessage);
@@ -231,7 +231,7 @@
         "failureMessageFormatForMinimumOnly": "",
         "failureMessageFormatForMaximumOnly": "",
         "valueFormat": null,
-        "valueFormatter": valerie.converters.passThrough.formatter
+        "valueformat": valerie.converters.passThrough.format
     };
 
     rules.Range.prototype = {
@@ -271,9 +271,9 @@
 
             failureMessage = formatting.replacePlaceholders(
                 failureMessageFormat, {
-                    "maximum": this.settings.valueFormatter(maximum, this.settings.valueFormat),
-                    "minimum": this.settings.valueFormatter(minimum, this.settings.valueFormat),
-                    "value": this.settings.valueFormatter(value, this.settings.valueFormat)
+                    "maximum": this.settings.valueformat(maximum, this.settings.valueFormat),
+                    "minimum": this.settings.valueformat(minimum, this.settings.valueFormat),
+                    "value": this.settings.valueformat(value, this.settings.valueFormat)
                 });
 
             return new FailedValidationResult(failureMessage);
@@ -296,6 +296,6 @@
         "failureMessageFormatForMinimumOnly": "",
         "failureMessageFormatForMaximumOnly": "",
         "valueFormat": null,
-        "valueFormatter": valerie.converters.passThrough.formatter
+        "valueformat": valerie.converters.passThrough.format
     };
 })();

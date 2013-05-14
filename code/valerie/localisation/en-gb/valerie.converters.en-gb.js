@@ -15,14 +15,14 @@
     
     // + converters.postcode
     converters.postcode = {
-        "formatter": function (value) {
+        "format": function (value) {
             if (value == null) {
                 return "";
             }
 
             return value;
         },
-        "parser": function (value) {
+        "parse": function (value) {
             if (value == null) {
                 return null;
             }

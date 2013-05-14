@@ -19,7 +19,7 @@
 
     // + converters.date
     converters.date = {
-        "formatter": function (value) {
+        "format": function (value) {
             if (value == null) {
                 return "";
             }
@@ -37,7 +37,7 @@
             
             return pad(firstPart, "0", 2) + "/" + pad(secondPart, "0", 2) + "/" + value.getFullYear();
         },
-        "parser": function (value) {
+        "parse": function (value) {
             if (value == null) {
                 return null;
             }
@@ -81,10 +81,10 @@
 
     // + converters.currencyMajor
     converters.currencyMajor = {
-        "formatter": function (value, format) {
+        "format": function (value, format) {
             return converters.currency.numericHelper.format(value, format);
         },
-        "parser": function (value) {
+        "parse": function (value) {
             var numericHelper = converters.currency.numericHelper;
 
             if (!numericHelper.isCurrencyMajor(value)) {
@@ -97,10 +97,10 @@
 
     // + converters.currencyMajorMinor
     converters.currencyMajorMinor = {
-        "formatter": function (value, format) {
+        "format": function (value, format) {
             return converters.currency.numericHelper.format(value, format);
         },
-        "parser": function (value) {
+        "parse": function (value) {
             var numericHelper = converters.currency.numericHelper;
 
             if (!numericHelper.isCurrencyMajorMinor(value)) {
@@ -115,14 +115,14 @@
 
     // + converters.email
     converters.email = {
-        "formatter": function (value) {
+        "format": function (value) {
             if (value == null) {
                 return "";
             }
 
             return value;
         },
-        "parser": function (value) {
+        "parse": function (value) {
             if (value == null) {
                 return null;
             }
@@ -137,10 +137,10 @@
 
     // + converters.float
     converters.float = {
-        "formatter": function (value, format) {
+        "format": function (value, format) {
             return converters.float.numericHelper.format(value, format);
         },
-        "parser": function (value) {
+        "parse": function (value) {
             var numericHelper = converters.float.numericHelper;
 
             if (!numericHelper.isFloat(value)) {
@@ -155,10 +155,10 @@
 
     // + converters.integer
     converters.integer = {
-        "formatter": function (value, format) {
+        "format": function (value, format) {
             return converters.integer.numericHelper.format(value, format);
         },
-        "parser": function (value) {
+        "parse": function (value) {
             var numericHelper = converters.integer.numericHelper;
 
             if (!numericHelper.isInteger(value)) {
@@ -173,14 +173,14 @@
 
     // + converters.number
     converters.number = {
-        "formatter": function (value) {
+        "format": function (value) {
             if (value == null) {
                 return "";
             }
 
             return value.toString();
         },
-        "parser": function (value) {
+        "parse": function (value) {
             if (value == null) {
                 return null;
             }
