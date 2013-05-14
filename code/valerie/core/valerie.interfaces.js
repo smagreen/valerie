@@ -2,7 +2,7 @@
 // These interfaces are not available to use in the run-time code.
 
 /**
- * The interface for a converter, a pair of functions: <code>format</code> and <parse>parse</parse>, which work in tandem
+ * The interface for a Converter, a pair of functions: <code>format</code> and <parse>parse</parse>, which work in tandem
  * on a single type of value.
  * @class
  */

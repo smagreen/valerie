@@ -2,6 +2,9 @@ module.exports = function (grunt) {
     grunt.initConfig({
         "pkg": grunt.file.readJSON("package.json"),
         "clean": {
+            "docs": [
+                "apidocs"
+            ],
             "build": [
                 "build"
             ]
@@ -173,6 +176,7 @@ module.exports = function (grunt) {
     ]);
 
     grunt.registerTask("docs", [
+        "clean:docs",
         "shell:docs"
     ]);
 }

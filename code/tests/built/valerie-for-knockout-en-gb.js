@@ -421,11 +421,11 @@ var valerie = {};
      * A converter which formats and parses strings.
      * Used as the default converter in numerous places throughout the library.
      * @namespace
-     * @see valerie.converters.Converter
+     * @see valerie.converters.IConverter
      */
     valerie.converters.passThrough = {
         /**
-         * @see valerie.converters.Converter#format
+         * @see valerie.converters.IConverter#format
          */
         "format": function (value) {
             if (value == null) {
@@ -435,7 +435,7 @@ var valerie = {};
             return value.toString();
         },
         /**
-         * @see valerie.converters.Converter#parse
+         * @see valerie.converters.IConverter#parse
          */
         "parse": function (value) {
             return value;
@@ -1451,20 +1451,20 @@ var valerie = {};
                     observableOrComputedOrValue = valueAccessor(),
                     value = ko.utils.unwrapObservable(observableOrComputedOrValue),
                     validationState = getValidationState(observableOrComputedOrValue),
-                    format = converters.passThrough.format,
+                    formatter = converters.passThrough.format,
                     valueFormat;
 
                 if (validationState) {
-                    format = validationState.settings.converter.format;
+                    formatter = validationState.settings.converter.format;
                     valueFormat = validationState.settings.valueFormat;
                 }
 
-                format = bindings.format || format;
+                formatter = bindings.formatter || formatter;
                 if (valueFormat == null) {
                     valueFormat = bindings.valueFormat;
                 }
 
-                ko.utils.setTextContent(element, format(value, valueFormat));
+                ko.utils.setTextContent(element, formatter(value, valueFormat));
             });
 
         // + validationCss binding handler

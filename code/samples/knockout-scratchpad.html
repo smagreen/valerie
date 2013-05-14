@@ -158,7 +158,7 @@
             <div data-bind="visibleWhenValid: housePrice">
                 <p>
                     You can borrow between:
-                    <strong data-bind="formattedValue: loanAmountMin, format: valerie.converters.currencyMajor.format, valueFormat: 'C,'"></strong>
+                    <strong data-bind="formattedValue: loanAmountMin, formatter: valerie.converters.currencyMajor.format, valueFormat: 'C,'"></strong>
                     &nbsp;and
                     <strong data-bind="formattedValue: loanAmountMax"></strong>.
                 </p>
@@ -198,26 +198,7 @@
 <script type="text/javascript" src="../thirdParty/knockout-2.2.1.debug.js"></script>
 
 <!-- ValerieJS -->
-<!-- <script type="text/javascript" src="../../build/valerie-for-knockout-en-gb.js"></script> -->
-
-<script type="text/javascript" src="../core/valerie.js"></script>
-<script type="text/javascript" src="../core/valerie.validationResult.js"></script>
-<script type="text/javascript" src="../core/valerie.utils.js"></script>
-<script type="text/javascript" src="../core/valerie.formatting.js"></script>
-<script type="text/javascript" src="../core/valerie.converters.passThrough.js"></script>
-<script type="text/javascript" src="../core/valerie.knockout.extras.js"></script>
-<script type="text/javascript" src="../core/valerie.dom.js"></script>
-<script type="text/javascript" src="../core/valerie.knockout.js"></script>
-<script type="text/javascript" src="../core/valerie.knockout.bindings.js"></script>
-<script type="text/javascript" src="../full/valerie.numericHelper.js"></script>
-<script type="text/javascript" src="../full/valerie.converters.js"></script>
-<script type="text/javascript" src="../full/valerie.rules.js"></script>
-<script type="text/javascript" src="../full/valerie.knockout.fluent.converters.js"></script>
-<script type="text/javascript" src="../full/valerie.knockout.fluent.rules.js"></script>
-<script type="text/javascript" src="../localisation/en-gb/core.js"></script>
-<script type="text/javascript" src="../localisation/en-gb/full.js"></script>
-<script type="text/javascript" src="../localisation/en-gb/valerie.converters.en-gb.js"></script>
-<script type="text/javascript" src="../localisation/en-gb/valerie.knockout.fluent.converters.en-gb.js"></script>
+<script type="text/javascript" src="../../build/valerie-for-knockout-en-gb.js"></script>
 
 <script type="text/javascript">
     window.onload = function () {

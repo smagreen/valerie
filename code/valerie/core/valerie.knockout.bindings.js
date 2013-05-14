@@ -293,20 +293,20 @@
                     observableOrComputedOrValue = valueAccessor(),
                     value = ko.utils.unwrapObservable(observableOrComputedOrValue),
                     validationState = getValidationState(observableOrComputedOrValue),
-                    format = converters.passThrough.format,
+                    formatter = converters.passThrough.format,
                     valueFormat;
 
                 if (validationState) {
-                    format = validationState.settings.converter.format;
+                    formatter = validationState.settings.converter.format;
                     valueFormat = validationState.settings.valueFormat;
                 }
 
-                format = bindings.format || format;
+                formatter = bindings.formatter || formatter;
                 if (valueFormat == null) {
                     valueFormat = bindings.valueFormat;
                 }
 
-                ko.utils.setTextContent(element, format(value, valueFormat));
+                ko.utils.setTextContent(element, formatter(value, valueFormat));
             });
 
         // + validationCss binding handler

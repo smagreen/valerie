@@ -11,11 +11,11 @@
      * A converter which formats and parses strings.
      * Used as the default converter in numerous places throughout the library.
      * @namespace
-     * @see valerie.converters.Converter
+     * @see valerie.converters.IConverter
      */
     valerie.converters.passThrough = {
         /**
-         * @see valerie.converters.Converter#format
+         * @see valerie.converters.IConverter#format
          */
         "format": function (value) {
             if (value == null) {
@@ -25,7 +25,7 @@
             return value.toString();
         },
         /**
-         * @see valerie.converters.Converter#parse
+         * @see valerie.converters.IConverter#parse
          */
         "parse": function (value) {
             return value;
