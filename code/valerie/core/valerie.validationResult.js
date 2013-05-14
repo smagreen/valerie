@@ -1,7 +1,11 @@
 ﻿(function () {
     "use strict";
 
-    var states;
+    var states = {
+        "failed": {},
+        "passed": {},
+        "pending": {}
+    };
 
     /**
      * The result of a validation activity.
@@ -15,7 +19,7 @@
      * @property {string} message - a message from the activity
      */
     valerie.ValidationResult = function (state, message) {
-        if(message == null) {
+        if (message == null) {
             message = "";
         }
 
@@ -32,54 +36,26 @@
      * @name ValidationResult.states
      * @static
      */
-    states = valerie.ValidationResult.states = {
-        "failed": {},
-        "passed": {},
-        "pending": {}
-    };
+    valerie.ValidationResult.states = states;
 
     /**
-     * The result of an activity that failed validation.
-     * @constructor
-     * @param {string} [message] a message from the activity
-     * @return {valerie.ValidationResult}
+     * A validation result for when validation has passed.
+     * @type {valerie.ValidationResult}
      */
-    valerie.FailedValidationResult = function (message) {
+    valerie.ValidationResult.passedInstance = new valerie.ValidationResult(states.passed);
+
+    /**
+     * A validation result for when validation hasn't yet completed.
+     * @type {valerie.ValidationResult}
+     */
+    valerie.ValidationResult.pendingInstance = new valerie.ValidationResult(states.pending);
+
+    /**
+     * Creates a validation result for when validation has failed.
+     * @param {string} [message] a message from the activity
+     * @returns {valerie.ValidationResult}
+     */
+    valerie.ValidationResult.createFailedResult = function (message) {
         return new valerie.ValidationResult(states.failed, message);
-    };
-
-
-    /**
-     * The result of an activity that passed validation.
-     * @constructor
-     * @param {string} [message] a message from the activity
-     * @return {valerie.ValidationResult}
-     */
-    valerie.PassedValidationResult = function (message) {
-        return new valerie.ValidationResult(states.passed, message);
-    };
-
-    /**
-     * An instance of a PassedValidationResult.
-     * @memberof valerie.PassedValidationResult
-     * @static
-     */
-    valerie.PassedValidationResult.instance = new valerie.PassedValidationResult();
-
-    /**
-     * The result of an activity which hasn't yet completed.
-     * @constructor
-     * @param {string} [message] a message from the activity
-     * @return {valerie.ValidationResult}
-     */
-    valerie.PendingValidationResult = function (message) {
-        return new valerie.ValidationResult(states.pending, message);
-    };
-
-    /**
-     * An instance of a PendingValidationResult.
-     * @memberof valerie.PendingValidationResult
-     * @static
-     */
-    valerie.PendingValidationResult.instance = new valerie.PendingValidationResult();
+    }
 })();

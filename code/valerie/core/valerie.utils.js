@@ -4,7 +4,6 @@
     /**
      * Contains general purpose utilities.
      * @namespace valerie.utils
-     * @inner
      */
     valerie.utils = {};
 
@@ -14,7 +13,7 @@
     /**
      * Creates a function that returns the given value, or simply returns the given value if it is already a function.
      * @memberof valerie.utils
-     * @param {*|function} valueOrFunction the value or function
+     * @param {*|function} [valueOrFunction] the value or function
      * @return {function} a newly created function, or the function passed in
      */
     utils.asFunction = function (valueOrFunction) {
@@ -32,6 +31,7 @@
      * @return {boolean} whether the given value is an array
      */
     utils.isArray = function (value) {
+        //noinspection JSValidateTypes
         return {}.toString.call(value) === "[object Array]";
     };
 
@@ -75,11 +75,7 @@
             return true;
         }
 
-        if (value.length === 0) {
-            return true;
-        }
-
-        return false;
+        return value.length === 0;
     };
 
     /**
@@ -107,6 +103,7 @@
      * @return {boolean} whether the given value is a string
      */
     utils.isString = function (value) {
+        //noinspection JSValidateTypes
         return {}.toString.call(value) === "[object String]";
     };
 

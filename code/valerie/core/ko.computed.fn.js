@@ -12,6 +12,6 @@
      * @return {valerie.PropertyValidationState} the validation state belonging to the computed
      */
     ko.computed.fn.validate = function(validationOptions) {
-        return valerie.knockout.validatableProperty(this, validationOptions);
+        return valerie.validatableProperty(this, validationOptions);
     };
 })();

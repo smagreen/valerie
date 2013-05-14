@@ -1,15 +1,15 @@
-
 (function () {
+    "use strict";
 
     var deferEvaluation = { "deferEvaluation": true },
     // Shortcuts.
-        FailedValidationResult = valerie.FailedValidationResult,
-        passedValidationResult = valerie.PassedValidationResult.instance,
-        koObservable = ko.observable,
-        koComputed = ko.computed,
         utils = valerie.utils,
         formatting = valerie.formatting,
-        extras = valerie.knockout.extras,
+        koExtras = valerie.koExtras,
+        koObservable = ko.observable,
+        koComputed = ko.computed,
+        passedValidationResult = valerie.ValidationResult.passedInstance,
+
     // Functions used by computeds.
         missingFunction = function (validationState) {
             var value = validationState.observableOrComputed(),
@@ -74,7 +74,7 @@
             missingResult = missingFunction(this);
 
             if (missingResult === -1) {
-                return new FailedValidationResult(this.settings.missingFailureMessage);
+                return valerie.ValidationResult.createFailedResult(this.settings.missingFailureMessage);
             }
 
             if (missingResult == 0) {
@@ -101,9 +101,9 @@
      * @property {string} entryFormat the string used to format the property's value for display in a user entry
      * @property {string} invalidFailureMessage the message shown when the user has entered an invalid value
      * @property {string} missingFailureMessage the message shown when a value is required but is missing
-     * @property {string} name the function used to determine the name of the property; used in failure messages
+     * @property {function} name the function used to determine the name of the property; used in failure messages
      * @property {function} required the function used to determine if a value is required
-     * @property {valerie.Rule[]} rules the chain of rules used to validate the property's value
+     * @property {valerie.IRule[]} rules the chain of rules used to validate the property's value
      * @property {string} valueFormat the string use to format the property's value for display in a message
      */
 
@@ -115,6 +115,7 @@
      * validation state
      */
     valerie.PropertyValidationState = function (observableOrComputed, options) {
+        //noinspection JSValidateTypes
         options = utils.mergeOptions(valerie.PropertyValidationState.defaultOptions, options);
         //noinspection JSUndefinedPropertyAssignment,JSUnresolvedVariable
         options.applicable = utils.asFunction(options.applicable);
@@ -131,18 +132,6 @@
         };
 
         /**
-         * The observable or computed this validation state is for.
-         * @type {function}
-         */
-        this.observableOrComputed = observableOrComputed;
-
-        /**
-         * The settings for this validation state.
-         * @type {valerie.PropertyValidationState.options}
-         */
-        this.settings = options;
-
-        /**
          * Gets whether the value held by or entered for the property fails validation.
          * @method
          * @return {boolean} <code>true</code> if validation has failed, <code>false</code> otherwise
@@ -154,7 +143,7 @@
          * @method
          * @return {string} the message, can be empty
          */
-        this.message = extras.pausableComputed(messageFunction, this, deferEvaluation);
+        this.message = koExtras.pausableComputed(messageFunction, this, deferEvaluation);
 
         /**
          * Gets whether the value held by or entered for the property passes validation.
@@ -164,7 +153,13 @@
         this.passed = koComputed(passedFunction, this, deferEvaluation);
 
         /**
-         * Gets whether validation for the property is pending.
+         * The observable or computed this validation state is for.
+         * @type {function}
+         */
+        this.observableOrComputed = observableOrComputed;
+
+        /**
+         * Gets whether validation for the property hasn't yet completed.
          * @method
          * @return {boolean} <code>true</code> is validation is pending, <code>false</code> otherwise
          */
@@ -178,11 +173,17 @@
         this.result = koComputed(resultFunction, this, deferEvaluation);
 
         /**
+         * The settings for this validation state.
+         * @type {valerie.PropertyValidationState.options}
+         */
+        this.settings = options;
+
+        /**
          * Gets whether the message describing the validation state should be shown.
          * @method
          * @return {boolean} <code>true</code> if the message should be shown, <code>false</code> otherwise
          */
-        this.showMessage = extras.pausableComputed(showMessageFunction, this, deferEvaluation);
+        this.showMessage = koExtras.pausableComputed(showMessageFunction, this, deferEvaluation);
 
         /**
          * Gets or sets whether the property has been "touched" by a user action.
@@ -200,7 +201,7 @@
          * <br/><b>fluent</b>
          * @name valerie.PropertyValidationState#addRule
          * @fluent
-         * @param {valerie.Rule} rule the rule to add
+         * @param {valerie.IRule} rule the rule to add
          * @return {valerie.PropertyValidationState}
          */
         "addRule": function (rule) {
@@ -305,5 +306,26 @@
         "required": utils.asFunction(false),
         "rules": [],
         "valueFormat": null
+    };
+
+    /**
+     * Makes the passed-in property validatable. After invocation the property will have a validation state.
+     * <br/><b>fluent</b>
+     * @param {function} observableOrComputed the Knockout observable or computed to make validatable
+     * @param {valerie.PropertyValidationState.options} [options] the options to use when creating the property's
+     * validation state
+     * @returns {valerie.PropertyValidationState} the validation state belonging to the property
+     * @throws {string} Only observables or computeds can be made validatable properties.
+     */
+    valerie.validatableProperty = function (observableOrComputed, options) {
+        if (!ko.isSubscribable(observableOrComputed)) {
+            throw "Only observables or computeds can be made validatable properties.";
+        }
+
+        var validationState = new valerie.PropertyValidationState(observableOrComputed, options);
+
+        valerie.validationState.setFor(observableOrComputed, validationState);
+
+        return validationState;
     };
 })();

@@ -54,6 +54,26 @@ valerie.IConverter = function () {
 };
 
 /**
+ * The interface for a Rule.
+ * @class
+ */
+valerie.IRule = function () {
+    return {
+        /**
+         * Validates the given value.
+         * @name valerie.IRule#test
+         * @function
+         * @abstract
+         * @param {*} value the value to validate
+         * @return {valerie.ValidationResult} the result of validating the value
+         */
+        "test": function (value) {
+            throw "Not implemented.";
+        }
+    };
+};
+
+/**
  * The interface for a validation state.
  * @constructor
  */
