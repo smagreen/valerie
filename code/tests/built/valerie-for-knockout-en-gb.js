@@ -588,12 +588,6 @@ var valerie = {};
         extras = knockout.extras;
 
     /**
-     * @typedef {object} ValidationState
-     * @type object
-     * @memberof valerie.knockout
-     */
-
-    /**
      * Finds and returns the validation states of:
      * <ul>
      *     <li>immediate properties of the given model</li>
@@ -607,7 +601,7 @@ var valerie = {};
      * sub-models
      * @param {boolean} [recurse = false] whether to inspect the descendant properties and, if specified,
      * descendant sub-models of child sub-models
-     * @param {ValidationState[]} [validationStates] the already inspected validation states; this parameter is used
+     * @param {IValidationState[]} [validationStates] the already inspected validation states; this parameter is used
      * in recursive invocations
      */
     knockout.findValidationStates = function (model, includeSubModels, recurse, validationStates) {
@@ -667,9 +661,9 @@ var valerie = {};
     /**
      * Gets the validation state for the given model, observable or computed.
      * This function is useful when developing binding handlers.
-     * @member of valerie.knockout
-     * @param modelOrObservableOrComputed the thing to get the validation state for
-     * @return {null|ValidationState} the validation state or <code>null</code> if the given thing does not have a
+     * @memberof valerie.knockout
+     * @param {*} modelOrObservableOrComputed the thing to get the validation state for
+     * @return {null|IValidationState} the validation state or <code>null</code> if the given thing does not have a
      * validation state.
      */
     knockout.getValidationState = function (modelOrObservableOrComputed) {
@@ -687,8 +681,8 @@ var valerie = {};
     /**
      * Informs if the given model, observable or computed has a validation state.
      * This function is useful when developing binding handlers.
-     * @member of valerie.knockout
-     * @param modelOrObservableOrComputed the thing to test
+     * @memberof valerie.knockout
+     * @param {*} modelOrObservableOrComputed the thing to test
      * @return {boolean} whether the given thing has a validation state
      */
     knockout.hasValidationState = function (modelOrObservableOrComputed) {
@@ -699,28 +693,42 @@ var valerie = {};
         return modelOrObservableOrComputed.hasOwnProperty(getValidationStateMethodName);
     };
 
-    // + setValidationState
-    // - sets the validation state on the model, observable or computed
-    // - for use when configuring validation in a non-fluent manner
+    /**
+     * Sets the validation state for the given model, observable or computed.
+     * @param {object|function} modelOrObservableOrComputed the thing to set the validation state on
+     * @param {IValidationState} state the validation state to use
+     */
     knockout.setValidationState = function (modelOrObservableOrComputed, state) {
         modelOrObservableOrComputed[getValidationStateMethodName] = function () {
             return state;
         };
     };
 
-    // + validatableModel
-    // - makes the model passed in validatable
+    /**
+     * Makes the passed-in model validatable. After invocation the model will have a validation state.
+     * <br/><b>fluent</b>
+     * @memberof valerie.knockout
+     * @param {object|function} model the model to make validatable
+     * @param {object} [options] the options to use when creating the model's validation state
+     * @returns {knockout.ModelValidationState} the validation state belonging to the model
+     */
     knockout.validatableModel = function (model, options) {
         var validationState = new knockout.ModelValidationState(model, options);
 
         knockout.setValidationState(model, validationState);
 
-        // Return the validation state so it can be used in a fluent manner.
         return validationState;
     };
 
-    // + validatableProperty
-    // - makes the observable, observable array or computed passed in validatable
+    /**
+     * Makes the passed-in property validatable. After invocation the property will have a validation state.
+     * <br/><b>fluent</b>
+     * @memberof valerie.knockout
+     * @param {function} observableOrComputed the Knockout observable or computed to make validatable
+     * @param {object} [options] the options to use when creating the property's validation state
+     * @returns {knockout.PropertyValidationState} the validation state belonging to the property
+     * @throws Only observables or computeds can be made validatable properties.
+     */
     knockout.validatableProperty = function (observableOrComputed, options) {
         if (!ko.isSubscribable(observableOrComputed)) {
             throw "Only observables or computeds can be made validatable properties.";
@@ -730,16 +738,7 @@ var valerie = {};
 
         knockout.setValidationState(observableOrComputed, validationState);
 
-        // Return the validation state so it can be used in a fluent manner.
         return validationState;
-    };
-
-    // + validate extension function
-    // - creates and returns the validation state for an observable or computed
-    koObservable.fn.validate = koComputed.fn.validate = function (validationOptions) {
-
-        // Create the validation state, then return it, so it can be modified fluently.
-        return knockout.validatableProperty(this, validationOptions);
     };
 
     // + ModelValidationState
@@ -1154,6 +1153,30 @@ var valerie = {};
             "valueFormat": null
         };
     })();
+})();
+
+(function () {
+    "use strict";
+
+    /**
+     * Creates and sets a validation state on a Knockout computed.
+     * @name ko.computed#validate
+     */
+    ko.computed.fn.validate = function(validationOptions) {
+        return valerie.knockout.validatableProperty(this, validationOptions);
+    };
+})();
+
+(function () {
+    "use strict";
+
+    /**
+     * Creates and sets a validation state on a Knockout observable.
+     * @name ko.observable#validate
+     */
+    ko.observable.fn.validate = function(validationOptions) {
+        return valerie.knockout.validatableProperty(this, validationOptions);
+    };
 })();
 
 // valerie.knockout.bindings

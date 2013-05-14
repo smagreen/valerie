@@ -23,12 +23,6 @@
         extras = knockout.extras;
 
     /**
-     * @typedef {object} ValidationState
-     * @type object
-     * @memberof valerie.knockout
-     */
-
-    /**
      * Finds and returns the validation states of:
      * <ul>
      *     <li>immediate properties of the given model</li>
@@ -42,7 +36,7 @@
      * sub-models
      * @param {boolean} [recurse = false] whether to inspect the descendant properties and, if specified,
      * descendant sub-models of child sub-models
-     * @param {ValidationState[]} [validationStates] the already inspected validation states; this parameter is used
+     * @param {IValidationState[]} [validationStates] the already inspected validation states; this parameter is used
      * in recursive invocations
      */
     knockout.findValidationStates = function (model, includeSubModels, recurse, validationStates) {
@@ -102,9 +96,9 @@
     /**
      * Gets the validation state for the given model, observable or computed.
      * This function is useful when developing binding handlers.
-     * @member of valerie.knockout
-     * @param modelOrObservableOrComputed the thing to get the validation state for
-     * @return {null|ValidationState} the validation state or <code>null</code> if the given thing does not have a
+     * @memberof valerie.knockout
+     * @param {*} modelOrObservableOrComputed the thing to get the validation state for
+     * @return {null|IValidationState} the validation state or <code>null</code> if the given thing does not have a
      * validation state.
      */
     knockout.getValidationState = function (modelOrObservableOrComputed) {
@@ -122,8 +116,8 @@
     /**
      * Informs if the given model, observable or computed has a validation state.
      * This function is useful when developing binding handlers.
-     * @member of valerie.knockout
-     * @param modelOrObservableOrComputed the thing to test
+     * @memberof valerie.knockout
+     * @param {*} modelOrObservableOrComputed the thing to test
      * @return {boolean} whether the given thing has a validation state
      */
     knockout.hasValidationState = function (modelOrObservableOrComputed) {
@@ -134,28 +128,42 @@
         return modelOrObservableOrComputed.hasOwnProperty(getValidationStateMethodName);
     };
 
-    // + setValidationState
-    // - sets the validation state on the model, observable or computed
-    // - for use when configuring validation in a non-fluent manner
+    /**
+     * Sets the validation state for the given model, observable or computed.
+     * @param {object|function} modelOrObservableOrComputed the thing to set the validation state on
+     * @param {IValidationState} state the validation state to use
+     */
     knockout.setValidationState = function (modelOrObservableOrComputed, state) {
         modelOrObservableOrComputed[getValidationStateMethodName] = function () {
             return state;
         };
     };
 
-    // + validatableModel
-    // - makes the model passed in validatable
+    /**
+     * Makes the passed-in model validatable. After invocation the model will have a validation state.
+     * <br/><b>fluent</b>
+     * @memberof valerie.knockout
+     * @param {object|function} model the model to make validatable
+     * @param {object} [options] the options to use when creating the model's validation state
+     * @returns {knockout.ModelValidationState} the validation state belonging to the model
+     */
     knockout.validatableModel = function (model, options) {
         var validationState = new knockout.ModelValidationState(model, options);
 
         knockout.setValidationState(model, validationState);
 
-        // Return the validation state so it can be used in a fluent manner.
         return validationState;
     };
 
-    // + validatableProperty
-    // - makes the observable, observable array or computed passed in validatable
+    /**
+     * Makes the passed-in property validatable. After invocation the property will have a validation state.
+     * <br/><b>fluent</b>
+     * @memberof valerie.knockout
+     * @param {function} observableOrComputed the Knockout observable or computed to make validatable
+     * @param {object} [options] the options to use when creating the property's validation state
+     * @returns {knockout.PropertyValidationState} the validation state belonging to the property
+     * @throws Only observables or computeds can be made validatable properties.
+     */
     knockout.validatableProperty = function (observableOrComputed, options) {
         if (!ko.isSubscribable(observableOrComputed)) {
             throw "Only observables or computeds can be made validatable properties.";
@@ -165,16 +173,7 @@
 
         knockout.setValidationState(observableOrComputed, validationState);
 
-        // Return the validation state so it can be used in a fluent manner.
         return validationState;
-    };
-
-    // + validate extension function
-    // - creates and returns the validation state for an observable or computed
-    koObservable.fn.validate = koComputed.fn.validate = function (validationOptions) {
-
-        // Create the validation state, then return it, so it can be modified fluently.
-        return knockout.validatableProperty(this, validationOptions);
     };
 
     // + ModelValidationState
@@ -409,184 +408,6 @@
             "failureMessageFormat": "",
             "name": utils.asFunction("(?)"),
             "paused": null
-        };
-    })();
-
-    // + PropertyValidationState
-    // - validation state for a single, simple, observable or computed property
-    (function () {
-        var missingFunction = function () {
-                var value = this.observableOrComputed(),
-                    missing = this.settings.missingTest(value),
-                    required = this.settings.required();
-
-                if (missing && required) {
-                    return -1;
-                }
-
-                if (missing && !required) {
-                    return 0;
-                }
-
-                return 1;
-            },
-            rulesResultFunction = function () {
-                var value = this.observableOrComputed(),
-                    rules = this.settings.rules,
-                    rule,
-                    result,
-                    index;
-
-                for (index = 0; index < rules.length; index++) {
-                    rule = rules[index];
-
-                    result = rule.test(value);
-
-                    if (result.failed || result.pending) {
-                        return result;
-                    }
-                }
-
-                return passedValidationResult;
-            },
-        // Functions for computeds.
-            failedFunction = function () {
-                return this.result().failed;
-            },
-            messageFunction = function () {
-                var message = this.result().message;
-
-                message = formatting.replacePlaceholders(message, { "name": this.settings.name() });
-
-                return message;
-            },
-            passedFunction = function () {
-                return this.result().passed;
-            },
-            pendingFunction = function () {
-                return this.result().pending;
-            },
-            resultFunction = function () {
-                var missingResult,
-                    result;
-
-                result = this.boundEntry.result();
-                if (result.failed) {
-                    return result;
-                }
-
-                missingResult = missingFunction.apply(this);
-
-                if (missingResult === -1) {
-                    return new FailedValidationResult(this.settings.missingFailureMessage);
-                }
-
-                if (missingResult === 0) {
-                    return result;
-                }
-
-                return rulesResultFunction.apply(this);
-            },
-            showMessageFunction = function () {
-                if (!this.settings.applicable()) {
-                    return false;
-                }
-
-                return this.touched() && this.result().failed;
-            };
-
-        // Constructor Function
-        definition = knockout.PropertyValidationState = function (observableOrComputed, options) {
-            options = utils.mergeOptions(knockout.PropertyValidationState.defaultOptions, options);
-            options.applicable = utils.asFunction(options.applicable);
-            options.name = utils.asFunction(options.name);
-            options.required = utils.asFunction(options.required);
-
-            this.boundEntry = {
-                "focused": koObservable(false),
-                "result": koObservable(passedValidationResult),
-                "textualInput": false
-            };
-
-            this.observableOrComputed = observableOrComputed;
-            this.settings = options;
-            this.touched = koObservable(false);
-
-            // Computeds.
-            this.failed = koComputed(failedFunction, this, deferEvaluation);
-            this.message = extras.pausableComputed(messageFunction, this, deferEvaluation);
-            this.passed = koComputed(passedFunction, this, deferEvaluation);
-            this.pending = koComputed(pendingFunction, this, deferEvaluation);
-            this.result = koComputed(resultFunction, this, deferEvaluation);
-            this.showMessage = extras.pausableComputed(showMessageFunction, this, deferEvaluation);
-        };
-
-        definition.prototype = {
-            // Validation state methods support a fluent interface.
-            "addRule": function (rule) {
-                this.settings.rules.push(rule);
-
-                return this;
-            },
-            "applicable": function (valueOrFunction) {
-                if (valueOrFunction == null) {
-                    valueOrFunction = true;
-                }
-
-                this.settings.applicable = utils.asFunction(valueOrFunction);
-
-                return this;
-            },
-            "end": function () {
-                var index,
-                    settings = this.settings,
-                    valueFormat = settings.valueFormat,
-                    valueformat = settings.converter.format,
-                    rules = settings.rules,
-                    ruleSettings;
-
-                for (index = 0; index < rules.length; index++) {
-                    ruleSettings = rules[index].settings;
-
-                    ruleSettings.valueFormat = valueFormat;
-                    ruleSettings.valueformat = valueformat;
-                }
-
-                return this.observableOrComputed;
-            },
-            "name": function (valueOrFunction) {
-                this.settings.name = utils.asFunction(valueOrFunction);
-
-                return this;
-            },
-            "required": function (valueOrFunction) {
-                if (valueOrFunction == null) {
-                    valueOrFunction = true;
-                }
-
-                this.settings.required = utils.asFunction(valueOrFunction);
-
-                return this;
-            },
-            "valueFormat": function (format) {
-                this.settings.valueFormat = format;
-
-                return this;
-            }
-        };
-
-        // Define default options.
-        definition.defaultOptions = {
-            "applicable": utils.asFunction(true),
-            "converter": valerie.converters.passThrough,
-            "entryFormat": null,
-            "invalidEntryFailureMessage": "",
-            "missingFailureMessage": "",
-            "missingTest": utils.isMissing,
-            "name": utils.asFunction(),
-            "required": utils.asFunction(false),
-            "rules": [],
-            "valueFormat": null
         };
     })();
 })();

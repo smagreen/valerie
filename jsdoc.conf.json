@@ -4,6 +4,7 @@
     },
     "source": {
         "include": [
+            "code/valerie/documentation-extras.js",
             "code/valerie/core",
             "code/valerie/full"
         ],

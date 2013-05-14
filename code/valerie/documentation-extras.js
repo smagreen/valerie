@@ -1,16 +1,35 @@
-// This file contains documentation for interfaces in the library.
-// These interfaces are not available to use in the run-time code.
+// This file contains extraneous declarations to help document the valerie library.
+// These declarations are not available to use in the run-time library.
 
 /**
- * The interface for a Converter, a pair of functions: <code>format</code> and <parse>parse</parse>, which work in tandem
+ * The KnockoutJS library.
+ * @namespace
+ */
+ko = {
+    /**
+     * A Knockout computed.
+     * @constructor
+     */
+    "computed": function () {
+    },
+    /**
+     * A Knockout observable.
+     * @constructor
+     */
+    "observable": function () {
+    }
+};
+
+/**
+ * The interface for a converter, a pair of functions: <code>format</code> and <parse>parse</parse>, which work in tandem
  * on a single type of value.
  * @class
  */
-valerie.converters.IConverter = function () {
+valerie.IConverter = function () {
     return {
         /**
          * Formats the given value as a string.
-         * @name valerie.converters.IConverter#format
+         * @name valerie.IConverter#format
          * @function
          * @abstract
          * @param {*} value the value to format
@@ -22,7 +41,7 @@ valerie.converters.IConverter = function () {
         },
         /**
          * Parses the given string as a particular value type.
-         * @name valerie.converters.IConverter#parse
+         * @name valerie.IConverter#parse
          * @function
          * @abstract
          * @param {string} value the string to parse
@@ -33,3 +52,11 @@ valerie.converters.IConverter = function () {
         }
     };
 };
+
+/**
+ * The interface for a validation state.
+ * @constructor
+ */
+valerie.knockout.IValidationState = function () {
+
+}
