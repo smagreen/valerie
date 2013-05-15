@@ -1,28 +1,21 @@
-﻿// valerie.knockout.bindings
-// - knockout bindings for:
-//   - validating user entries
-//   - showing the validation state of a view-model
-
-(function () {
+﻿(function () {
     "use strict";
 
+    // Shortcuts.
     var passedValidationResult = valerie.ValidationResult.passedInstance,
         utils = valerie.utils,
         dom = valerie.dom,
+        setElementVisibility = dom.setElementVisibility,
         converters = valerie.converters,
+        getValidationState = valerie.validationState.getFor,
         koBindingHandlers = ko.bindingHandlers,
         koRegisterEventHandler = ko.utils.registerEventHandler,
-        setElementVisibility = dom.setElementVisibility,
-        getValidationState = valerie.validationState.getFor,
-        isolatedBindingHandler = valerie.koExtras.isolatedBindingHandler,
-        knockout = valerie.knockout= {};
+        isolatedBindingHandler = valerie.koExtras.isolatedBindingHandler;
 
     // Define validatedChecked and validatedValue binding handlers.
     (function () {
         var checkedBindingHandler = koBindingHandlers.checked,
             valueBindingHandler = koBindingHandlers.value,
-            validatedCheckedBindingHandler,
-            validatedValueBindingHandler,
             blurHandler = function (element, observableOrComputed) {
                 var validationState = getValidationState(observableOrComputed);
 
@@ -61,14 +54,14 @@
                     observableOrComputed(null);
 
                     if (settings.required()) {
-                        result = new valerie.ValidationResult.createFailedResult(settings.missingFailureMessage);
+                        result = valerie.ValidationResult.createFailedResult(settings.missingFailureMessage);
                     }
                 } else {
                     parsedValue = settings.converter.parse(enteredValue);
                     observableOrComputed(parsedValue);
 
                     if (parsedValue == null) {
-                        result = new valerie.ValidationResult.createFailedResult(settings.invalidEntryFailureMessage);
+                        result = valerie.ValidationResult.createFailedResult(settings.invalidEntryFailureMessage);
                     }
                 }
 
@@ -89,10 +82,16 @@
                     validationState.settings.entryFormat);
             };
 
-        // + validatedChecked binding handler
-        // - functions in the same way as the "checked" binding handler
-        // - registers a blur event handler so validation messages for missing selections can be displayed
-        validatedCheckedBindingHandler = koBindingHandlers.validatedChecked = {
+        /**
+         * Validates entries that can be checked, i.e. check boxes and radio buttons.
+         * Functions in the same way as the <b>ko.bindingHandlers.checked</b> binding handler, with the following
+         * alterations:
+         * <ul>
+         *     <li>registers a blur event handler so validation messages for missing selections can be displayed</li>
+         * </ul>
+         * @name ko.bindingHandlers.validatedValue
+         */
+        koBindingHandlers.validatedChecked = {
             "init": function (element, valueAccessor, allBindingsAccessor, viewModel, bindingContext) {
                 var observableOrComputed = valueAccessor(),
                     validationState = getValidationState(observableOrComputed);
@@ -114,11 +113,28 @@
             "update": checkedBindingHandler.update
         };
 
-        // + validatedValue binding handler
-        // - with the exception of textual inputs, functions in the same way as the "value" binding handler
-        // - registers a blur event handler so validation messages for completed entries or selections can be displayed
-        // - registers a blur event handler to reformat parsed textual entries
-        validatedValueBindingHandler = koBindingHandlers.validatedValue = {
+        /**
+         * Validates entries that can be keyed or selected.
+         * Functions in the same way as the <b>ko.bindingHandlers.value</b> binding handler, with the following
+         * alterations:
+         * <ul>
+         *     <li>registers a blur event handler:
+         *     <ul>
+         *         <li>to display validation messages as entries or selections lose focus</li>
+         *         <li>to reformat successfully parsed textual entries</li>
+         *     </ul>
+         *     </li>
+         *     <li>
+         *         registers a focus event handler to pause the update of any existing visible validation message
+         *     </li>
+         *     <li>
+         *         registers a key-up event handler which validates the entry as it's being entered; this allows other
+         *         entries that are shown conditionally to be available before the user tabs out of this entry
+         *     </li>
+         * </ul>
+         * @name ko.bindingHandlers.validatedValue
+         */
+        koBindingHandlers.validatedValue = {
             "init": function (element, valueAccessor, allBindingsAccessor, viewModel, bindingContext) {
                 var observableOrComputed = valueAccessor(),
                     validationState = getValidationState(observableOrComputed),
@@ -187,44 +203,9 @@
                     bindingContext);
             }
         };
-
-        // + originalBindingHandlers
-        // - record the original binding handlers
-        knockout.originalBindingHandlers = {
-            "checked": checkedBindingHandler,
-            "value": valueBindingHandler
-        };
-
-        // + validatingBindingHandlers
-        // - the validating binding handlers
-        knockout.validatingBindingHandlers = {
-            "checked": validatedCheckedBindingHandler,
-            "value": validatedValueBindingHandler
-        };
-
-        // + useValidatingBindingHandlers
-        // - replaces the original "checked" and "value" binding handlers with validating equivalents
-        knockout.useValidatingBindingHandlers = function () {
-            koBindingHandlers.checked = validatedCheckedBindingHandler;
-            koBindingHandlers.value = validatedValueBindingHandler;
-            koBindingHandlers.koChecked = checkedBindingHandler;
-            koBindingHandlers.koValue = valueBindingHandler;
-
-            // Allow configuration changes to be made fluently.
-            return knockout;
-        };
-
-        // + useOriginalBindingHandlers
-        // - restores the original "checked" and "value" binding handlers
-        knockout.useOriginalBindingHandlers = function () {
-            koBindingHandlers.checked = checkedBindingHandler;
-            koBindingHandlers.value = valueBindingHandler;
-
-            // Allow configuration changes to be made fluently.
-            return knockout;
-        };
     })();
 
+    // Define binding handlers which control the display of element based on a validation state.
     (function () {
         var applyForValidationState =
             function (functionToApply, element, valueAccessor, allBindingsAccessor, viewModel) {
@@ -245,7 +226,11 @@
                 }
             };
 
-        // + disabledWhenNotValid binding handler
+        /**
+         * Disables the element when the chosen property or model has failed or is pending validation, enabled
+         * otherwise.
+         * @name ko.bindingHandlers.disabledWhenNotValid
+         */
         koBindingHandlers.disabledWhenNotValid = isolatedBindingHandler(
             function (element, valueAccessor, allBindingsAccessor, viewModel) {
                 var functionToApply = function (validationState) {
@@ -255,7 +240,11 @@
                 applyForValidationState(functionToApply, element, valueAccessor, allBindingsAccessor, viewModel);
             });
 
-        // + disabledWhenTouchedAndNotValid binding handler
+        /**
+         * Disables the element when the chosen property or model has been touched and has failed or is pending
+         * validation, enabled otherwise.<br/>
+         * @name ko.bindingHandlers.disabledWhenTouchedAndNotValid
+         */
         koBindingHandlers.disabledWhenTouchedAndNotValid = isolatedBindingHandler(
             function (element, valueAccessor, allBindingsAccessor, viewModel) {
                 var functionToApply = function (validationState) {
@@ -265,7 +254,10 @@
                 applyForValidationState(functionToApply, element, valueAccessor, allBindingsAccessor, viewModel);
             });
 
-        // + enabledWhenApplicable binding handler
+        /**
+         * Enables the element when the chosen property or model is applicable, disabled otherwise.
+         * @name ko.bindingHandlers.enabledWhenApplicable
+         */
         koBindingHandlers.enabledWhenApplicable = isolatedBindingHandler(
             function (element, valueAccessor, allBindingsAccessor, viewModel) {
                 var functionToApply = function (validationState) {
@@ -275,7 +267,10 @@
                 applyForValidationState(functionToApply, element, valueAccessor, allBindingsAccessor, viewModel);
             });
 
-        // + formattedValue binding handler
+        /**
+         * Sets the text of the element to be a formatted representation of the specified property.
+         * @name ko.bindingHandlers.formattedValue
+         */
         koBindingHandlers.formattedValue = isolatedBindingHandler(
             function (element, valueAccessor, allBindingsAccessor) {
                 var bindings = allBindingsAccessor(),
@@ -299,14 +294,20 @@
                 ko.utils.setTextContent(element, formatter(value, valueFormat));
             });
 
-        // + validationCss binding handler
-        // - sets CSS classes on the bound element depending on the validation status of the value:
-        //   - error: if validation failed
-        //   - focused: if the bound element is in focus
-        //   - passed: if validation passed
-        //   - touched: if the bound element has been touched
-        //   - untouched: if the bound element has not been touched
-        // - the names of the classes used are held in the bindingHandlers.validationCss.classNames object
+        /**
+         * Sets CSS classes on the element based on the validation state of the chosen property or model.</br>
+         * The names of the CSS classes used are held in the <b>ko.bindingHandlers.validationCss.classNames</b> object,
+         * by default they are:
+         * <ul>
+         *     <li><b>failed</b> - if validation failed</li>
+         *     <li><b>focused</b> - if the element is in focus</li>
+         *     <li><b>passed</b> - if validation passed</li>
+         *     <li><b>pending</b> - if validation is pending</li>
+         *     <li><b>touched</b> - set if the element has been "touched"</li>
+         *     <li><b>untouched</b> - set if the element has not been "touched"</li>
+         * </ul>
+         * @name ko.bindingHandlers.validationCss
+         */
         koBindingHandlers.validationCss = isolatedBindingHandler(
             function (element, valueAccessor, allBindingsAccessor, viewModel) {
                 var functionToApply = function (validationState) {
@@ -337,18 +338,26 @@
                 applyForValidationState(functionToApply, element, valueAccessor, allBindingsAccessor, viewModel);
             });
 
+        /**
+         * The class names used by the <b>ko.bindingHandlers.validationCss</b> binding.
+         */
         koBindingHandlers.validationCss.classNames = {
-            "failed": "error",
+            "failed": "failed",
             "focused": "focused",
-            "passed": "success",
-            "pending": "waiting",
+            "passed": "passed",
+            "pending": "pending",
             "touched": "touched",
             "untouched": "untouched"
         };
 
-        // + validationMessageFor binding handler
-        // - makes the bound element visible if the value is invalid
-        // - sets the text of the bound element to be the validation message
+        /**
+         * Makes the element behave like a validation message for the chosen property or model:
+         * <ul>
+         *     <li>makes the element visible if the value is invalid</li>
+         *     <li>sets the text of the element to be the underlying validation state's message</li>
+         * </ul>
+         * @name ko.bindingHandlers.validationMessageFor
+         */
         koBindingHandlers.validationMessageFor = isolatedBindingHandler(
             function (element, valueAccessor, allBindingsAccessor, viewModel) {
                 var functionToApply = function (validationState) {
@@ -359,8 +368,10 @@
                 applyForValidationState(functionToApply, element, valueAccessor, allBindingsAccessor, viewModel);
             });
 
-        // + visibleWhenFocused binding handler
-        // - makes the bound element visible if the bound element for the value is focused, invisible otherwise
+        /**
+         * Makes the element visible when the entry bound to the chosen property is in focus, invisible otherwise.
+         * @name ko.bindingHandlers.visibleWhenFocused
+         */
         koBindingHandlers.visibleWhenFocused = isolatedBindingHandler(
             function (element, valueAccessor, allBindingsAccessor, viewModel) {
                 var functionToApply = function (validationState) {
@@ -370,8 +381,10 @@
                 applyForValidationState(functionToApply, element, valueAccessor, allBindingsAccessor, viewModel);
             });
 
-        // + visibleWhenInvalid binding handler
-        // - makes the bound element visible if the value is invalid, invisible otherwise
+        /**
+         * Makes the element visible when the chosen property or model has failed validation, invisible otherwise.
+         * @name ko.bindingHandlers.visibleWhenInvalid
+         */
         koBindingHandlers.visibleWhenInvalid = isolatedBindingHandler(
             function (element, valueAccessor, allBindingsAccessor, viewModel) {
                 var functionToApply = function (validationState) {
@@ -381,8 +394,10 @@
                 applyForValidationState(functionToApply, element, valueAccessor, allBindingsAccessor, viewModel);
             });
 
-        // + visibleWhenSummaryNotEmpty binding handler
-        // - makes the bound element visible if the validation summary is not empty, invisible otherwise
+        /**
+         * Makes the element visible when the summary for the chosen model is not empty, invisible otherwise.
+         * @name ko.bindingHandlers.visibleWhenSummaryNotEmpty
+         */
         koBindingHandlers.visibleWhenSummaryNotEmpty = isolatedBindingHandler(
             function (element, valueAccessor, allBindingsAccessor, viewModel) {
                 var functionToApply = function (validationState) {
@@ -392,8 +407,10 @@
                 applyForValidationState(functionToApply, element, valueAccessor, allBindingsAccessor, viewModel);
             });
 
-        // + visibleWhenTouched binding handler
-        // - makes the bound element visible if the value has been touched, invisible otherwise
+        /**
+         * Makes the element visible if the chosen property or model has been touched, invisible otherwise.
+         * @name ko.bindingHandlers.visibleWhenTouched
+         */
         koBindingHandlers.visibleWhenTouched = isolatedBindingHandler(
             function (element, valueAccessor, allBindingsAccessor, viewModel) {
                 var functionToApply = function (validationState) {
@@ -403,8 +420,10 @@
                 applyForValidationState(functionToApply, element, valueAccessor, allBindingsAccessor, viewModel);
             });
 
-        // + visibleWhenUntouched binding handler
-        // - makes the bound element visible if the value is untouched, invisible otherwise
+        /**
+         * Makes the element visible if the chosen property or model is untouched, invisible otherwise.
+         * @name ko.bindingHandlers.visibleWhenUntouched
+         */
         koBindingHandlers.visibleWhenUntouched = isolatedBindingHandler(
             function (element, valueAccessor, allBindingsAccessor, viewModel) {
                 var functionToApply = function (validationState) {
@@ -414,8 +433,10 @@
                 applyForValidationState(functionToApply, element, valueAccessor, allBindingsAccessor, viewModel);
             });
 
-        // + visibleWhenValid binding handler
-        // - makes the bound element visible if the value is valid, invisible otherwise
+        /**
+         * Makes the element visible if the chosen property or model has passed validation.
+         * @name ko.bindingHandlers.visibleWhenValid
+         */
         koBindingHandlers.visibleWhenValid = isolatedBindingHandler(
             function (element, valueAccessor, allBindingsAccessor, viewModel) {
                 var functionToApply = function (validationState) {

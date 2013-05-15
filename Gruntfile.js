@@ -46,7 +46,8 @@ module.exports = function (grunt) {
                     "code/valerie/core/valerie.propertyValidationState.js",
                     "code/valerie/core/ko.computed.fn.js",
                     "code/valerie/core/ko.observable.fn.js",
-                    "code/valerie/core/valerie.knockout.bindings.js"
+                    "code/valerie/core/ko.bindingHandlers.js",
+                    "code/valerie/core/valerie.koBindingsHelper.js"
                 ],
                 "dest": "build/valerie-for-knockout-core.js"
             },

@@ -85,8 +85,10 @@
     };
 
     /**
-     * Gets the validation state for the given model, observable or computed.
-     * This function is useful when developing binding handlers.
+     * Gets the validation state for the given model, observable or computed.<br>
+     * If the model is known to have a validation state, the construct <code>model.validation()</code> can also be used
+     * retrieve it.<br/>
+     * <i>This function is useful when developing binding handlers.</i>
      * @param {object|function} modelOrObservableOrComputed the thing to get the validation state for
      * @return {null|IValidationState} the validation state or <code>null</code> if the given thing does not have a
      * validation state.
@@ -104,8 +106,8 @@
     };
 
     /**
-     * Informs if the given model, observable or computed has a validation state.
-     * This function is useful when developing binding handlers.
+     * Informs if the given model, observable or computed has a validation state.<br/>
+     * <i>This function is useful when developing binding handlers.</i>
      * @param {object|function} modelOrObservableOrComputed the thing to test
      * @return {boolean} whether the given thing has a validation state
      */

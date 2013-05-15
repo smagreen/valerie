@@ -7,6 +7,28 @@
  */
 ko = {
     /**
+     * Knockout binding handlers.<br/>
+     * <br/>
+     * <h3>NOTE: How valerie's Binding Handlers Choose a Property or Model</h3>
+     * Most valerie binding handlers allow the property or model to work against to be specified in a number of ways.
+     * For these handlers, the following algorithm describes how a property or model is chosen:
+     * <ul>
+     *     <li>
+     *         use the value given for the binding, unless it's <code>true</code> in which case use the first found
+     *         from:
+     *     <ul>
+     *         <li>the value of the element's <b>value</b> binding</li>
+     *         <li>the value of the element's <b>checked</b> binding</li>
+     *         <li>the value of the element's <b>validatedChecked</b> binding</li>
+     *         <li>the value of the element's <b>validatedValue</b> binding</li>
+     *         <li>the view-model object in the current context <code>($data)</code></li>
+     *     </ul>
+     * </ul>
+     * @namespace
+     */
+    "bindingHandlers": {
+    },
+    /**
      * A Knockout computed.
      * @constructor
      */
@@ -158,7 +180,7 @@ valerie.IValidationState = function () {
         },
         /**
          * Gets or sets whether the item has been "touched" by a user action.
-         * @name valerie.IValidationState#touced
+         * @name valerie.IValidationState#touched
          * @function
          * @abstract
          * @method

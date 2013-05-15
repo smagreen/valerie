@@ -33,7 +33,7 @@
             display: none;
         }
 
-        form div aside.error {
+        form div aside.failed {
             background-color: #a33;
             color: #fff;
             padding: 0.25em 0.5em;
@@ -43,7 +43,7 @@
             display: inline-block;
         }
 
-        form div aside.success, form div aside.untouched {
+        form div aside.passed, form div aside.pending, form div aside.untouched {
             display: none !important;
         }
 
@@ -53,11 +53,11 @@
             padding: 0.25em 0;
         }
 
-        input.error, select.error {
+        input.failed, select.failed {
             border-color: #a33;
         }
 
-        input.success, select.success {
+        input.passed, select.passed {
             border-color: #3a3;
         }
 
@@ -65,7 +65,7 @@
             border-color: #ccc;
         }
 
-        input.waiting, select.waiting {
+        input.pending, select.pending {
             border-color: #aa3;
         }
     </style>
@@ -202,8 +202,7 @@
 
 <script type="text/javascript">
     window.onload = function () {
-        var v = valerie,
-                k = valerie.knockout;
+        var v = valerie;
 
         var longRunningRuleCompleted = ko.observable(false),
                 longRunningRuleTimeout,
@@ -228,9 +227,6 @@
 
                     return v.ValidationResult.pendingInstance;
                 };
-
-        // Configure valerie
-        k.useValidatingBindingHandlers();
 
         var viewModel,
                 housePrice = ko.observable(150000)
@@ -302,6 +298,7 @@
                 .end();
 
         // Apply bindings
+        v.koBindingsHelper.useValidatingBindingHandlers();
         ko.applyBindings(viewModel, document.getElementById("view"));
     };
 </script>
