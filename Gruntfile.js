@@ -3,13 +3,23 @@ module.exports = function (grunt) {
         "pkg": grunt.file.readJSON("package.json"),
         "clean": {
             "docs": [
-                "apidocs"
+                "latest/apidocs"
             ],
             "build": [
                 "build"
             ]
         },
         "copy": {
+            "updateLatest": {
+                "files": [
+                    {
+                        "expand": true,
+                        "cwd": "build",
+                        "src": ["valerie-*.js"],
+                        "dest": "latest/code"
+                    }
+                ]
+            },
             "updateRunner": {
                 "files": [
                     {
@@ -58,19 +68,33 @@ module.exports = function (grunt) {
                     "code/valerie/full/valerie.converters.js",
                     "code/valerie/full/valerie.rules.js",
                     "code/valerie/full/valerie.propertyValidationState-fluentConverters.js",
-                    "code/valerie/full/valerie.propertyValidationState-fluentRules.js",
+                    "code/valerie/full/valerie.propertyValidationState-fluentRules.js"
                 ],
                 "dest": "build/valerie-for-knockout.js"
             },
-            "en-gb": {
+            "en": {
                 "src": [
                     "build/valerie-for-knockout.js",
-                    "code/valerie/localisation/en-gb/core.js",
-                    "code/valerie/localisation/en-gb/full.js",
-                    "code/valerie/localisation/en-gb/valerie.converters.en-gb.js",
-                    "code/valerie/localisation/en-gb/valerie.knockout.fluent.converters.en-gb.js"
+                    "code/valerie/localisation/en/core-en.js",
+                    "code/valerie/localisation/en/full-en.js"
+                ],
+                "dest": "build/valerie-for-knockout-en.js"
+            },
+            "en-gb": {
+                "src": [
+                    "build/valerie-for-knockout-en.js",
+                    "code/valerie/localisation/en-gb/full-en-gb.js",
+                    "code/valerie/localisation/en-gb/valerie.converters-en-gb.js",
+                    "code/valerie/localisation/en-gb/valerie.propertyValidationState-fluentConverters-en-gb.js"
                 ],
                 "dest": "build/valerie-for-knockout-en-gb.js"
+            },
+            "en-us": {
+                "src": [
+                    "build/valerie-for-knockout-en.js",
+                    "code/valerie/localisation/en-us/full-en-us.js"
+                ],
+                "dest": "build/valerie-for-knockout-en-us.js"
             }
         },
         "jasmine": {
@@ -162,7 +186,9 @@ module.exports = function (grunt) {
         "clean:build",
         "concat:core",
         "concat:full",
+        "concat:en",
         "concat:en-gb",
+        "concat:en-us",
         "jshint"
     ]);
 
@@ -184,4 +210,10 @@ module.exports = function (grunt) {
         "clean:docs",
         "shell:docs"
     ]);
-}
+
+    grunt.registerTask("updateLatest", [
+        "build",
+        "docs",
+        "copy:updateLatest"
+    ]);
+};

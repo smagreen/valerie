@@ -1,10 +1,9 @@
 ﻿(function () {
-    var converters = valerie.converters,
-        rules = valerie.rules,
+    "use strict";
+
+    var rules = valerie.rules,
         defaultOptions;
 
-    converters.defaultNumericHelper.init(".", ",", "£", "2");
-    
     defaultOptions = rules.ArrayLength.defaultOptions;
     defaultOptions.failureMessageFormat = "There must be between {minimum} and {maximum} items.";
     defaultOptions.failureMessageFormatForMinimumOnly = "There must be at least {minimum} items.";

@@ -1,12 +1,15 @@
 {
     "opts": {
-        "destination": "apidocs"
+        "destination": "latest/apidocs"
     },
     "source": {
         "include": [
             "code/valerie/documentation-extras.js",
             "code/valerie/core",
-            "code/valerie/full"
+            "code/valerie/full",
+            "code/valerie/localisation/en",
+            "code/valerie/localisation/en-gb",
+            "code/valerie/localisation/en-us"
         ],
         "includePattern": ".+\\.js(doc)?$"
     },

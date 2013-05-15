@@ -1,12 +1,15 @@
-﻿// valerie.converters.en-gb
-// - additional converters for the en-gb locale
-(function () {
+﻿(function () {
     "use strict";
 
     var converters = valerie.converters = valerie.converters || {},
         postcodeExpression = /^([A-Z][A-Z]?)((?:[0-9][A-Z])|(?:[0-9]{1,2}))\s*([0-9])([A-Z][A-Z])$/i;
-    
-    // + converters.postcode
+
+    /**
+     * A converter for postcodes.<br/>
+     * <i>[full, en-gb]</i>
+     * @name valerie.converters~postcode
+     * @type valerie.IConverter
+     */
     converters.postcode = {
         "format": function (value) {
             if (value == null) {
