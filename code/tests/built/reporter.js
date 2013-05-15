@@ -112,7 +112,7 @@ phantom.sendMessage = function() {
       if (!value) return value;
 
       // If we're a node
-      if (value instanceof Node) return '[ Node ]';
+      // if (value instanceof Node) return '[ Node ]';
 
       // If we're a window (logic stolen from jQuery)
       if (value.window && value.window === value.window.window) return '[ Window ]';
