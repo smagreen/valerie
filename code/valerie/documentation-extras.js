@@ -91,9 +91,28 @@ valerie.IRule = function () {
          */
         "test": function (value) {
             throw "Not implemented.";
+        },
+        /**
+         * The default options for the rule.
+         * @memberof valerie.IRule
+         * @type valerie.IRule.options
+         */
+        "defaultOptions": {
         }
     };
 };
+
+/**
+ * The options for the rule.
+ * @typedef {object} valerie.IRule.options
+ * @property {string} failureMessageFormat the format of the failure message
+ * @property {string} failureMessageFormatForMaximumOnly the format of the failure message for a ranged rule when only
+ * a maximum value has been specified
+ * @property {string} failureMessageFormatForMinimumOnly the format of the failure message for a ranged rule when only
+ * a minimum value has been specified
+ * @property {string} valueFormat the format to use when formatting values that may appear in a failure message
+ * @property {string} valueFormatter the function to format values that may appear in a failure message
+ */
 
 /**
  * The interface for a validation state.

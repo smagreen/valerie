@@ -445,19 +445,17 @@ var valerie = {};
     /**
      * Contains converters, always singletons.
      * @namespace
+     * @see valerie.IConverter
      */
     valerie.converters = {};
 
     /**
      * A converter which formats and parses strings.
      * Used as the default converter in numerous places throughout the library.
-     * @namespace
-     * @see valerie.IConverter
+     * @name valerie.converters~passThrough
+     * @type valerie.IConverter
      */
     valerie.converters.passThrough = {
-        /**
-         * @see valerie.IConverter#format
-         */
         "format": function (value) {
             if (value == null) {
                 return "";
@@ -465,9 +463,6 @@ var valerie = {};
 
             return value.toString();
         },
-        /**
-         * @see valerie.IConverter#parse
-         */
         "parse": function (value) {
             return value;
         }
@@ -484,7 +479,7 @@ var valerie = {};
     };
 
     /**
-     * The result of a validation activity.
+     * Constructs the result of a validation activity.
      * @constructor
      * @param {object} state the result state
      * @param {string} [message] a message from the activity
@@ -529,7 +524,7 @@ var valerie = {};
     /**
      * Creates a validation result for when validation has failed.
      * @param {string} [message] a message from the activity
-     * @returns {valerie.ValidationResult}
+     * @return {valerie.ValidationResult}
      */
     valerie.ValidationResult.createFailedResult = function (message) {
         return new valerie.ValidationResult(states.failed, message);
@@ -628,8 +623,8 @@ var valerie = {};
      * retrieve it.<br/>
      * <i>This function is useful when developing binding handlers.</i>
      * @param {object|function} modelOrObservableOrComputed the thing to get the validation state for
-     * @return {null|IValidationState} the validation state or <code>null</code> if the given thing does not have a
-     * validation state.
+     * @return {null|valerie.IValidationState} the validation state or <code>null</code> if the given thing does not
+     * have a validation state.
      */
     valerie.validationState.getFor = function (modelOrObservableOrComputed) {
         if (modelOrObservableOrComputed == null) {
@@ -660,7 +655,7 @@ var valerie = {};
     /**
      * Sets the validation state for the given model, observable or computed.
      * @param {object|function} modelOrObservableOrComputed the thing to set the validation state on
-     * @param {valerie.ModelValidationState|valerie.PropertyValidationState} state the validation state to use
+     * @param {valerie.IValidationState} state the validation state to use
      */
     valerie.validationState.setFor = function (modelOrObservableOrComputed, state) {
         modelOrObservableOrComputed[getValidationStateMethodName] = function () {
@@ -779,7 +774,7 @@ var valerie = {};
      */
 
     /**
-     * The validation state for a model, which may comprise of simple properties and sub-models.
+     * Constructs the validation state for a model, which may comprise of simple properties and sub-models.
      * @param model the model the validation state is for
      * @param {valerie.ModelValidationState.options} [options = default options] the options to use when creating the
      * validation state
@@ -916,8 +911,8 @@ var valerie = {};
 
     valerie.ModelValidationState.prototype = {
         /**
-         * Adds validation states to this validation state.
-         * <br/><b>fluent</b>
+         * Adds validation states to this validation state.<br/>
+         * <i>[fluent]</i>
          * @name valerie.ModelValidationState#addValidationStates
          * @fluent
          * @param {array.<valerie.IValidationState>} validationStates the validation states to add
@@ -930,8 +925,8 @@ var valerie = {};
             return this;
         },
         /**
-         * Sets the value or function used to determine if the model is applicable.
-         * <br/><b>fluent</b>
+         * Sets the value or function used to determine if the model is applicable.<br/>
+         * <i>[fluent]</i>
          * @name valerie.ModelValidationState#applicable
          * @fluent
          * @param {boolean|function} [valueOrFunction = true] the value or function to use
@@ -947,8 +942,8 @@ var valerie = {};
             return this;
         },
         /**
-         * Clears the static summary of validation states that are in a failure state.
-         * <br/><b>fluent</b>
+         * Clears the static summary of validation states that are in a failure state.<br/>
+         * <i>[fluent]</i>
          * @name valerie.ModelValidationState#clearSummary
          * @fluent
          * @param {boolean} [clearSubModelSummaries = false] whether to clear the static summaries for sub-models
@@ -977,16 +972,14 @@ var valerie = {};
         },
         /**
          * Ends a chain of fluent method calls on this model validation state.
-         * <br/>
-         * @fluent
          * @return {function} the model the validation state is for
          */
         "end": function () {
             return this.model;
         },
         /**
-         * Sets the value or function used to determine the name of the model.
-         * <br/><b>fluent</b>
+         * Sets the value or function used to determine the name of the model.<br/>
+         * <i>[fluent]</i>
          * @fluent
          * @param {string|function} valueOrFunction the value or function to use
          * @return {valerie.ModelValidationState}
@@ -997,8 +990,8 @@ var valerie = {};
             return this;
         },
         /**
-         * Removes validation states.
-         * <br/><b>fluent</b>
+         * Removes validation states.<br/>
+         * <i>[fluent]</i>
          * @fluent
          * @param {array.<valerie.IValidationState>} validationStates the validation states to remove
          * @return {valerie.ModelValidationState}
@@ -1019,8 +1012,8 @@ var valerie = {};
             return this;
         },
         /**
-         * Updates the static summary of validation states that are in a failure state.
-         * <br/><b>fluent</b>
+         * Updates the static summary of validation states that are in a failure state.<br/>
+         * <i>[fluent]</i>
          * @fluent
          * @param {boolean} [updateSubModelSummaries = false] whether to update the static summaries for sub-models
          * @return {valerie.ModelValidationState}
@@ -1057,8 +1050,8 @@ var valerie = {};
             return this;
         },
         /**
-         * Adds the validation states for all the descendant properties and sub-models that belong to the model.
-         * <br/><b>fluent</b>
+         * Adds the validation states for all the descendant properties and sub-models that belong to the model.<br/>
+         * <i>[fluent]</i>
          * @fluent
          * @return {valerie.ModelValidationState}
          */
@@ -1069,8 +1062,8 @@ var valerie = {};
             return this;
         },
         /**
-         * Adds the validation states for all the descendant properties that belong to the model.
-         * <br/><b>fluent</b>
+         * Adds the validation states for all the descendant properties that belong to the model.<br/>
+         * <i>[fluent]</i>
          * @fluent
          * @return {valerie.ModelValidationState}
          */
@@ -1081,8 +1074,8 @@ var valerie = {};
             return this;
         },
         /**
-         * Adds the validation states for all the child properties that belong to the model.
-         * <br/><b>fluent</b>
+         * Adds the validation states for all the child properties that belong to the model.<br/>
+         * <i>[fluent]</i>
          * @fluent
          * @return {valerie.ModelValidationState}
          */
@@ -1093,8 +1086,8 @@ var valerie = {};
             return this;
         },
         /**
-         * Adds the validation states for all the child properties and sub-models that belong to the model.
-         * <br/><b>fluent</b>
+         * Adds the validation states for all the child properties and sub-models that belong to the model.<br/>
+         * <i>[fluent]</i>
          * @fluent
          * @return {valerie.ModelValidationState}
          */
@@ -1124,7 +1117,7 @@ var valerie = {};
      * @param {object|function} model the model to make validatable
      * @param {valerie.ModelValidationState.options} [options] the options to use when creating the model's validation
      * state
-     * @returns {valerie.ModelValidationState} the validation state belonging to the model
+     * @return {valerie.ModelValidationState} the validation state belonging to the model
      */
     valerie.validatableModel = function (model, options) {
         var validationState = new valerie.ModelValidationState(model, options);
@@ -1245,7 +1238,7 @@ var valerie = {};
      */
 
     /**
-     * The validation state for a simple, single, observable or computed property.
+     * Constructs the validation state for a simple, single, observable or computed property.
      * @constructor
      * @param {function} observableOrComputed the observable or computed the validation state is for
      * @param {valerie.PropertyValidationState.options} [options = default options] the options to use when creating the
@@ -1348,9 +1341,8 @@ var valerie = {};
 
     valerie.PropertyValidationState.prototype = {
         /**
-         * Adds a rule to the chain of rules used to validate the property's value.
-         * <br/><b>fluent</b>
-         * @name valerie.PropertyValidationState#addRule
+         * Adds a rule to the chain of rules used to validate the property's value.<br/>
+         * <i>[fluent]</i>
          * @fluent
          * @param {valerie.IRule} rule the rule to add
          * @return {valerie.PropertyValidationState}
@@ -1361,9 +1353,8 @@ var valerie = {};
             return this;
         },
         /**
-         * Sets the value or function used to determine if the property is applicable.
-         * <br/><b>fluent</b>
-         * @name valerie.PropertyValidationState#applicable
+         * Sets the value or function used to determine if the property is applicable.<br/>
+         * <i>[fluent]</i>
          * @fluent
          * @param {boolean|function} [valueOrFunction = true] the value or function to use
          * @return {valerie.PropertyValidationState}
@@ -1379,8 +1370,8 @@ var valerie = {};
         },
         /**
          * Ends a chain of fluent method calls on this property validation state.<br/>
-         * Applies the <b>options.valueFormat</b> format string to all the rules in the rule chain.
-         * <br/><b>fluent</b>
+         * Applies the <b>options.valueFormat</b> format string to all the rules in the rule chain.<br/>
+         * <i>[fluent]</i>
          * @fluent
          * @return {function} the observable or computed the validation state is for
          */
@@ -1400,8 +1391,8 @@ var valerie = {};
             return this.observableOrComputed;
         },
         /**
-         * Sets the value or function used to determine the name of the property.
-         * <br/><b>fluent</b>
+         * Sets the value or function used to determine the name of the property.<br/>
+         * <i>[fluent]</i>
          * @fluent
          * @param {string|function} valueOrFunction the value or function to use
          * @return {valerie.PropertyValidationState}
@@ -1412,8 +1403,8 @@ var valerie = {};
             return this;
         },
         /**
-         * Sets the value or function used to determine the if the property is required.
-         * <br/><b>fluent</b>
+         * Sets the value or function used to determine the if the property is required.<br/>
+         * <i>[fluent]</i>
          * @fluent
          * @param {boolean|function} [valueOrFunction = false] the value or function to use
          * @return {valerie.PropertyValidationState}
@@ -1428,8 +1419,8 @@ var valerie = {};
             return this;
         },
         /**
-         * Sets the format string used to format the display of the value
-         * <br/><b>fluent</b>
+         * Sets the format string used to format the display of the value.<br/>
+         * <i>[fluent]</i>
          * @fluent
          * @param {string} format the format string to use
          * @return {valerie.PropertyValidationState}
@@ -1465,7 +1456,7 @@ var valerie = {};
      * @param {function} observableOrComputed the Knockout observable or computed to make validatable
      * @param {valerie.PropertyValidationState.options} [options] the options to use when creating the property's
      * validation state
-     * @returns {valerie.PropertyValidationState} the validation state belonging to the property
+     * @return {valerie.PropertyValidationState} the validation state belonging to the property
      * @throws {string} Only observables or computeds can be made validatable properties.
      */
     valerie.validatableProperty = function (observableOrComputed, options) {
@@ -1485,8 +1476,8 @@ var valerie = {};
     "use strict";
 
     /**
-     * Creates and sets a validation state on a Knockout computed.
-     * <br/><b>fluent</b>
+     * Creates and sets a validation state on a Knockout computed.<br/>
+     * <i>[fluent]</i>
      * @name ko.computed#validate
      * @method
      * @fluent
@@ -1503,8 +1494,8 @@ var valerie = {};
     "use strict";
 
     /**
-     * Creates and sets a validation state on a Knockout observable.
-     * <br/><b>fluent</b>
+     * Creates and sets a validation state on a Knockout observable.<br/>
+     * <i>[fluent]</i>
      * @name ko.observable#validate
      * @method
      * @fluent
@@ -1999,10 +1990,6 @@ var valerie = {};
         }
     };
 })();
-// valerie.numericHelper
-// - helper for parsing and formatting numeric values
-// - used by other parts of the valerie library
-
 (function () {
     "use strict";
 
@@ -2032,11 +2019,25 @@ var valerie = {};
             };
         };
 
-    // + valerie.NumericHelper
+    /**
+     * A helper for parsing and formatting numeric values.<br/>
+     * <i>[full]</i>
+     * @constructor
+     */
     valerie.NumericHelper = function () {
     };
 
     valerie.NumericHelper.prototype = {
+        /**
+         * Initialises the helper.<br/>
+         * <i>[fluent]</i>
+         * @param {char|string} decimalSeparator the character or string to use as the decimal separator
+         * @param {char|string} thousandsSeparator the character or string to use as the thousands separator
+         * @param {char|string} currencySign the character or string to use as the currency sign
+         * @param {number} currencyMinorUnitPlaces the number of decimal places to use when parsing and formatting the
+         * currency's minor units
+         * @returns {valerie.NumericHelper}
+         */
         "init": function (decimalSeparator, thousandsSeparator, currencySign, currencyMinorUnitPlaces) {
             var integerExpression = "\\d+(\\" + thousandsSeparator + "\\d{3})*",
                 currencyMajorExpression = "(\\" + currencySign + ")?" + integerExpression,
@@ -2060,12 +2061,43 @@ var valerie = {};
 
             return this;
         },
+        /**
+         * Adds thousands separators to the given numeric string.
+         * @param {string} numericString the numeric string to add separators to
+         * @return {string} a numeric string with thousands separators
+         */
         "addThousandsSeparator": function (numericString) {
             var settings = this.settings;
 
             return formatting.addThousandsSeparator(numericString, settings.thousandsSeparator,
                 settings.decimalSeparator);
         },
+        /**
+         * Formats the given numeric value as a string.<br/>
+         * Permitted format strings are:
+         * <ul>
+         *     <li><code>C,.c</code></li>
+         *     <li><code>C,.1</code></li>
+         *     <li><code>C,.2</code></li>
+         *     <li><code>C,.n</code></li>
+         *     <li><code>C,.c</code></li>
+         *     <li><code>.c</code></li>
+         *     <li><code>.1</code></li>
+         *     <li><code>.n</code></li>
+         * </ul>
+         * The formatting characters have the following directives:
+         * <ul>
+         *     <li><code>C</code> - include the currency sign in the formatted string</li>
+         *     <li><code>,</code> - include thousands separators in the formatted string</li>
+         *     <li><code>.</code> - include the decimal separator in the formatted string</li>
+         *     <li><code>.c</code> - include the default number of digits after the decimal separator</li>
+         *     <li><code>.1</code> - include 1 digit after the decimal separator</li>
+         *     <li><code>.2</code> - include 2 digits after the decimal separator</li>
+         *     <li><code>.n</code> - include [n] digits after the decimal separator</li>
+         * @param {number} value the value to format
+         * @param {string} format the format to use
+         * @return {string} the formatted string
+         */
         "format": function (value, format) {
             if (value == null) {
                 return "";
@@ -2085,14 +2117,17 @@ var valerie = {};
             }
 
             if (numberOfDecimalPlaces != null) {
+                //noinspection JSValidateTypes
                 value = value.toFixed(numberOfDecimalPlaces);
             } else {
                 value = value.toString();
             }
 
+            //noinspection JSUnresolvedFunction
             value = value.replace(".", settings.decimalSeparator);
 
             if (formatOptions.includeThousandsSeparator) {
+                //noinspection JSValidateTypes
                 value = this.addThousandsSeparator(value);
             }
 
@@ -2100,23 +2135,57 @@ var valerie = {};
                 (formatOptions.includeCurrencySign ? settings.currencySign : "") +
                 value;
         },
+        /**
+         * Informs whether the given numeric string represents a currency value with major units only.
+         * @param {string} numericString the numeric string to test
+         * @return {boolean} <code>true</code> if the given numeric string represents a currency value,
+         * <code>false</code> otherwise
+         */
         "isCurrencyMajor": function (numericString) {
             return this.expressions.currencyMajor.test(numericString);
         },
+        /**
+         * Informs whether the given numeric string represents a currency value with major units and optionally minor units.
+         * @param {string} numericString the numeric string to test
+         * @return {boolean} <code>true</code> if the given numeric string represents a currency value,
+         * <code>false</code> otherwise
+         */
         "isCurrencyMajorMinor": function (numericString) {
             return this.expressions.currencyMajorMinor.test(numericString);
         },
+        /**
+         * Informs whether the given numeric string represents a non-integer numeric value.
+         * @param {string} numericString the numeric string to test
+         * @return {boolean} <code>true</code> if the given numeric string represents a non-integer numeric value,
+         * <code>false</code> otherwise
+         */
         "isFloat": function (numericString) {
             return this.expressions.float.test(numericString);
         },
+        /**
+         * Informs whether the given numeric string represents an integer value.
+         * @param {string} numericString the numeric string to test
+         * @return {boolean} <code>true</code> if the given numeric string represents a integer value,
+         * <code>false</code> otherwise
+         */
         "isInteger": function (numericString) {
             return this.expressions.integer.test(numericString);
         },
+        /**
+         * Attempts to parse the given numeric string as a number value. The string is unformatted first.
+         * @param numericString
+         * @returns {NaN|number}
+         */
         "parse": function (numericString) {
             numericString = this.unformat(numericString);
 
             return Number(numericString);
         },
+        /**
+         * Unformats a numeric string; removes currency signs, thousands separators and normalises decimal separators.
+         * @param {string} numericString the numeric string to unformat
+         * @returns {string} the unformatted string
+         */
         "unformat": function (numericString) {
             var settings = this.settings;
 
@@ -2129,19 +2198,26 @@ var valerie = {};
     };
 })();
 
-// valerie.converters
-// - additional converters
-
 (function () {
     "use strict";
 
-    var pad = valerie.formatting.pad,
-        converters = valerie.converters = valerie.converters || {},
+    var
         defaultNumericHelper = new valerie.NumericHelper(),
         dateExpression = /^(\d\d?)(?:\-|\/)(\d\d?)(?:\-|\/)(\d\d\d\d)$/,
-        emailExpression = /^[A-Z0-9._%+-]+@[A-Z0-9.-]+\.[A-Z]{2,4}$/i;
+        emailExpression = /^[A-Z0-9._%+-]+@[A-Z0-9.-]+\.[A-Z]{2,4}$/i,
+    // Shortcuts.
+        pad = valerie.formatting.pad,
+        converters = valerie.converters = valerie.converters || {};
 
-    // + converters.date
+    /**
+     * A converter for dates.<br/>
+     * By default date strings in <code>dd/mm/yyyy</code> or <code>dd-mm-yyyy</code> formats can be parsed.<br/>
+     * By setting <b>valerie.converters.date.monthBeforeDate</b> to <code>true</code> date strings in
+     * <code>mm/dd/yyyy</code> or <code>mm-dd-yyyy</code> can be parsed.</br>
+     * <i>[full]</i>
+     * @name valerie.converters~date
+     * @type valerie.IConverter
+     */
     converters.date = {
         "format": function (value) {
             if (value == null) {
@@ -2195,15 +2271,31 @@ var valerie = {};
             }
 
             return value;
-        }
+        },
+        /**
+         * Controls whether dd/mm/yyyy or mm/dd/yyyy are acceptable date formats.
+         * @name valerie.converters.date#monthBeforeDate
+         * @type {boolean}
+         */
+        "monthBeforeDate": false
     };
 
-    converters.date.monthBeforeDate = false;
-
-    // + converters.defaultNumericHelper
+    /**
+     * The default numerical helper used by converters.
+     * @type {valerie.NumericHelper}
+     */
     converters.defaultNumericHelper = defaultNumericHelper;
 
-    // + converters.currencyMajor
+    /**
+     * A converter for currency values with only major units, for example: <code>£1,093</code>, <code>$1093</code>,
+     * <code>1.093</code>.<br/>
+     * Currency string values are parsed into <code>float</code> values.<br/>
+     * <b>valerie.converters.currency.numericHelper</b> is used to parse and format values; this is defaulted to
+     * <b>valerie.converters.defaultNumericHelper</b>.<br/>
+     * <i>[full]</i>
+     * @name valerie.converters~currencyMajor
+     * @type valerie.IConverter
+     */
     converters.currencyMajor = {
         "format": function (value, format) {
             return converters.currency.numericHelper.format(value, format);
@@ -2219,7 +2311,16 @@ var valerie = {};
         }
     };
 
-    // + converters.currencyMajorMinor
+    /**
+     * A converter for currency values with major and optionally minor units, for example: <code>£93</code>,
+     * <code>$93.22</code>, <code>1,093.00</code>, <code>1.293,22</code>.<br/>
+     * Currency string values are parsed into <code>float</code> values.<br/>
+     * <b>valerie.converters.currency.numericHelper</b> is used to parse and format values; this is defaulted to
+     * <b>valerie.converters.defaultNumericHelper</b>.<br/>
+     * <i>[full]</i>
+     * @name valerie.converters~currencyMajorMinor
+     * @type valerie.IConverter
+     */
     converters.currencyMajorMinor = {
         "format": function (value, format) {
             return converters.currency.numericHelper.format(value, format);
@@ -2235,9 +2336,18 @@ var valerie = {};
         }
     };
 
+    /**
+     * The default numerical helper used by converters that convert currency values.
+     * @type {valerie.NumericHelper}
+     */
     converters.currency = { "numericHelper": defaultNumericHelper };
 
-    // + converters.email
+    /**
+     * A converter for e-mail addresses.<br/>
+     * <i>[full]</i>
+     * @name valerie.converters~email
+     * @type valerie.IConverter
+     */
     converters.email = {
         "format": function (value) {
             if (value == null) {
@@ -2259,7 +2369,12 @@ var valerie = {};
         }
     };
 
-    // + converters.float
+    /**
+     * A converter for non-integer number values.<br/>
+     * <i>[full]</i>
+     * @name valerie.converters~float
+     * @type valerie.IConverter
+     */
     converters.float = {
         "format": function (value, format) {
             return converters.float.numericHelper.format(value, format);
@@ -2275,9 +2390,18 @@ var valerie = {};
         }
     };
 
+    /**
+     * The default numerical helper used by the <b>valerie.converters.float</b> converter.
+     * @type {valerie.NumericHelper}
+     */
     converters.float.numericHelper = defaultNumericHelper;
 
-    // + converters.integer
+    /**
+     * A converter for integer values.<br/>
+     * <i>[full]</i>
+     * @name valerie.converters~integer
+     * @type valerie.IConverter
+     */
     converters.integer = {
         "format": function (value, format) {
             return converters.integer.numericHelper.format(value, format);
@@ -2293,9 +2417,18 @@ var valerie = {};
         }
     };
 
+    /**
+     * The default numerical helper used by the <b>valerie.converters.integer</b> converter.
+     * @type {valerie.NumericHelper}
+     */
     converters.integer.numericHelper = defaultNumericHelper;
 
-    // + converters.number
+    /**
+     * A converter for Javascript Number values.<br/>
+     * <i>[full]</i>
+     * @name valerie.converters~number
+     * @type valerie.IConverter
+     */
     converters.number = {
         "format": function (value) {
             if (value == null) {
@@ -2320,19 +2453,32 @@ var valerie = {};
     };
 })();
 
-// valerie.rules
-// - general purpose rules
-
 (function() {
     "use strict";
 
-    var // ReSharper restore InconsistentNaming
-        passedValidationResult = valerie.ValidationResult.passedInstance,
-        rules = valerie.rules = valerie.rules || {},
-        utils = valerie.utils,
-        formatting = valerie.formatting;
+    /**
+     * Contains rule classes for validating models and properties.
+     * @namespace
+     * @see valerie.IRule
+     */
+    valerie.rules = {};
 
-    // + rules.ArrayLength
+    // Shortcuts.
+    var utils = valerie.utils,
+        formatting = valerie.formatting,
+        rules = valerie.rules,
+        passedValidationResult = valerie.ValidationResult.passedInstance;
+
+    /**
+     * Constructs a rule to test whether an array's length is within a permitted range.<br/>
+     * <i>[full]</i>
+     * @name valerie.rules.ArrayLength
+     * @type valerie.IRule
+     * @constructor
+     * @param {number|function} minimumValueOrFunction a value or function that specifies the minimum permitted length
+     * @param {number|function} [maximumValueOrFunction] a value or function that specifies the maximum permitted length
+     * @param {valerie.IRule.options} [options] the options to use when constructing the rule
+     */
     rules.ArrayLength = function(minimumValueOrFunction, maximumValueOrFunction, options) {
         if (arguments.length < 2) {
             throw "At least 2 arguments are expected.";
@@ -2340,18 +2486,33 @@ var valerie = {};
 
         options = utils.mergeOptions(rules.ArrayLength.defaultOptions, options);
 
+        //noinspection JSValidateTypes
         return new rules.Length(minimumValueOrFunction, maximumValueOrFunction, options);
     };
 
+    /**
+     * The default options for the rule.
+     * @name valerie.rules.ArrayLength.defaultOptions
+     * @type {valerie.IRule.options}
+     */
     rules.ArrayLength.defaultOptions = {
         "failureMessageFormat": "",
         "failureMessageFormatForMinimumOnly": "",
         "failureMessageFormatForMaximumOnly": "",
         "valueFormat": null,
-        "valueformat": valerie.converters.passThrough.format
+        "valueFormatter": valerie.converters.passThrough.format
     };
 
-    // + rules.During
+    /**
+     * Constructs a rule to test whether a date value is within a permitted time-span.<br/>
+     * <i>[full]</i>
+     * @name valerie.rules.During
+     * @type valerie.IRule
+     * @constructor
+     * @param {date|function} minimumValueOrFunction a value or function that specifies the earliest permitted date
+     * @param {date|function} [maximumValueOrFunction] a value or function that specifies the latest permitted date
+     * @param {valerie.IRule.options} [options] the options to use when constructing the rule
+     */
     rules.During = function(minimumValueOrFunction, maximumValueOrFunction, options) {
         if (arguments.length < 2) {
             throw "At least 2 arguments are expected.";
@@ -2359,18 +2520,32 @@ var valerie = {};
 
         options = utils.mergeOptions(rules.During.defaultOptions, options);
 
+        //noinspection JSValidateTypes
         return new rules.Range(minimumValueOrFunction, maximumValueOrFunction, options);
     };
 
+    /**
+     * The default options for the rule.
+     * @name valerie.rules.During.defaultOptions
+     * @type {valerie.IRule.options}
+     */
     rules.During.defaultOptions = {
         "failureMessageFormat": "",
         "failureMessageFormatForMinimumOnly": "",
         "failureMessageFormatForMaximumOnly": "",
         "valueFormat": null,
-        "valueformat": valerie.converters.passThrough.format
+        "valueFormatter": valerie.converters.passThrough.format
     };
-   
-    // + rules.Expression
+
+    /**
+     * Constructs a rule to test whether a string value matches the given regular expression.<br/>
+     * <i>[full]</i>
+     * @name valerie.rules.Expression
+     * @type valerie.IRule
+     * @constructor
+     * @param {string|RegExp} regularExpressionObjectOrString the regular expression
+     * @param {valerie.IRule.options} [options] the options to use when constructing the rule
+     */
     rules.Expression = function(regularExpressionObjectOrString, options) {
         this.expression = utils.isString(regularExpressionObjectOrString) ?
             new RegExp(regularExpressionObjectOrString) :
@@ -2379,10 +2554,15 @@ var valerie = {};
         this.settings = utils.mergeOptions(rules.Expression.defaultOptions, options);
     };
 
+    /**
+     * The default options for the rule.
+     * @name valerie.rules.Expression.defaultOptions
+     * @type {valerie.IRule.options}
+     */
     rules.Expression.defaultOptions = {
         "failureMessageFormat": "",
         "valueFormat": null,
-        "valueformat": valerie.converters.passThrough.format
+        "valueFormatter": valerie.converters.passThrough.format
     };
 
     rules.Expression.prototype = {
@@ -2397,14 +2577,23 @@ var valerie = {};
 
             failureMessage = formatting.replacePlaceholders(
                 this.settings.failureMessageFormat, {
-                    "value": this.settings.valueformat(value, this.settings.valueFormat)
+                    "value": this.settings.valueFormatter(value, this.settings.valueFormat)
                 });
 
-            return new valerie.ValidationResult.createFailedResult(failureMessage);
+            return valerie.ValidationResult.createFailedResult(failureMessage);
         }
     };
 
-    // + rules.Length
+    /**
+     * Constructs a rule to test whether an object's <code>length</code> property is within a permitted range.<br/>
+     * <i>[full]</i>
+     * @name valerie.rules.Length
+     * @type valerie.IRule
+     * @constructor
+     * @param {number|function} minimumValueOrFunction a value or function that specifies the minimum permitted value
+     * @param {number|function} [maximumValueOrFunction] a value or function that specifies the maximum permitted value
+     * @param {valerie.IRule.options} [options] the options to use when constructing the rule
+     */
     rules.Length = function(minimumValueOrFunction, maximumValueOrFunction, options) {
         if (arguments.length < 2) {
             throw "At least 2 arguments are expected.";
@@ -2421,43 +2610,75 @@ var valerie = {};
                 length = value.length;
             }
 
-            // ReSharper disable UsageOfPossiblyUnassignedValue
             return rangeRule.test(length);
-            // ReSharper restore UsageOfPossiblyUnassignedValue
         };
+
+        return passedValidationResult;
     };
 
+    /**
+     * The default options for the rule.
+     * @name valerie.rules.Length.defaultOptions
+     * @type {valerie.IRule.options}
+     */
     rules.Length.defaultOptions = {
         "failureMessageFormat": "",
         "failureMessageFormatForMinimumOnly": "",
         "failureMessageFormatForMaximumOnly": "",
         "valueFormat": null,
-        "valueformat": valerie.converters.passThrough.format
+        "valueFormatter": valerie.converters.passThrough.format
     };
 
-    // + rules.Matches
+    /**
+     * Constructs a rule to test whether a value matches another.<br/>
+     * <i>[full]</i>
+     * @name valerie.rules.Matches
+     * @type valerie.IRule
+     * @constructor
+     * @param {*} permittedValueOrFunction a value or function that specifies the permitted value
+     * @param {valerie.IRule.options} [options] the options to use when constructing the rule
+     */
     rules.Matches = function(permittedValueOrFunction, options) {
         options = utils.mergeOptions(rules.Matches.defaultOptions, options);
 
         return new rules.OneOf([permittedValueOrFunction], options);
     };
 
+    /**
+     * The default options for the rule.
+     * @name valerie.rules.Matches.defaultOptions
+     * @type {valerie.IRule.options}
+     */
     rules.Matches.defaultOptions = {
         "failureMessageFormat": "",
-        "valueFormat": null,
-        "valueformat": valerie.converters.passThrough.format
+        "formatter": valerie.converters.passThrough.format,
+        "valueFormat": null
     };
 
-    // + rules.NoneOf
+    //noinspection FunctionWithInconsistentReturnsJS
+    /**
+     * Constructs a rule to test whether a value is not in a list of forbidden values.<br/>
+     * <i>[full]</i>
+     * @name valerie.rules.NoneOf
+     * @type valerie.IRule
+     * @constructor
+     * @param {array} forbiddenValuesOrFunction a value or function that specifies the forbidden values
+     * @param {valerie.IRule.options} [options] the options to use when constructing the rule
+     */
     rules.NoneOf = function(forbiddenValuesOrFunction, options) {
         this.forbiddenValues = utils.asFunction(forbiddenValuesOrFunction);
         this.settings = utils.mergeOptions(rules.NoneOf.defaultOptions, options);
     };
 
+    /**
+     * The default options for the rule.
+     * @name valerie.rules.NoneOf.defaultOptions
+     * @type {valerie.IRule.options}
+     */
     rules.NoneOf.defaultOptions = {
         "failureMessageFormat": "",
-        "valueFormat": null,
-        "valueformat": valerie.converters.passThrough.format
+        "formatter": valerie.converters.passThrough.format,
+        "valueFormat": null
     };
 
     rules.NoneOf.prototype = {
@@ -2470,10 +2691,10 @@ var valerie = {};
                 if (value === values[index]) {
                     failureMessage = formatting.replacePlaceholders(
                         this.settings.failureMessageFormat, {
-                            "value": this.settings.valueformat(value, this.settings.valueFormat)
+                            "value": this.settings.valueFormatter(value, this.settings.valueFormat)
                         });
 
-                    return new valerie.ValidationResult.createFailedResult(failureMessage);
+                    return valerie.ValidationResult.createFailedResult(failureMessage);
                 }
             }
 
@@ -2481,29 +2702,55 @@ var valerie = {};
         }
     };
 
-    // + rules.Not
+    /**
+     * Constructs a rule to test whether a value does not match another.<br>
+     * <i>[full]</i>
+     * @name valerie.rules.Not
+     * @type valerie.IRule
+     * @constructor
+     * @param {*} forbiddenValueOrFunction a value or function that specifies the forbidden value
+     * @param {valerie.IRule.options} [options] the options to use when constructing the rule
+     */
     rules.Not = function(forbiddenValueOrFunction, options) {
         options = utils.mergeOptions(rules.Not.defaultOptions, options);
 
         return new rules.NoneOf([forbiddenValueOrFunction], options);
     };
 
+    /**
+     * The default options for the rule.
+     * @name valerie.rules.Not.defaultOptions
+     * @type {valerie.IRule.options}
+     */
     rules.Not.defaultOptions = {
         "failureMessageFormat": "",
         "valueFormat": null,
-        "valueformat": valerie.converters.passThrough.format
+        "valueFormatter": valerie.converters.passThrough.format
     };
 
-    // + rules.OneOf
+    /**
+     * Constructs a rule to test whether a value is in a list of permitted values.<br/>
+     * <i>[full]</i>
+     * @name valerie.rules.OneOf
+     * @type valerie.IRule
+     * @constructor
+     * @param {array} permittedValuesOrFunction a value or function that specifies the permitted values
+     * @param {valerie.IRule.options} [options] the options to use when constructing the rule
+     */
     rules.OneOf = function(permittedValuesOrFunction, options) {
         this.permittedValues = utils.asFunction(permittedValuesOrFunction);
         this.settings = utils.mergeOptions(rules.OneOf.defaultOptions, options);
     };
 
+    /**
+     * The default options for the rule.
+     * @name valerie.rules.OneOf.defaultOptions
+     * @type {valerie.IRule.options}
+     */
     rules.OneOf.defaultOptions = {
         "failureMessageFormat": "",
         "valueFormat": null,
-        "valueformat": valerie.converters.passThrough.format
+        "valueFormatter": valerie.converters.passThrough.format
     };
 
     rules.OneOf.prototype = {
@@ -2520,14 +2767,23 @@ var valerie = {};
 
             failureMessage = formatting.replacePlaceholders(
                 this.settings.failureMessageFormat, {
-                    "value": this.settings.valueformat(value, this.settings.valueFormat)
+                    "value": this.settings.valueFormatter(value, this.settings.valueFormat)
                 });
 
-            return new valerie.ValidationResult.createFailedResult(failureMessage);
+            return valerie.ValidationResult.createFailedResult(failureMessage);
         }
     };
 
-    // + rules.Range
+    /**
+     * Constructs a rule to test whether an value is within a permitted range.<br/>
+     * <i>[full]</i>
+     * @name valerie.rules.Range
+     * @type valerie.IRule
+     * @constructor
+     * @param {number|function} minimumValueOrFunction a value or function that specifies the minimum permitted value
+     * @param {number|function} [maximumValueOrFunction] a value or function that specifies the maximum permitted value
+     * @param {valerie.IRule.options} [options] the options to use when constructing the rule
+     */
     rules.Range = function(minimumValueOrFunction, maximumValueOrFunction, options) {
         if (arguments.length < 2 || arguments.length > 3) {
             throw "At least 2 arguments are expected.";
@@ -2538,12 +2794,17 @@ var valerie = {};
         this.settings = utils.mergeOptions(rules.Range.defaultOptions, options);
     };
 
+    /**
+     * The default options for the rule.
+     * @name valerie.rules.Range.defaultOptions
+     * @type {valerie.IRule.options}
+     */
     rules.Range.defaultOptions = {
         "failureMessageFormat": "",
         "failureMessageFormatForMinimumOnly": "",
         "failureMessageFormatForMaximumOnly": "",
         "valueFormat": null,
-        "valueformat": valerie.converters.passThrough.format
+        "valueFormatter": valerie.converters.passThrough.format
     };
 
     rules.Range.prototype = {
@@ -2583,16 +2844,25 @@ var valerie = {};
 
             failureMessage = formatting.replacePlaceholders(
                 failureMessageFormat, {
-                    "maximum": this.settings.valueformat(maximum, this.settings.valueFormat),
-                    "minimum": this.settings.valueformat(minimum, this.settings.valueFormat),
-                    "value": this.settings.valueformat(value, this.settings.valueFormat)
+                    "maximum": this.settings.valueFormatter(maximum, this.settings.valueFormat),
+                    "minimum": this.settings.valueFormatter(minimum, this.settings.valueFormat),
+                    "value": this.settings.valueFormatter(value, this.settings.valueFormat)
                 });
 
-            return new valerie.ValidationResult.createFailedResult(failureMessage);
+            return valerie.ValidationResult.createFailedResult(failureMessage);
         }
     };
 
-    // + rules.StringLength
+    /**
+     * Constructs a rule to test whether a string's length is within a permitted range.<br/>
+     * <i>[full]</i>
+     * @name valerie.rules.StringLength
+     * @type valerie.IRule
+     * @constructor
+     * @param {number|function} minimumValueOrFunction a value or function that specifies the minimum permitted length
+     * @param {number|function} [maximumValueOrFunction] a value or function that specifies the maximum permitted length
+     * @param {valerie.IRule.options} [options] the options to use when constructing the rule
+     */
     rules.StringLength = function(minimumValueOrFunction, maximumValueOrFunction, options) {
         if (arguments.length < 2) {
             throw "At least 2 arguments are expected.";
@@ -2600,29 +2870,43 @@ var valerie = {};
 
         options = utils.mergeOptions(rules.StringLength.defaultOptions, options);
 
+        //noinspection JSValidateTypes
         return new rules.Length(minimumValueOrFunction, maximumValueOrFunction, options);
     };
 
+    /**
+     * The default options for the rule.
+     * @name valerie.rules.StringLength.defaultOptions
+     * @type {valerie.IRule.options}
+     */
     rules.StringLength.defaultOptions = {
         "failureMessageFormat": "",
         "failureMessageFormatForMinimumOnly": "",
         "failureMessageFormatForMaximumOnly": "",
         "valueFormat": null,
-        "valueformat": valerie.converters.passThrough.format
+        "valueFormatter": valerie.converters.passThrough.format
     };
 })();
-
-// valerie.knockout.fluent.converters
-// - additional functions for the PropertyValidationState prototype for fluently specifying converters
 
 (function () {
     "use strict";
 
+    // Shortcuts.
     var utils = valerie.utils,
         converters = valerie.converters,
         prototype = valerie.PropertyValidationState.prototype;
 
-    // + currencyMajor
+    /**
+     * Validate the property using <b>valerie.converters.currencyMajor</b>.<br/>
+     * <b>valerie.PropertyValidationState.prototype.currencyMajor.defaultOptions</b> holds the default options used by
+     * this fluent method.<br/>
+     * <i>[fluent, full]</i>
+     * @name valerie.PropertyValidationState#currencyMajor
+     * @method
+     * @param {valerie.PropertyValidationState.options} [options = default options] the options to apply to the
+     * validation state
+     * @return {valerie.PropertyValidationState} the validation state
+     */
     prototype.currencyMajor = function (options) {
         options = utils.mergeOptions(this.currencyMajor.defaultOptions, options);
         this.settings = utils.mergeOptions(this.settings, options);
@@ -2636,7 +2920,17 @@ var valerie = {};
         "valueFormat": "C,"
     };
 
-    // + currencyMajorMinor
+    /**
+     * Validate the property using <b>valerie.converters.currencyMajorMinor</b>.<br/>
+     * <b>valerie.PropertyValidationState.prototype.currencyMajorMinor.defaultOptions</b> holds the default options used
+     * by this fluent method.<br/>
+     * <i>[fluent, full]</i>
+     * @name valerie.PropertyValidationState#currencyMajorMinor
+     * @method
+     * @param {valerie.PropertyValidationState.options} [options = default options] the options to apply to the
+     * validation state
+     * @return {valerie.PropertyValidationState} the validation state
+     */
     prototype.currencyMajorMinor = function (options) {
         options = utils.mergeOptions(this.currencyMajorMinor.defaultOptions, options);
         this.settings = utils.mergeOptions(this.settings, options);
@@ -2650,21 +2944,43 @@ var valerie = {};
         "valueFormat": "C,.c"
     };
 
-    // + date
+    /**
+     * Validate the property using <b>valerie.converters.date</b>.<br/>
+     * <i>[fluent, full]</i>
+     * @name valerie.PropertyValidationState#date
+     * @method
+     * @return {valerie.PropertyValidationState} the validation state
+     */
     prototype.date = function () {
         this.settings.converter = converters.date;
 
         return this;
     };
 
-    // + email
+    /**
+     * Validate the property using <b>valerie.converters.email</b>.<br/>
+     * <i>[fluent, full]</i>
+     * @name valerie.PropertyValidationState#email
+     * @method
+     * @return {valerie.PropertyValidationState} the validation state
+     */
     prototype.email = function () {
         this.settings.converter = converters.email;
 
         return this;
     };
 
-    // + float
+    /**
+     * Validate the property using <b>valerie.converters.float</b>.<br/>
+     * <b>valerie.PropertyValidationState.prototype.float.defaultOptions</b> holds the default options used by this
+     * fluent method.<br/>
+     * <i>[fluent, full]</i>
+     * @name valerie.PropertyValidationState#float
+     * @method
+     * @param {valerie.PropertyValidationState.options} [options = default options] the options to apply to the
+     * validation state
+     * @return {valerie.PropertyValidationState} the validation state
+     */
     prototype.float = function (options) {
         options = utils.mergeOptions(this.float.defaultOptions, options);
         this.settings = utils.mergeOptions(this.settings, options);
@@ -2678,7 +2994,17 @@ var valerie = {};
         "valueFormat": ",."
     };
 
-    // + integer
+    /**
+     * Validate the property using <b>valerie.converters.integer</b>.<br/>
+     * <b>valerie.PropertyValidationState.prototype.integer.defaultOptions</b> holds the default options used by this
+     * fluent method.<br/>
+     * <i>[fluent, full]</i>
+     * @name valerie.PropertyValidationState#integer
+     * @method
+     * @param {valerie.PropertyValidationState.options} [options = default options] the options to apply to the
+     * validation state
+     * @return {valerie.PropertyValidationState} the validation state
+     */
     prototype.integer = function (options) {
         options = utils.mergeOptions(this.integer.defaultOptions, options);
         this.settings = utils.mergeOptions(this.settings, options);
@@ -2692,14 +3018,26 @@ var valerie = {};
         "valueFormat": ","
     };
 
-    // + number
+    /**
+     * Validate the property using <b>valerie.converters.number</b>.<br/>
+     * <i>[fluent, full]</i>
+     * @name valerie.PropertyValidationState#number
+     * @method
+     * @return {valerie.PropertyValidationState} the validation state
+     */
     prototype.number = function () {
         this.settings.converter = converters.number;
 
         return this;
     };
 
-    // + string
+    /**
+     * Validate the property using <b>valerie.converters.passThrough</b>.<br/>
+     * <i>[fluent, full]</i>
+     * @name valerie.PropertyValidationState#string
+     * @method
+     * @return {valerie.PropertyValidationState} the validation state
+     */
     prototype.string = function () {
         this.settings.converter = converters.passThrough;
 
@@ -2707,62 +3045,266 @@ var valerie = {};
     };
 })();
 
-// valerie.knockout.fluent.rules
-// - additional functions for the PropertyValidationState prototype for fluently specifying rules
-
 (function () {
     "use strict";
 
-    // ReSharper disable InconsistentNaming
+    // Shortcuts.
     var prototype = valerie.PropertyValidationState.prototype,
         rules = valerie.rules;
 
-    // + during
+    /**
+     * Validate the property further by checking its value falls between two permitted dates.<br/>
+     * <i>[fluent, full]</i>
+     * @name valerie.PropertyValidationState#during
+     * @method
+     * @param {date|function} earliestValueOrFunction a value or function that specifies the earliest permitted date
+     * @param {date|function} latestValueOrFunction a value or function that specifies the latest permitted date
+     * @param {valerie.IRule.options} [options] the options to use when constructing the rule
+     * @return {valerie.PropertyValidationState} the validation state
+     */
     prototype.during = function (earliestValueOrFunction, latestValueOrFunction, options) {
         return this.addRule(new rules.During(earliestValueOrFunction, latestValueOrFunction, options));
     };
 
-    // + earliest
+    /**
+     * Validate the property further by checking its value is not before a permitted date.<br/>
+     * <i>[fluent, full]</i>
+     * @name valerie.PropertyValidationState#earliest
+     * @method
+     * @param {date|function} earliestValueOrFunction a value or function that specifies the earliest permitted date
+     * @param {valerie.IRule.options} [options] the options to use when constructing the rule
+     * @return {valerie.PropertyValidationState} the validation state
+     */
     prototype.earliest = function (earliestValueOrFunction, options) {
         return this.addRule(new rules.During(earliestValueOrFunction, null, options));
     };
 
-    // + expression
+    /**
+     * Validate the property further by checking its value matches a regular expression.<br/>
+     * <i>[fluent, full]</i>
+     * @name valerie.PropertyValidationState#expression
+     * @method
+     * @param {string|RegExp} regularExpressionObjectOrString the regular expression
+     * @param {valerie.IRule.options} [options] the options to use when constructing the rule
+     * @return {valerie.PropertyValidationState} the validation state
+     */
     prototype.expression = function (regularExpressionObjectOrString, options) {
         return this.addRule(new rules.Expression(regularExpressionObjectOrString, options));
     };
 
-    // + latest
+    /**
+     * Validate the property further by checking its value is not after a permitted date.<br/>
+     * <i>[fluent, full]</i>
+     * @name valerie.PropertyValidationState#latest
+     * @method
+     * @param {date|function} latestValueOrFunction a value or function that specifies the latest permitted date
+     * @param {valerie.IRule.options} [options] the options to use when constructing the rule
+     * @return {valerie.PropertyValidationState} the validation state
+     */
     prototype.latest = function (latestValueOrFunction, options) {
         return this.addRule(new rules.During(null, latestValueOrFunction, options));
     };
 
-    // + length
-    prototype.length = function (shortestValueOrFunction, longestValueOrFunction, options) {
+    /**
+     * Validate the property further by checking its length is within a certain range.<br/>
+     * <i>[fluent, full]</i>
+     * @name valerie.PropertyValidationState#lengthBetween
+     * @method
+     * @param {number|function} shortestValueOrFunction a value or function that specifies the shortest permitted length
+     * @param {number|function} longestValueOrFunction a value or function that specifies the longest permitted length
+     * @param {valerie.IRule.options} [options] the options to use when constructing the rule
+     * @return {valerie.PropertyValidationState} the validation state
+     */
+    prototype.lengthBetween = function (shortestValueOrFunction, longestValueOrFunction, options) {
         return this.addRule(new rules.StringLength(shortestValueOrFunction, longestValueOrFunction, options));
     };
 
-    // + matches
+    /**
+     * Validate the property further by checking its value matches another.<br/>
+     * <i>[fluent, full]</i>
+     * @name valerie.PropertyValidationState#matches
+     * @method
+     * @param {*} permittedValueOrFunction a value or function that specifies the permitted value
+     * @param {valerie.IRule.options} [options] the options to use when constructing the rule
+     * @return {valerie.PropertyValidationState} the validation state
+     */
     prototype.matches = function (permittedValueOrFunction, options) {
         return this.addRule(new rules.Matches(permittedValueOrFunction, options));
     };
 
-    // + maximum
+    /**
+     * Validate the property further by checking its value doesn't exceed a maximum.<br/>
+     * <i>[fluent, full]</i>
+     * @name valerie.PropertyValidationState#maximum
+     * @method
+     * @param {*|function} maximumValueOrFunction the value or function that specifies the permitted maximum
+     * @param {valerie.IRule.options} [options] the options to use when constructing the rule
+     * @return {valerie.PropertyValidationState} the validation state
+     */
     prototype.maximum = function (maximumValueOrFunction, options) {
         return this.addRule(new rules.Range(null, maximumValueOrFunction, options));
     };
 
-    // + maximumNumberOfItems
+    /**
+     * Validate the property further by checking the number of items it has doesn't exceed a maximum.<br/>
+     * <i>[fluent, full]</i>
+     * @name valerie.PropertyValidationState#maximumNumberOfItems
+     * @method
+     * @param {number|function} maximumValueOrFunction a value or function that specifies the maximum number of items
+     * permitted
+     * @param {valerie.IRule.options} [options] the options to use when constructing the rule
+     * @return {valerie.PropertyValidationState} the validation state
+     */
     prototype.maximumNumberOfItems = function (maximumValueOrFunction, options) {
         return this.addRule(new rules.ArrayLength(null, maximumValueOrFunction, options));
     };
 
-    // + maximumLength
+    /**
+     * Validate the property further by checking it isn't too long.<br/>
+     * <i>[fluent, full]</i>
+     * @name valerie.PropertyValidationState#maximumLength
+     * @method
+     * @param {number|function} longestValueOrFunction a value or function that specifies the maximum length permitted
+     * @param {valerie.IRule.options} [options] the options to use when constructing the rule
+     * @return {valerie.PropertyValidationState} the validation state
+     */
     prototype.maximumLength = function (longestValueOrFunction, options) {
         return this.addRule(new rules.StringLength(null, longestValueOrFunction, options));
     };
 
-    // + ruleMessage
+    /**
+     * Validate the property further by checking its value doesn't exceed a minimum.<br/>
+     * <i>[fluent, full]</i>
+     * @name valerie.PropertyValidationState#minimum
+     * @method
+     * @param {*|function} minimumValueOrFunction the value or function that specifies the permitted minimum
+     * @param {valerie.IRule.options} [options] the options to use when constructing the rule
+     * @return {valerie.PropertyValidationState} the validation state
+     */
+    prototype.minimum = function (minimumValueOrFunction, options) {
+        return this.addRule(new rules.Range(minimumValueOrFunction, null, options));
+    };
+
+    /**
+     * Validate the property further by checking the number of items it has doesn't exceed a minimum.<br/>
+     * <i>[fluent, full]</i>
+     * @name valerie.PropertyValidationState#minimumNumberOfItems
+     * @method
+     * @param {number|function} minimumValueOrFunction a value or function that specifies the minimum number of items
+     * permitted
+     * @param {valerie.IRule.options} [options] the options to use when constructing the rule
+     * @return {valerie.PropertyValidationState} the validation state
+     */
+    prototype.minimumNumberOfItems = function (minimumValueOrFunction, options) {
+        return this.addRule(new rules.ArrayLength(minimumValueOrFunction, null, options));
+    };
+
+    /**
+     * Validate the property further by checking it isn't too short.<br/>
+     * <i>[fluent, full]</i>
+     * @name valerie.PropertyValidationState#minimumLength
+     * @method
+     * @param {number|function} shortestValueOrFunction a value or function that specifies the minimum length permitted
+     * @param {valerie.IRule.options} [options] the options to use when constructing the rule
+     * @return {valerie.PropertyValidationState} the validation state
+     */
+    prototype.minimumLength = function (shortestValueOrFunction, options) {
+        return this.addRule(new rules.StringLength(shortestValueOrFunction, null, options));
+    };
+
+    /**
+     * Validate the property further by checking its value is not in a list of forbidden values.<br/>
+     * <i>[fluent, full]</i>
+     * @name valerie.PropertyValidationState#noneOf
+     * @method
+     * @param {array|function} forbiddenValuesOrFunction a value or function that specifies the forbidden values
+     * @param {valerie.IRule.options} [options] the options to use when constructing the rule
+     * @return {valerie.PropertyValidationState} the validation state
+     */
+    prototype.noneOf = function (forbiddenValuesOrFunction, options) {
+        return this.addRule(new rules.NoneOf(forbiddenValuesOrFunction, options));
+    };
+
+    /**
+     * Validate the property further by checking its value does not match another.<br/>
+     * <i>[fluent, full]</i>
+     * @name valerie.PropertyValidationState#not
+     * @method
+     * @param {*} forbiddenValueOrFunction a value or function that specifies the forbidden values
+     * @param {valerie.IRule.options} [options] the options to use when constructing the rule
+     * @return {valerie.PropertyValidationState} the validation state
+     */
+    prototype.not = function (forbiddenValueOrFunction, options) {
+        return this.addRule(new rules.Not(forbiddenValueOrFunction, options));
+    };
+
+    /**
+     * Validate the property further by checking its number of items hasn't exceed a minimum or maximum number.<br/>
+     * <i>[fluent, full]</i>
+     * @name valerie.PropertyValidationState#numberOfItems
+     * @method
+     * @param {number|function} minimumValueOrFunction a value or function that specifies the minimum number of items
+     * @param {number|function} maximumValueOrFunction a value or function that specifies the maximum number of items
+     * @param {valerie.IRule.options} [options] the options to use when constructing the rule
+     * @return {valerie.PropertyValidationState} the validation state
+     */
+    prototype.numberOfItems = function (minimumValueOrFunction, maximumValueOrFunction, options) {
+        return this.addRule(new rules.ArrayLength(minimumValueOrFunction, maximumValueOrFunction, options));
+    };
+
+    /**
+     * Validate the property further by checking its value is in a list of permitted values.<br/>
+     * <i>[fluent, full]</i>
+     * @name valerie.PropertyValidationState#oneOf
+     * @method
+     * @param {array|function} permittedValuesOrFunction a value or function that specifies the permitted values
+     * @param {valerie.IRule.options} [options] the options to use when constructing the rule
+     * @return {valerie.PropertyValidationState} the validation state
+     */
+    prototype.oneOf = function (permittedValuesOrFunction, options) {
+        return this.addRule(new rules.OneOf(permittedValuesOrFunction, options));
+    };
+
+    /**
+     * Validate the property further by checking its value doesn't exceed a minimum or maximum value.<br/>
+     * <i>[fluent, full]</i>
+     * @name valerie.PropertyValidationState#range
+     * @method
+     * @param {number|function} minimumValueOrFunction a value or function that specifies the minimum permitted value
+     * @param {number|function} maximumValueOrFunction a value or function that specifies the maximum permitted value
+     * @param {valerie.IRule.options} [options] the options to use when constructing the rule
+     * @return {valerie.PropertyValidationState} the validation state
+     */
+    prototype.range = function (minimumValueOrFunction, maximumValueOrFunction, options) {
+        return this.addRule(new rules.Range(minimumValueOrFunction, maximumValueOrFunction, options));
+    };
+
+    /**
+     * Validate the property further by add an ad-hoc rule to the rule-chain.<br/>
+     * <i>[fluent, full]</i>
+     * @name valerie.PropertyValidationState#rule
+     * @method
+     * @param {function} testFunction the function to use to test the property's value
+     * @return {valerie.PropertyValidationState} the validation state
+     */
+    prototype.rule = function (testFunction) {
+        return this.addRule({
+            "settings": {
+            },
+            "test": function (value) {
+                return testFunction(value);
+            }
+        });
+    };
+
+    /**
+     * Sets the message to show if the rule last added to the validation state's rule-chain fails.<br/>
+     * <i>[fluent, full]</i>
+     * @name valerie.PropertyValidationState#ruleMessage
+     * @method
+     * @param {string} message the validation message
+     * @return {valerie.PropertyValidationState} the validation state
+     */
     prototype.ruleMessage = function (message) {
         var stateRules = this.settings.rules,
             index = stateRules.length - 1,
@@ -2774,57 +3316,6 @@ var valerie = {};
         }
 
         return this;
-    };
-
-    // + minimum
-    prototype.minimum = function (minimumValueOrFunction, options) {
-        return this.addRule(new rules.Range(minimumValueOrFunction, null, options));
-    };
-
-    // + minimumNumerOfItems
-    prototype.minimumNumerOfItems = function (minimumValueOrFunction, options) {
-        return this.addRule(new rules.ArrayLength(minimumValueOrFunction, null, options));
-    };
-
-    // + minimumLength
-    prototype.minimumLength = function (shortestValueOrFunction, options) {
-        return this.addRule(new rules.StringLength(shortestValueOrFunction, null, options));
-    };
-
-    // + noneOf
-    prototype.noneOf = function (forbiddenValuesOrFunction, options) {
-        return this.addRule(new rules.NoneOf(forbiddenValuesOrFunction, options));
-    };
-
-    // + not
-    prototype.not = function (forbiddenValueOrFunction, options) {
-        return this.addRule(new rules.Not(forbiddenValueOrFunction, options));
-    };
-
-    // + numberOfItems
-    prototype.numberOfItems = function (minimumValueOrFunction, maximumValueOrFunction, options) {
-        return this.addRule(new rules.ArrayLength(minimumValueOrFunction, maximumValueOrFunction, options));
-    };
-
-    // + oneOf
-    prototype.oneOf = function (permittedValuesOrFunction, options) {
-        return this.addRule(new rules.OneOf(permittedValuesOrFunction, options));
-    };
-
-    // + range
-    prototype.range = function (minimumValueOrFunction, maximumValueOrFunction, options) {
-        return this.addRule(new rules.Range(minimumValueOrFunction, maximumValueOrFunction, options));
-    };
-
-    // + rule
-    prototype.rule = function (testFunction) {
-        return this.addRule({
-            "settings": {
-            },
-            "test": function (value) {
-                return testFunction(value);
-            }
-        });
     };
 })();
 

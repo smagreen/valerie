@@ -2,8 +2,8 @@
     "use strict";
 
     /**
-     * Creates and sets a validation state on a Knockout observable.
-     * <br/><b>fluent</b>
+     * Creates and sets a validation state on a Knockout observable.<br/>
+     * <i>[fluent]</i>
      * @name ko.observable#validate
      * @method
      * @fluent

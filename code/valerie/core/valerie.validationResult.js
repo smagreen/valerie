@@ -8,7 +8,7 @@
     };
 
     /**
-     * The result of a validation activity.
+     * Constructs the result of a validation activity.
      * @constructor
      * @param {object} state the result state
      * @param {string} [message] a message from the activity
@@ -53,7 +53,7 @@
     /**
      * Creates a validation result for when validation has failed.
      * @param {string} [message] a message from the activity
-     * @returns {valerie.ValidationResult}
+     * @return {valerie.ValidationResult}
      */
     valerie.ValidationResult.createFailedResult = function (message) {
         return new valerie.ValidationResult(states.failed, message);

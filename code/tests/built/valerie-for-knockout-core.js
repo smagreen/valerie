@@ -445,19 +445,17 @@ var valerie = {};
     /**
      * Contains converters, always singletons.
      * @namespace
+     * @see valerie.IConverter
      */
     valerie.converters = {};
 
     /**
      * A converter which formats and parses strings.
      * Used as the default converter in numerous places throughout the library.
-     * @namespace
-     * @see valerie.IConverter
+     * @name valerie.converters~passThrough
+     * @type valerie.IConverter
      */
     valerie.converters.passThrough = {
-        /**
-         * @see valerie.IConverter#format
-         */
         "format": function (value) {
             if (value == null) {
                 return "";
@@ -465,9 +463,6 @@ var valerie = {};
 
             return value.toString();
         },
-        /**
-         * @see valerie.IConverter#parse
-         */
         "parse": function (value) {
             return value;
         }
@@ -484,7 +479,7 @@ var valerie = {};
     };
 
     /**
-     * The result of a validation activity.
+     * Constructs the result of a validation activity.
      * @constructor
      * @param {object} state the result state
      * @param {string} [message] a message from the activity
@@ -529,7 +524,7 @@ var valerie = {};
     /**
      * Creates a validation result for when validation has failed.
      * @param {string} [message] a message from the activity
-     * @returns {valerie.ValidationResult}
+     * @return {valerie.ValidationResult}
      */
     valerie.ValidationResult.createFailedResult = function (message) {
         return new valerie.ValidationResult(states.failed, message);
@@ -628,8 +623,8 @@ var valerie = {};
      * retrieve it.<br/>
      * <i>This function is useful when developing binding handlers.</i>
      * @param {object|function} modelOrObservableOrComputed the thing to get the validation state for
-     * @return {null|IValidationState} the validation state or <code>null</code> if the given thing does not have a
-     * validation state.
+     * @return {null|valerie.IValidationState} the validation state or <code>null</code> if the given thing does not
+     * have a validation state.
      */
     valerie.validationState.getFor = function (modelOrObservableOrComputed) {
         if (modelOrObservableOrComputed == null) {
@@ -660,7 +655,7 @@ var valerie = {};
     /**
      * Sets the validation state for the given model, observable or computed.
      * @param {object|function} modelOrObservableOrComputed the thing to set the validation state on
-     * @param {valerie.ModelValidationState|valerie.PropertyValidationState} state the validation state to use
+     * @param {valerie.IValidationState} state the validation state to use
      */
     valerie.validationState.setFor = function (modelOrObservableOrComputed, state) {
         modelOrObservableOrComputed[getValidationStateMethodName] = function () {
@@ -779,7 +774,7 @@ var valerie = {};
      */
 
     /**
-     * The validation state for a model, which may comprise of simple properties and sub-models.
+     * Constructs the validation state for a model, which may comprise of simple properties and sub-models.
      * @param model the model the validation state is for
      * @param {valerie.ModelValidationState.options} [options = default options] the options to use when creating the
      * validation state
@@ -916,8 +911,8 @@ var valerie = {};
 
     valerie.ModelValidationState.prototype = {
         /**
-         * Adds validation states to this validation state.
-         * <br/><b>fluent</b>
+         * Adds validation states to this validation state.<br/>
+         * <i>[fluent]</i>
          * @name valerie.ModelValidationState#addValidationStates
          * @fluent
          * @param {array.<valerie.IValidationState>} validationStates the validation states to add
@@ -930,8 +925,8 @@ var valerie = {};
             return this;
         },
         /**
-         * Sets the value or function used to determine if the model is applicable.
-         * <br/><b>fluent</b>
+         * Sets the value or function used to determine if the model is applicable.<br/>
+         * <i>[fluent]</i>
          * @name valerie.ModelValidationState#applicable
          * @fluent
          * @param {boolean|function} [valueOrFunction = true] the value or function to use
@@ -947,8 +942,8 @@ var valerie = {};
             return this;
         },
         /**
-         * Clears the static summary of validation states that are in a failure state.
-         * <br/><b>fluent</b>
+         * Clears the static summary of validation states that are in a failure state.<br/>
+         * <i>[fluent]</i>
          * @name valerie.ModelValidationState#clearSummary
          * @fluent
          * @param {boolean} [clearSubModelSummaries = false] whether to clear the static summaries for sub-models
@@ -977,16 +972,14 @@ var valerie = {};
         },
         /**
          * Ends a chain of fluent method calls on this model validation state.
-         * <br/>
-         * @fluent
          * @return {function} the model the validation state is for
          */
         "end": function () {
             return this.model;
         },
         /**
-         * Sets the value or function used to determine the name of the model.
-         * <br/><b>fluent</b>
+         * Sets the value or function used to determine the name of the model.<br/>
+         * <i>[fluent]</i>
          * @fluent
          * @param {string|function} valueOrFunction the value or function to use
          * @return {valerie.ModelValidationState}
@@ -997,8 +990,8 @@ var valerie = {};
             return this;
         },
         /**
-         * Removes validation states.
-         * <br/><b>fluent</b>
+         * Removes validation states.<br/>
+         * <i>[fluent]</i>
          * @fluent
          * @param {array.<valerie.IValidationState>} validationStates the validation states to remove
          * @return {valerie.ModelValidationState}
@@ -1019,8 +1012,8 @@ var valerie = {};
             return this;
         },
         /**
-         * Updates the static summary of validation states that are in a failure state.
-         * <br/><b>fluent</b>
+         * Updates the static summary of validation states that are in a failure state.<br/>
+         * <i>[fluent]</i>
          * @fluent
          * @param {boolean} [updateSubModelSummaries = false] whether to update the static summaries for sub-models
          * @return {valerie.ModelValidationState}
@@ -1057,8 +1050,8 @@ var valerie = {};
             return this;
         },
         /**
-         * Adds the validation states for all the descendant properties and sub-models that belong to the model.
-         * <br/><b>fluent</b>
+         * Adds the validation states for all the descendant properties and sub-models that belong to the model.<br/>
+         * <i>[fluent]</i>
          * @fluent
          * @return {valerie.ModelValidationState}
          */
@@ -1069,8 +1062,8 @@ var valerie = {};
             return this;
         },
         /**
-         * Adds the validation states for all the descendant properties that belong to the model.
-         * <br/><b>fluent</b>
+         * Adds the validation states for all the descendant properties that belong to the model.<br/>
+         * <i>[fluent]</i>
          * @fluent
          * @return {valerie.ModelValidationState}
          */
@@ -1081,8 +1074,8 @@ var valerie = {};
             return this;
         },
         /**
-         * Adds the validation states for all the child properties that belong to the model.
-         * <br/><b>fluent</b>
+         * Adds the validation states for all the child properties that belong to the model.<br/>
+         * <i>[fluent]</i>
          * @fluent
          * @return {valerie.ModelValidationState}
          */
@@ -1093,8 +1086,8 @@ var valerie = {};
             return this;
         },
         /**
-         * Adds the validation states for all the child properties and sub-models that belong to the model.
-         * <br/><b>fluent</b>
+         * Adds the validation states for all the child properties and sub-models that belong to the model.<br/>
+         * <i>[fluent]</i>
          * @fluent
          * @return {valerie.ModelValidationState}
          */
@@ -1124,7 +1117,7 @@ var valerie = {};
      * @param {object|function} model the model to make validatable
      * @param {valerie.ModelValidationState.options} [options] the options to use when creating the model's validation
      * state
-     * @returns {valerie.ModelValidationState} the validation state belonging to the model
+     * @return {valerie.ModelValidationState} the validation state belonging to the model
      */
     valerie.validatableModel = function (model, options) {
         var validationState = new valerie.ModelValidationState(model, options);
@@ -1245,7 +1238,7 @@ var valerie = {};
      */
 
     /**
-     * The validation state for a simple, single, observable or computed property.
+     * Constructs the validation state for a simple, single, observable or computed property.
      * @constructor
      * @param {function} observableOrComputed the observable or computed the validation state is for
      * @param {valerie.PropertyValidationState.options} [options = default options] the options to use when creating the
@@ -1348,9 +1341,8 @@ var valerie = {};
 
     valerie.PropertyValidationState.prototype = {
         /**
-         * Adds a rule to the chain of rules used to validate the property's value.
-         * <br/><b>fluent</b>
-         * @name valerie.PropertyValidationState#addRule
+         * Adds a rule to the chain of rules used to validate the property's value.<br/>
+         * <i>[fluent]</i>
          * @fluent
          * @param {valerie.IRule} rule the rule to add
          * @return {valerie.PropertyValidationState}
@@ -1361,9 +1353,8 @@ var valerie = {};
             return this;
         },
         /**
-         * Sets the value or function used to determine if the property is applicable.
-         * <br/><b>fluent</b>
-         * @name valerie.PropertyValidationState#applicable
+         * Sets the value or function used to determine if the property is applicable.<br/>
+         * <i>[fluent]</i>
          * @fluent
          * @param {boolean|function} [valueOrFunction = true] the value or function to use
          * @return {valerie.PropertyValidationState}
@@ -1379,8 +1370,8 @@ var valerie = {};
         },
         /**
          * Ends a chain of fluent method calls on this property validation state.<br/>
-         * Applies the <b>options.valueFormat</b> format string to all the rules in the rule chain.
-         * <br/><b>fluent</b>
+         * Applies the <b>options.valueFormat</b> format string to all the rules in the rule chain.<br/>
+         * <i>[fluent]</i>
          * @fluent
          * @return {function} the observable or computed the validation state is for
          */
@@ -1400,8 +1391,8 @@ var valerie = {};
             return this.observableOrComputed;
         },
         /**
-         * Sets the value or function used to determine the name of the property.
-         * <br/><b>fluent</b>
+         * Sets the value or function used to determine the name of the property.<br/>
+         * <i>[fluent]</i>
          * @fluent
          * @param {string|function} valueOrFunction the value or function to use
          * @return {valerie.PropertyValidationState}
@@ -1412,8 +1403,8 @@ var valerie = {};
             return this;
         },
         /**
-         * Sets the value or function used to determine the if the property is required.
-         * <br/><b>fluent</b>
+         * Sets the value or function used to determine the if the property is required.<br/>
+         * <i>[fluent]</i>
          * @fluent
          * @param {boolean|function} [valueOrFunction = false] the value or function to use
          * @return {valerie.PropertyValidationState}
@@ -1428,8 +1419,8 @@ var valerie = {};
             return this;
         },
         /**
-         * Sets the format string used to format the display of the value
-         * <br/><b>fluent</b>
+         * Sets the format string used to format the display of the value.<br/>
+         * <i>[fluent]</i>
          * @fluent
          * @param {string} format the format string to use
          * @return {valerie.PropertyValidationState}
@@ -1465,7 +1456,7 @@ var valerie = {};
      * @param {function} observableOrComputed the Knockout observable or computed to make validatable
      * @param {valerie.PropertyValidationState.options} [options] the options to use when creating the property's
      * validation state
-     * @returns {valerie.PropertyValidationState} the validation state belonging to the property
+     * @return {valerie.PropertyValidationState} the validation state belonging to the property
      * @throws {string} Only observables or computeds can be made validatable properties.
      */
     valerie.validatableProperty = function (observableOrComputed, options) {
@@ -1485,8 +1476,8 @@ var valerie = {};
     "use strict";
 
     /**
-     * Creates and sets a validation state on a Knockout computed.
-     * <br/><b>fluent</b>
+     * Creates and sets a validation state on a Knockout computed.<br/>
+     * <i>[fluent]</i>
      * @name ko.computed#validate
      * @method
      * @fluent
@@ -1503,8 +1494,8 @@ var valerie = {};
     "use strict";
 
     /**
-     * Creates and sets a validation state on a Knockout observable.
-     * <br/><b>fluent</b>
+     * Creates and sets a validation state on a Knockout observable.<br/>
+     * <i>[fluent]</i>
      * @name ko.observable#validate
      * @method
      * @fluent

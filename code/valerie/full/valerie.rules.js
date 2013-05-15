@@ -1,16 +1,29 @@
-﻿// valerie.rules
-// - general purpose rules
-
-(function() {
+﻿(function() {
     "use strict";
 
-    var // ReSharper restore InconsistentNaming
-        passedValidationResult = valerie.ValidationResult.passedInstance,
-        rules = valerie.rules = valerie.rules || {},
-        utils = valerie.utils,
-        formatting = valerie.formatting;
+    /**
+     * Contains rule classes for validating models and properties.
+     * @namespace
+     * @see valerie.IRule
+     */
+    valerie.rules = {};
 
-    // + rules.ArrayLength
+    // Shortcuts.
+    var utils = valerie.utils,
+        formatting = valerie.formatting,
+        rules = valerie.rules,
+        passedValidationResult = valerie.ValidationResult.passedInstance;
+
+    /**
+     * Constructs a rule to test whether an array's length is within a permitted range.<br/>
+     * <i>[full]</i>
+     * @name valerie.rules.ArrayLength
+     * @type valerie.IRule
+     * @constructor
+     * @param {number|function} minimumValueOrFunction a value or function that specifies the minimum permitted length
+     * @param {number|function} [maximumValueOrFunction] a value or function that specifies the maximum permitted length
+     * @param {valerie.IRule.options} [options] the options to use when constructing the rule
+     */
     rules.ArrayLength = function(minimumValueOrFunction, maximumValueOrFunction, options) {
         if (arguments.length < 2) {
             throw "At least 2 arguments are expected.";
@@ -18,18 +31,33 @@
 
         options = utils.mergeOptions(rules.ArrayLength.defaultOptions, options);
 
+        //noinspection JSValidateTypes
         return new rules.Length(minimumValueOrFunction, maximumValueOrFunction, options);
     };
 
+    /**
+     * The default options for the rule.
+     * @name valerie.rules.ArrayLength.defaultOptions
+     * @type {valerie.IRule.options}
+     */
     rules.ArrayLength.defaultOptions = {
         "failureMessageFormat": "",
         "failureMessageFormatForMinimumOnly": "",
         "failureMessageFormatForMaximumOnly": "",
         "valueFormat": null,
-        "valueformat": valerie.converters.passThrough.format
+        "valueFormatter": valerie.converters.passThrough.format
     };
 
-    // + rules.During
+    /**
+     * Constructs a rule to test whether a date value is within a permitted time-span.<br/>
+     * <i>[full]</i>
+     * @name valerie.rules.During
+     * @type valerie.IRule
+     * @constructor
+     * @param {date|function} minimumValueOrFunction a value or function that specifies the earliest permitted date
+     * @param {date|function} [maximumValueOrFunction] a value or function that specifies the latest permitted date
+     * @param {valerie.IRule.options} [options] the options to use when constructing the rule
+     */
     rules.During = function(minimumValueOrFunction, maximumValueOrFunction, options) {
         if (arguments.length < 2) {
             throw "At least 2 arguments are expected.";
@@ -37,18 +65,32 @@
 
         options = utils.mergeOptions(rules.During.defaultOptions, options);
 
+        //noinspection JSValidateTypes
         return new rules.Range(minimumValueOrFunction, maximumValueOrFunction, options);
     };
 
+    /**
+     * The default options for the rule.
+     * @name valerie.rules.During.defaultOptions
+     * @type {valerie.IRule.options}
+     */
     rules.During.defaultOptions = {
         "failureMessageFormat": "",
         "failureMessageFormatForMinimumOnly": "",
         "failureMessageFormatForMaximumOnly": "",
         "valueFormat": null,
-        "valueformat": valerie.converters.passThrough.format
+        "valueFormatter": valerie.converters.passThrough.format
     };
-   
-    // + rules.Expression
+
+    /**
+     * Constructs a rule to test whether a string value matches the given regular expression.<br/>
+     * <i>[full]</i>
+     * @name valerie.rules.Expression
+     * @type valerie.IRule
+     * @constructor
+     * @param {string|RegExp} regularExpressionObjectOrString the regular expression
+     * @param {valerie.IRule.options} [options] the options to use when constructing the rule
+     */
     rules.Expression = function(regularExpressionObjectOrString, options) {
         this.expression = utils.isString(regularExpressionObjectOrString) ?
             new RegExp(regularExpressionObjectOrString) :
@@ -57,10 +99,15 @@
         this.settings = utils.mergeOptions(rules.Expression.defaultOptions, options);
     };
 
+    /**
+     * The default options for the rule.
+     * @name valerie.rules.Expression.defaultOptions
+     * @type {valerie.IRule.options}
+     */
     rules.Expression.defaultOptions = {
         "failureMessageFormat": "",
         "valueFormat": null,
-        "valueformat": valerie.converters.passThrough.format
+        "valueFormatter": valerie.converters.passThrough.format
     };
 
     rules.Expression.prototype = {
@@ -75,14 +122,23 @@
 
             failureMessage = formatting.replacePlaceholders(
                 this.settings.failureMessageFormat, {
-                    "value": this.settings.valueformat(value, this.settings.valueFormat)
+                    "value": this.settings.valueFormatter(value, this.settings.valueFormat)
                 });
 
-            return new valerie.ValidationResult.createFailedResult(failureMessage);
+            return valerie.ValidationResult.createFailedResult(failureMessage);
         }
     };
 
-    // + rules.Length
+    /**
+     * Constructs a rule to test whether an object's <code>length</code> property is within a permitted range.<br/>
+     * <i>[full]</i>
+     * @name valerie.rules.Length
+     * @type valerie.IRule
+     * @constructor
+     * @param {number|function} minimumValueOrFunction a value or function that specifies the minimum permitted value
+     * @param {number|function} [maximumValueOrFunction] a value or function that specifies the maximum permitted value
+     * @param {valerie.IRule.options} [options] the options to use when constructing the rule
+     */
     rules.Length = function(minimumValueOrFunction, maximumValueOrFunction, options) {
         if (arguments.length < 2) {
             throw "At least 2 arguments are expected.";
@@ -99,43 +155,75 @@
                 length = value.length;
             }
 
-            // ReSharper disable UsageOfPossiblyUnassignedValue
             return rangeRule.test(length);
-            // ReSharper restore UsageOfPossiblyUnassignedValue
         };
+
+        return passedValidationResult;
     };
 
+    /**
+     * The default options for the rule.
+     * @name valerie.rules.Length.defaultOptions
+     * @type {valerie.IRule.options}
+     */
     rules.Length.defaultOptions = {
         "failureMessageFormat": "",
         "failureMessageFormatForMinimumOnly": "",
         "failureMessageFormatForMaximumOnly": "",
         "valueFormat": null,
-        "valueformat": valerie.converters.passThrough.format
+        "valueFormatter": valerie.converters.passThrough.format
     };
 
-    // + rules.Matches
+    /**
+     * Constructs a rule to test whether a value matches another.<br/>
+     * <i>[full]</i>
+     * @name valerie.rules.Matches
+     * @type valerie.IRule
+     * @constructor
+     * @param {*} permittedValueOrFunction a value or function that specifies the permitted value
+     * @param {valerie.IRule.options} [options] the options to use when constructing the rule
+     */
     rules.Matches = function(permittedValueOrFunction, options) {
         options = utils.mergeOptions(rules.Matches.defaultOptions, options);
 
         return new rules.OneOf([permittedValueOrFunction], options);
     };
 
+    /**
+     * The default options for the rule.
+     * @name valerie.rules.Matches.defaultOptions
+     * @type {valerie.IRule.options}
+     */
     rules.Matches.defaultOptions = {
         "failureMessageFormat": "",
-        "valueFormat": null,
-        "valueformat": valerie.converters.passThrough.format
+        "formatter": valerie.converters.passThrough.format,
+        "valueFormat": null
     };
 
-    // + rules.NoneOf
+    //noinspection FunctionWithInconsistentReturnsJS
+    /**
+     * Constructs a rule to test whether a value is not in a list of forbidden values.<br/>
+     * <i>[full]</i>
+     * @name valerie.rules.NoneOf
+     * @type valerie.IRule
+     * @constructor
+     * @param {array} forbiddenValuesOrFunction a value or function that specifies the forbidden values
+     * @param {valerie.IRule.options} [options] the options to use when constructing the rule
+     */
     rules.NoneOf = function(forbiddenValuesOrFunction, options) {
         this.forbiddenValues = utils.asFunction(forbiddenValuesOrFunction);
         this.settings = utils.mergeOptions(rules.NoneOf.defaultOptions, options);
     };
 
+    /**
+     * The default options for the rule.
+     * @name valerie.rules.NoneOf.defaultOptions
+     * @type {valerie.IRule.options}
+     */
     rules.NoneOf.defaultOptions = {
         "failureMessageFormat": "",
-        "valueFormat": null,
-        "valueformat": valerie.converters.passThrough.format
+        "formatter": valerie.converters.passThrough.format,
+        "valueFormat": null
     };
 
     rules.NoneOf.prototype = {
@@ -148,10 +236,10 @@
                 if (value === values[index]) {
                     failureMessage = formatting.replacePlaceholders(
                         this.settings.failureMessageFormat, {
-                            "value": this.settings.valueformat(value, this.settings.valueFormat)
+                            "value": this.settings.valueFormatter(value, this.settings.valueFormat)
                         });
 
-                    return new valerie.ValidationResult.createFailedResult(failureMessage);
+                    return valerie.ValidationResult.createFailedResult(failureMessage);
                 }
             }
 
@@ -159,29 +247,55 @@
         }
     };
 
-    // + rules.Not
+    /**
+     * Constructs a rule to test whether a value does not match another.<br>
+     * <i>[full]</i>
+     * @name valerie.rules.Not
+     * @type valerie.IRule
+     * @constructor
+     * @param {*} forbiddenValueOrFunction a value or function that specifies the forbidden value
+     * @param {valerie.IRule.options} [options] the options to use when constructing the rule
+     */
     rules.Not = function(forbiddenValueOrFunction, options) {
         options = utils.mergeOptions(rules.Not.defaultOptions, options);
 
         return new rules.NoneOf([forbiddenValueOrFunction], options);
     };
 
+    /**
+     * The default options for the rule.
+     * @name valerie.rules.Not.defaultOptions
+     * @type {valerie.IRule.options}
+     */
     rules.Not.defaultOptions = {
         "failureMessageFormat": "",
         "valueFormat": null,
-        "valueformat": valerie.converters.passThrough.format
+        "valueFormatter": valerie.converters.passThrough.format
     };
 
-    // + rules.OneOf
+    /**
+     * Constructs a rule to test whether a value is in a list of permitted values.<br/>
+     * <i>[full]</i>
+     * @name valerie.rules.OneOf
+     * @type valerie.IRule
+     * @constructor
+     * @param {array} permittedValuesOrFunction a value or function that specifies the permitted values
+     * @param {valerie.IRule.options} [options] the options to use when constructing the rule
+     */
     rules.OneOf = function(permittedValuesOrFunction, options) {
         this.permittedValues = utils.asFunction(permittedValuesOrFunction);
         this.settings = utils.mergeOptions(rules.OneOf.defaultOptions, options);
     };
 
+    /**
+     * The default options for the rule.
+     * @name valerie.rules.OneOf.defaultOptions
+     * @type {valerie.IRule.options}
+     */
     rules.OneOf.defaultOptions = {
         "failureMessageFormat": "",
         "valueFormat": null,
-        "valueformat": valerie.converters.passThrough.format
+        "valueFormatter": valerie.converters.passThrough.format
     };
 
     rules.OneOf.prototype = {
@@ -198,14 +312,23 @@
 
             failureMessage = formatting.replacePlaceholders(
                 this.settings.failureMessageFormat, {
-                    "value": this.settings.valueformat(value, this.settings.valueFormat)
+                    "value": this.settings.valueFormatter(value, this.settings.valueFormat)
                 });
 
-            return new valerie.ValidationResult.createFailedResult(failureMessage);
+            return valerie.ValidationResult.createFailedResult(failureMessage);
         }
     };
 
-    // + rules.Range
+    /**
+     * Constructs a rule to test whether an value is within a permitted range.<br/>
+     * <i>[full]</i>
+     * @name valerie.rules.Range
+     * @type valerie.IRule
+     * @constructor
+     * @param {number|function} minimumValueOrFunction a value or function that specifies the minimum permitted value
+     * @param {number|function} [maximumValueOrFunction] a value or function that specifies the maximum permitted value
+     * @param {valerie.IRule.options} [options] the options to use when constructing the rule
+     */
     rules.Range = function(minimumValueOrFunction, maximumValueOrFunction, options) {
         if (arguments.length < 2 || arguments.length > 3) {
             throw "At least 2 arguments are expected.";
@@ -216,12 +339,17 @@
         this.settings = utils.mergeOptions(rules.Range.defaultOptions, options);
     };
 
+    /**
+     * The default options for the rule.
+     * @name valerie.rules.Range.defaultOptions
+     * @type {valerie.IRule.options}
+     */
     rules.Range.defaultOptions = {
         "failureMessageFormat": "",
         "failureMessageFormatForMinimumOnly": "",
         "failureMessageFormatForMaximumOnly": "",
         "valueFormat": null,
-        "valueformat": valerie.converters.passThrough.format
+        "valueFormatter": valerie.converters.passThrough.format
     };
 
     rules.Range.prototype = {
@@ -261,16 +389,25 @@
 
             failureMessage = formatting.replacePlaceholders(
                 failureMessageFormat, {
-                    "maximum": this.settings.valueformat(maximum, this.settings.valueFormat),
-                    "minimum": this.settings.valueformat(minimum, this.settings.valueFormat),
-                    "value": this.settings.valueformat(value, this.settings.valueFormat)
+                    "maximum": this.settings.valueFormatter(maximum, this.settings.valueFormat),
+                    "minimum": this.settings.valueFormatter(minimum, this.settings.valueFormat),
+                    "value": this.settings.valueFormatter(value, this.settings.valueFormat)
                 });
 
-            return new valerie.ValidationResult.createFailedResult(failureMessage);
+            return valerie.ValidationResult.createFailedResult(failureMessage);
         }
     };
 
-    // + rules.StringLength
+    /**
+     * Constructs a rule to test whether a string's length is within a permitted range.<br/>
+     * <i>[full]</i>
+     * @name valerie.rules.StringLength
+     * @type valerie.IRule
+     * @constructor
+     * @param {number|function} minimumValueOrFunction a value or function that specifies the minimum permitted length
+     * @param {number|function} [maximumValueOrFunction] a value or function that specifies the maximum permitted length
+     * @param {valerie.IRule.options} [options] the options to use when constructing the rule
+     */
     rules.StringLength = function(minimumValueOrFunction, maximumValueOrFunction, options) {
         if (arguments.length < 2) {
             throw "At least 2 arguments are expected.";
@@ -278,14 +415,20 @@
 
         options = utils.mergeOptions(rules.StringLength.defaultOptions, options);
 
+        //noinspection JSValidateTypes
         return new rules.Length(minimumValueOrFunction, maximumValueOrFunction, options);
     };
 
+    /**
+     * The default options for the rule.
+     * @name valerie.rules.StringLength.defaultOptions
+     * @type {valerie.IRule.options}
+     */
     rules.StringLength.defaultOptions = {
         "failureMessageFormat": "",
         "failureMessageFormatForMinimumOnly": "",
         "failureMessageFormatForMaximumOnly": "",
         "valueFormat": null,
-        "valueformat": valerie.converters.passThrough.format
+        "valueFormatter": valerie.converters.passThrough.format
     };
 })();

@@ -108,7 +108,7 @@
      */
 
     /**
-     * The validation state for a simple, single, observable or computed property.
+     * Constructs the validation state for a simple, single, observable or computed property.
      * @constructor
      * @param {function} observableOrComputed the observable or computed the validation state is for
      * @param {valerie.PropertyValidationState.options} [options = default options] the options to use when creating the
@@ -211,9 +211,8 @@
 
     valerie.PropertyValidationState.prototype = {
         /**
-         * Adds a rule to the chain of rules used to validate the property's value.
-         * <br/><b>fluent</b>
-         * @name valerie.PropertyValidationState#addRule
+         * Adds a rule to the chain of rules used to validate the property's value.<br/>
+         * <i>[fluent]</i>
          * @fluent
          * @param {valerie.IRule} rule the rule to add
          * @return {valerie.PropertyValidationState}
@@ -224,9 +223,8 @@
             return this;
         },
         /**
-         * Sets the value or function used to determine if the property is applicable.
-         * <br/><b>fluent</b>
-         * @name valerie.PropertyValidationState#applicable
+         * Sets the value or function used to determine if the property is applicable.<br/>
+         * <i>[fluent]</i>
          * @fluent
          * @param {boolean|function} [valueOrFunction = true] the value or function to use
          * @return {valerie.PropertyValidationState}
@@ -242,8 +240,8 @@
         },
         /**
          * Ends a chain of fluent method calls on this property validation state.<br/>
-         * Applies the <b>options.valueFormat</b> format string to all the rules in the rule chain.
-         * <br/><b>fluent</b>
+         * Applies the <b>options.valueFormat</b> format string to all the rules in the rule chain.<br/>
+         * <i>[fluent]</i>
          * @fluent
          * @return {function} the observable or computed the validation state is for
          */
@@ -263,8 +261,8 @@
             return this.observableOrComputed;
         },
         /**
-         * Sets the value or function used to determine the name of the property.
-         * <br/><b>fluent</b>
+         * Sets the value or function used to determine the name of the property.<br/>
+         * <i>[fluent]</i>
          * @fluent
          * @param {string|function} valueOrFunction the value or function to use
          * @return {valerie.PropertyValidationState}
@@ -275,8 +273,8 @@
             return this;
         },
         /**
-         * Sets the value or function used to determine the if the property is required.
-         * <br/><b>fluent</b>
+         * Sets the value or function used to determine the if the property is required.<br/>
+         * <i>[fluent]</i>
          * @fluent
          * @param {boolean|function} [valueOrFunction = false] the value or function to use
          * @return {valerie.PropertyValidationState}
@@ -291,8 +289,8 @@
             return this;
         },
         /**
-         * Sets the format string used to format the display of the value
-         * <br/><b>fluent</b>
+         * Sets the format string used to format the display of the value.<br/>
+         * <i>[fluent]</i>
          * @fluent
          * @param {string} format the format string to use
          * @return {valerie.PropertyValidationState}
@@ -328,7 +326,7 @@
      * @param {function} observableOrComputed the Knockout observable or computed to make validatable
      * @param {valerie.PropertyValidationState.options} [options] the options to use when creating the property's
      * validation state
-     * @returns {valerie.PropertyValidationState} the validation state belonging to the property
+     * @return {valerie.PropertyValidationState} the validation state belonging to the property
      * @throws {string} Only observables or computeds can be made validatable properties.
      */
     valerie.validatableProperty = function (observableOrComputed, options) {

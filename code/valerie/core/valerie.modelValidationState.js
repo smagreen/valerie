@@ -108,7 +108,7 @@
      */
 
     /**
-     * The validation state for a model, which may comprise of simple properties and sub-models.
+     * Constructs the validation state for a model, which may comprise of simple properties and sub-models.
      * @param model the model the validation state is for
      * @param {valerie.ModelValidationState.options} [options = default options] the options to use when creating the
      * validation state
@@ -245,8 +245,8 @@
 
     valerie.ModelValidationState.prototype = {
         /**
-         * Adds validation states to this validation state.
-         * <br/><b>fluent</b>
+         * Adds validation states to this validation state.<br/>
+         * <i>[fluent]</i>
          * @name valerie.ModelValidationState#addValidationStates
          * @fluent
          * @param {array.<valerie.IValidationState>} validationStates the validation states to add
@@ -259,8 +259,8 @@
             return this;
         },
         /**
-         * Sets the value or function used to determine if the model is applicable.
-         * <br/><b>fluent</b>
+         * Sets the value or function used to determine if the model is applicable.<br/>
+         * <i>[fluent]</i>
          * @name valerie.ModelValidationState#applicable
          * @fluent
          * @param {boolean|function} [valueOrFunction = true] the value or function to use
@@ -276,8 +276,8 @@
             return this;
         },
         /**
-         * Clears the static summary of validation states that are in a failure state.
-         * <br/><b>fluent</b>
+         * Clears the static summary of validation states that are in a failure state.<br/>
+         * <i>[fluent]</i>
          * @name valerie.ModelValidationState#clearSummary
          * @fluent
          * @param {boolean} [clearSubModelSummaries = false] whether to clear the static summaries for sub-models
@@ -306,16 +306,14 @@
         },
         /**
          * Ends a chain of fluent method calls on this model validation state.
-         * <br/>
-         * @fluent
          * @return {function} the model the validation state is for
          */
         "end": function () {
             return this.model;
         },
         /**
-         * Sets the value or function used to determine the name of the model.
-         * <br/><b>fluent</b>
+         * Sets the value or function used to determine the name of the model.<br/>
+         * <i>[fluent]</i>
          * @fluent
          * @param {string|function} valueOrFunction the value or function to use
          * @return {valerie.ModelValidationState}
@@ -326,8 +324,8 @@
             return this;
         },
         /**
-         * Removes validation states.
-         * <br/><b>fluent</b>
+         * Removes validation states.<br/>
+         * <i>[fluent]</i>
          * @fluent
          * @param {array.<valerie.IValidationState>} validationStates the validation states to remove
          * @return {valerie.ModelValidationState}
@@ -348,8 +346,8 @@
             return this;
         },
         /**
-         * Updates the static summary of validation states that are in a failure state.
-         * <br/><b>fluent</b>
+         * Updates the static summary of validation states that are in a failure state.<br/>
+         * <i>[fluent]</i>
          * @fluent
          * @param {boolean} [updateSubModelSummaries = false] whether to update the static summaries for sub-models
          * @return {valerie.ModelValidationState}
@@ -386,8 +384,8 @@
             return this;
         },
         /**
-         * Adds the validation states for all the descendant properties and sub-models that belong to the model.
-         * <br/><b>fluent</b>
+         * Adds the validation states for all the descendant properties and sub-models that belong to the model.<br/>
+         * <i>[fluent]</i>
          * @fluent
          * @return {valerie.ModelValidationState}
          */
@@ -398,8 +396,8 @@
             return this;
         },
         /**
-         * Adds the validation states for all the descendant properties that belong to the model.
-         * <br/><b>fluent</b>
+         * Adds the validation states for all the descendant properties that belong to the model.<br/>
+         * <i>[fluent]</i>
          * @fluent
          * @return {valerie.ModelValidationState}
          */
@@ -410,8 +408,8 @@
             return this;
         },
         /**
-         * Adds the validation states for all the child properties that belong to the model.
-         * <br/><b>fluent</b>
+         * Adds the validation states for all the child properties that belong to the model.<br/>
+         * <i>[fluent]</i>
          * @fluent
          * @return {valerie.ModelValidationState}
          */
@@ -422,8 +420,8 @@
             return this;
         },
         /**
-         * Adds the validation states for all the child properties and sub-models that belong to the model.
-         * <br/><b>fluent</b>
+         * Adds the validation states for all the child properties and sub-models that belong to the model.<br/>
+         * <i>[fluent]</i>
          * @fluent
          * @return {valerie.ModelValidationState}
          */
@@ -453,7 +451,7 @@
      * @param {object|function} model the model to make validatable
      * @param {valerie.ModelValidationState.options} [options] the options to use when creating the model's validation
      * state
-     * @returns {valerie.ModelValidationState} the validation state belonging to the model
+     * @return {valerie.ModelValidationState} the validation state belonging to the model
      */
     valerie.validatableModel = function (model, options) {
         var validationState = new valerie.ModelValidationState(model, options);

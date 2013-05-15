@@ -90,8 +90,8 @@
      * retrieve it.<br/>
      * <i>This function is useful when developing binding handlers.</i>
      * @param {object|function} modelOrObservableOrComputed the thing to get the validation state for
-     * @return {null|IValidationState} the validation state or <code>null</code> if the given thing does not have a
-     * validation state.
+     * @return {null|valerie.IValidationState} the validation state or <code>null</code> if the given thing does not
+     * have a validation state.
      */
     valerie.validationState.getFor = function (modelOrObservableOrComputed) {
         if (modelOrObservableOrComputed == null) {
@@ -122,7 +122,7 @@
     /**
      * Sets the validation state for the given model, observable or computed.
      * @param {object|function} modelOrObservableOrComputed the thing to set the validation state on
-     * @param {valerie.ModelValidationState|valerie.PropertyValidationState} state the validation state to use
+     * @param {valerie.IValidationState} state the validation state to use
      */
     valerie.validationState.setFor = function (modelOrObservableOrComputed, state) {
         modelOrObservableOrComputed[getValidationStateMethodName] = function () {

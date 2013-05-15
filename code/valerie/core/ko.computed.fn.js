@@ -2,8 +2,8 @@
     "use strict";
 
     /**
-     * Creates and sets a validation state on a Knockout computed.
-     * <br/><b>fluent</b>
+     * Creates and sets a validation state on a Knockout computed.<br/>
+     * <i>[fluent]</i>
      * @name ko.computed#validate
      * @method
      * @fluent

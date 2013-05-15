@@ -1,16 +1,23 @@
-﻿// valerie.converters
-// - additional converters
-
-(function () {
+﻿(function () {
     "use strict";
 
-    var pad = valerie.formatting.pad,
-        converters = valerie.converters = valerie.converters || {},
+    var
         defaultNumericHelper = new valerie.NumericHelper(),
         dateExpression = /^(\d\d?)(?:\-|\/)(\d\d?)(?:\-|\/)(\d\d\d\d)$/,
-        emailExpression = /^[A-Z0-9._%+-]+@[A-Z0-9.-]+\.[A-Z]{2,4}$/i;
+        emailExpression = /^[A-Z0-9._%+-]+@[A-Z0-9.-]+\.[A-Z]{2,4}$/i,
+    // Shortcuts.
+        pad = valerie.formatting.pad,
+        converters = valerie.converters = valerie.converters || {};
 
-    // + converters.date
+    /**
+     * A converter for dates.<br/>
+     * By default date strings in <code>dd/mm/yyyy</code> or <code>dd-mm-yyyy</code> formats can be parsed.<br/>
+     * By setting <b>valerie.converters.date.monthBeforeDate</b> to <code>true</code> date strings in
+     * <code>mm/dd/yyyy</code> or <code>mm-dd-yyyy</code> can be parsed.</br>
+     * <i>[full]</i>
+     * @name valerie.converters~date
+     * @type valerie.IConverter
+     */
     converters.date = {
         "format": function (value) {
             if (value == null) {
@@ -64,15 +71,31 @@
             }
 
             return value;
-        }
+        },
+        /**
+         * Controls whether dd/mm/yyyy or mm/dd/yyyy are acceptable date formats.
+         * @name valerie.converters.date#monthBeforeDate
+         * @type {boolean}
+         */
+        "monthBeforeDate": false
     };
 
-    converters.date.monthBeforeDate = false;
-
-    // + converters.defaultNumericHelper
+    /**
+     * The default numerical helper used by converters.
+     * @type {valerie.NumericHelper}
+     */
     converters.defaultNumericHelper = defaultNumericHelper;
 
-    // + converters.currencyMajor
+    /**
+     * A converter for currency values with only major units, for example: <code>£1,093</code>, <code>$1093</code>,
+     * <code>1.093</code>.<br/>
+     * Currency string values are parsed into <code>float</code> values.<br/>
+     * <b>valerie.converters.currency.numericHelper</b> is used to parse and format values; this is defaulted to
+     * <b>valerie.converters.defaultNumericHelper</b>.<br/>
+     * <i>[full]</i>
+     * @name valerie.converters~currencyMajor
+     * @type valerie.IConverter
+     */
     converters.currencyMajor = {
         "format": function (value, format) {
             return converters.currency.numericHelper.format(value, format);
@@ -88,7 +111,16 @@
         }
     };
 
-    // + converters.currencyMajorMinor
+    /**
+     * A converter for currency values with major and optionally minor units, for example: <code>£93</code>,
+     * <code>$93.22</code>, <code>1,093.00</code>, <code>1.293,22</code>.<br/>
+     * Currency string values are parsed into <code>float</code> values.<br/>
+     * <b>valerie.converters.currency.numericHelper</b> is used to parse and format values; this is defaulted to
+     * <b>valerie.converters.defaultNumericHelper</b>.<br/>
+     * <i>[full]</i>
+     * @name valerie.converters~currencyMajorMinor
+     * @type valerie.IConverter
+     */
     converters.currencyMajorMinor = {
         "format": function (value, format) {
             return converters.currency.numericHelper.format(value, format);
@@ -104,9 +136,18 @@
         }
     };
 
+    /**
+     * The default numerical helper used by converters that convert currency values.
+     * @type {valerie.NumericHelper}
+     */
     converters.currency = { "numericHelper": defaultNumericHelper };
 
-    // + converters.email
+    /**
+     * A converter for e-mail addresses.<br/>
+     * <i>[full]</i>
+     * @name valerie.converters~email
+     * @type valerie.IConverter
+     */
     converters.email = {
         "format": function (value) {
             if (value == null) {
@@ -128,7 +169,12 @@
         }
     };
 
-    // + converters.float
+    /**
+     * A converter for non-integer number values.<br/>
+     * <i>[full]</i>
+     * @name valerie.converters~float
+     * @type valerie.IConverter
+     */
     converters.float = {
         "format": function (value, format) {
             return converters.float.numericHelper.format(value, format);
@@ -144,9 +190,18 @@
         }
     };
 
+    /**
+     * The default numerical helper used by the <b>valerie.converters.float</b> converter.
+     * @type {valerie.NumericHelper}
+     */
     converters.float.numericHelper = defaultNumericHelper;
 
-    // + converters.integer
+    /**
+     * A converter for integer values.<br/>
+     * <i>[full]</i>
+     * @name valerie.converters~integer
+     * @type valerie.IConverter
+     */
     converters.integer = {
         "format": function (value, format) {
             return converters.integer.numericHelper.format(value, format);
@@ -162,9 +217,18 @@
         }
     };
 
+    /**
+     * The default numerical helper used by the <b>valerie.converters.integer</b> converter.
+     * @type {valerie.NumericHelper}
+     */
     converters.integer.numericHelper = defaultNumericHelper;
 
-    // + converters.number
+    /**
+     * A converter for Javascript Number values.<br/>
+     * <i>[full]</i>
+     * @name valerie.converters~number
+     * @type valerie.IConverter
+     */
     converters.number = {
         "format": function (value) {
             if (value == null) {

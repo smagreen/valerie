@@ -57,8 +57,8 @@ module.exports = function (grunt) {
                     "code/valerie/full/valerie.numericHelper.js",
                     "code/valerie/full/valerie.converters.js",
                     "code/valerie/full/valerie.rules.js",
-                    "code/valerie/full/valerie.knockout.fluent.converters.js",
-                    "code/valerie/full/valerie.knockout.fluent.rules.js"
+                    "code/valerie/full/valerie.propertyValidationState-fluentConverters.js",
+                    "code/valerie/full/valerie.propertyValidationState-fluentRules.js",
                 ],
                 "dest": "build/valerie-for-knockout.js"
             },
