@@ -1,0 +1,731 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8">
+    <title>JSDoc: Namespace: converters</title>
+    
+    <script src="scripts/prettify/prettify.js"> </script>
+    <script src="scripts/prettify/lang-css.js"> </script>
+    <!--[if lt IE 9]>
+      <script src="//html5shiv.googlecode.com/svn/trunk/html5.js"></script>
+    <![endif]-->
+    <link type="text/css" rel="stylesheet" href="styles/prettify-tomorrow.css">
+    <link type="text/css" rel="stylesheet" href="styles/jsdoc-default.css">
+</head>
+
+<body>
+
+<div id="main">
+    
+    <h1 class="page-title">Namespace: converters</h1>
+    
+    
+
+
+
+<section>
+    
+<header>
+    <h2>
+        <span class="ancestors"><a href="valerie.html">valerie</a>.</span>
+    
+    converters
+    </h2>
+    
+</header>  
+
+<article>
+    <div class="container-overview">
+    
+    
+    
+        
+            <div class="description">Contains converters, always singletons.</div>
+        
+        
+        
+<dl class="details">
+    
+        
+    
+    
+    
+
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    <dt class="tag-source">Source:</dt>
+    <dd class="tag-source"><ul class="dummy"><li>
+        <a href="valerie.converters.js_.html">core/valerie.converters.js</a>, <a href="valerie.converters.js_.html#line9">line 9</a>
+    </li></ul></dd>
+    
+    
+    
+    
+    
+    <dt class="tag-see">See:</dt>
+    <dd class="tag-see">
+        <ul>
+            <li><a href="valerie.IConverter.html">valerie.IConverter</a></li>
+        </ul>
+    </dd>
+    
+    
+    
+</dl>
+
+        
+        
+    
+    </div>
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+        <h3 class="subsection-title">Members</h3>
+        
+        <dl>
+            
+<dt>
+    <h4 class="name" id="currencyMajor"><span class="type-signature">&lt;inner> </span>currencyMajor<span class="type-signature"> :<a href="valerie.IConverter.html">valerie.IConverter</a></span></h4>
+    
+    
+</dt>
+<dd>
+    
+    <div class="description">
+        A converter for currency values with only major units, for example: <code>£1,093</code>, <code>$1093</code>,
+<code>1.093</code>.<br/>
+Currency string values are parsed into <code>float</code> values.<br/>
+<b>valerie.converters.currency.numericHelper</b> is used to parse and format values; this is defaulted to
+<b>valerie.converters.defaultNumericHelper</b>.<br/>
+<i>[full]</i>
+    </div>
+    
+    
+    
+        <h5>Type:</h5>
+        <ul>
+            <li>
+                
+<span class="param-type"><a href="valerie.IConverter.html">valerie.IConverter</a></span>
+
+
+            </li>
+        </ul>
+    
+
+    
+<dl class="details">
+    
+        
+    
+    
+    
+
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    <dt class="tag-source">Source:</dt>
+    <dd class="tag-source"><ul class="dummy"><li>
+        <a href="valerie.converters.js.html">full/valerie.converters.js</a>, <a href="valerie.converters.js.html#line89">line 89</a>
+    </li></ul></dd>
+    
+    
+    
+    
+    
+    
+    
+</dl>
+
+    
+    
+</dd>
+
+        
+            
+<dt>
+    <h4 class="name" id="currencyMajorMinor"><span class="type-signature">&lt;inner> </span>currencyMajorMinor<span class="type-signature"> :<a href="valerie.IConverter.html">valerie.IConverter</a></span></h4>
+    
+    
+</dt>
+<dd>
+    
+    <div class="description">
+        A converter for currency values with major and optionally minor units, for example: <code>£93</code>,
+<code>$93.22</code>, <code>1,093.00</code>, <code>1.293,22</code>.<br/>
+Currency string values are parsed into <code>float</code> values.<br/>
+<b>valerie.converters.currency.numericHelper</b> is used to parse and format values; this is defaulted to
+<b>valerie.converters.defaultNumericHelper</b>.<br/>
+<i>[full]</i>
+    </div>
+    
+    
+    
+        <h5>Type:</h5>
+        <ul>
+            <li>
+                
+<span class="param-type"><a href="valerie.IConverter.html">valerie.IConverter</a></span>
+
+
+            </li>
+        </ul>
+    
+
+    
+<dl class="details">
+    
+        
+    
+    
+    
+
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    <dt class="tag-source">Source:</dt>
+    <dd class="tag-source"><ul class="dummy"><li>
+        <a href="valerie.converters.js.html">full/valerie.converters.js</a>, <a href="valerie.converters.js.html#line114">line 114</a>
+    </li></ul></dd>
+    
+    
+    
+    
+    
+    
+    
+</dl>
+
+    
+    
+</dd>
+
+        
+            
+<dt>
+    <h4 class="name" id="date"><span class="type-signature">&lt;inner> </span>date<span class="type-signature"> :<a href="valerie.IConverter.html">valerie.IConverter</a></span></h4>
+    
+    
+</dt>
+<dd>
+    
+    <div class="description">
+        A converter for dates.<br/>
+By default date strings in <code>dd/mm/yyyy</code> or <code>dd-mm-yyyy</code> formats can be parsed.<br/>
+By setting <b>valerie.converters.date.monthBeforeDate</b> to <code>true</code> date strings in
+<code>mm/dd/yyyy</code> or <code>mm-dd-yyyy</code> can be parsed.</br>
+<i>[full]</i>
+    </div>
+    
+    
+    
+        <h5>Type:</h5>
+        <ul>
+            <li>
+                
+<span class="param-type"><a href="valerie.IConverter.html">valerie.IConverter</a></span>
+
+
+            </li>
+        </ul>
+    
+
+    
+<dl class="details">
+    
+        
+    
+    
+    
+
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    <dt class="tag-source">Source:</dt>
+    <dd class="tag-source"><ul class="dummy"><li>
+        <a href="valerie.converters.js.html">full/valerie.converters.js</a>, <a href="valerie.converters.js.html#line12">line 12</a>
+    </li></ul></dd>
+    
+    
+    
+    
+    
+    
+    
+</dl>
+
+    
+    
+</dd>
+
+        
+            
+<dt>
+    <h4 class="name" id="email"><span class="type-signature">&lt;inner> </span>email<span class="type-signature"> :<a href="valerie.IConverter.html">valerie.IConverter</a></span></h4>
+    
+    
+</dt>
+<dd>
+    
+    <div class="description">
+        A converter for e-mail addresses.<br/>
+<i>[full]</i>
+    </div>
+    
+    
+    
+        <h5>Type:</h5>
+        <ul>
+            <li>
+                
+<span class="param-type"><a href="valerie.IConverter.html">valerie.IConverter</a></span>
+
+
+            </li>
+        </ul>
+    
+
+    
+<dl class="details">
+    
+        
+    
+    
+    
+
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    <dt class="tag-source">Source:</dt>
+    <dd class="tag-source"><ul class="dummy"><li>
+        <a href="valerie.converters.js.html">full/valerie.converters.js</a>, <a href="valerie.converters.js.html#line145">line 145</a>
+    </li></ul></dd>
+    
+    
+    
+    
+    
+    
+    
+</dl>
+
+    
+    
+</dd>
+
+        
+            
+<dt>
+    <h4 class="name" id="float"><span class="type-signature">&lt;inner> </span>float<span class="type-signature"> :<a href="valerie.IConverter.html">valerie.IConverter</a></span></h4>
+    
+    
+</dt>
+<dd>
+    
+    <div class="description">
+        A converter for non-integer number values.<br/>
+<i>[full]</i>
+    </div>
+    
+    
+    
+        <h5>Type:</h5>
+        <ul>
+            <li>
+                
+<span class="param-type"><a href="valerie.IConverter.html">valerie.IConverter</a></span>
+
+
+            </li>
+        </ul>
+    
+
+    
+<dl class="details">
+    
+        
+    
+    
+    
+
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    <dt class="tag-source">Source:</dt>
+    <dd class="tag-source"><ul class="dummy"><li>
+        <a href="valerie.converters.js.html">full/valerie.converters.js</a>, <a href="valerie.converters.js.html#line172">line 172</a>
+    </li></ul></dd>
+    
+    
+    
+    
+    
+    
+    
+</dl>
+
+    
+    
+</dd>
+
+        
+            
+<dt>
+    <h4 class="name" id="integer"><span class="type-signature">&lt;inner> </span>integer<span class="type-signature"> :<a href="valerie.IConverter.html">valerie.IConverter</a></span></h4>
+    
+    
+</dt>
+<dd>
+    
+    <div class="description">
+        A converter for integer values.<br/>
+<i>[full]</i>
+    </div>
+    
+    
+    
+        <h5>Type:</h5>
+        <ul>
+            <li>
+                
+<span class="param-type"><a href="valerie.IConverter.html">valerie.IConverter</a></span>
+
+
+            </li>
+        </ul>
+    
+
+    
+<dl class="details">
+    
+        
+    
+    
+    
+
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    <dt class="tag-source">Source:</dt>
+    <dd class="tag-source"><ul class="dummy"><li>
+        <a href="valerie.converters.js.html">full/valerie.converters.js</a>, <a href="valerie.converters.js.html#line199">line 199</a>
+    </li></ul></dd>
+    
+    
+    
+    
+    
+    
+    
+</dl>
+
+    
+    
+</dd>
+
+        
+            
+<dt>
+    <h4 class="name" id="number"><span class="type-signature">&lt;inner> </span>number<span class="type-signature"> :<a href="valerie.IConverter.html">valerie.IConverter</a></span></h4>
+    
+    
+</dt>
+<dd>
+    
+    <div class="description">
+        A converter for Javascript Number values.<br/>
+<i>[full]</i>
+    </div>
+    
+    
+    
+        <h5>Type:</h5>
+        <ul>
+            <li>
+                
+<span class="param-type"><a href="valerie.IConverter.html">valerie.IConverter</a></span>
+
+
+            </li>
+        </ul>
+    
+
+    
+<dl class="details">
+    
+        
+    
+    
+    
+
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    <dt class="tag-source">Source:</dt>
+    <dd class="tag-source"><ul class="dummy"><li>
+        <a href="valerie.converters.js.html">full/valerie.converters.js</a>, <a href="valerie.converters.js.html#line226">line 226</a>
+    </li></ul></dd>
+    
+    
+    
+    
+    
+    
+    
+</dl>
+
+    
+    
+</dd>
+
+        
+            
+<dt>
+    <h4 class="name" id="passThrough"><span class="type-signature">&lt;inner> </span>passThrough<span class="type-signature"> :<a href="valerie.IConverter.html">valerie.IConverter</a></span></h4>
+    
+    
+</dt>
+<dd>
+    
+    <div class="description">
+        A converter which formats and parses strings.
+Used as the default converter in numerous places throughout the library.
+    </div>
+    
+    
+    
+        <h5>Type:</h5>
+        <ul>
+            <li>
+                
+<span class="param-type"><a href="valerie.IConverter.html">valerie.IConverter</a></span>
+
+
+            </li>
+        </ul>
+    
+
+    
+<dl class="details">
+    
+        
+    
+    
+    
+
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    <dt class="tag-source">Source:</dt>
+    <dd class="tag-source"><ul class="dummy"><li>
+        <a href="valerie.converters.js_.html">core/valerie.converters.js</a>, <a href="valerie.converters.js_.html#line11">line 11</a>
+    </li></ul></dd>
+    
+    
+    
+    
+    
+    
+    
+</dl>
+
+    
+    
+</dd>
+
+        
+            
+<dt>
+    <h4 class="name" id="postcode"><span class="type-signature">&lt;inner> </span>postcode<span class="type-signature"> :<a href="valerie.IConverter.html">valerie.IConverter</a></span></h4>
+    
+    
+</dt>
+<dd>
+    
+    <div class="description">
+        A converter for postcodes.<br/>
+<i>[full, en-gb]</i>
+    </div>
+    
+    
+    
+        <h5>Type:</h5>
+        <ul>
+            <li>
+                
+<span class="param-type"><a href="valerie.IConverter.html">valerie.IConverter</a></span>
+
+
+            </li>
+        </ul>
+    
+
+    
+<dl class="details">
+    
+        
+    
+    
+    
+
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    <dt class="tag-source">Source:</dt>
+    <dd class="tag-source"><ul class="dummy"><li>
+        <a href="valerie.converters-en-gb.js.html">localisation/en-gb/valerie.converters-en-gb.js</a>, <a href="valerie.converters-en-gb.js.html#line7">line 7</a>
+    </li></ul></dd>
+    
+    
+    
+    
+    
+    
+    
+</dl>
+
+    
+    
+</dd>
+
+        </dl>
+    
+    
+    
+    
+    
+    
+    
+</article>
+
+</section>  
+
+
+
+
+</div>
+
+<nav>
+    <h2><a href="index.html">Index</a></h2><h3>Classes</h3><ul><li><a href="ko.computed.html">computed</a></li><li><a href="ko.observable.html">observable</a></li><li><a href="valerie.IConverter.html">IConverter</a></li><li><a href="valerie.IRule.html">IRule</a></li><li><a href="valerie.IValidationState.html">IValidationState</a></li><li><a href="valerie.ModelValidationState.html">ModelValidationState</a></li><li><a href="valerie.NumericHelper.html">NumericHelper</a></li><li><a href="valerie.PropertyValidationState.html">PropertyValidationState</a></li><li><a href="valerie.rules.ArrayLength.html">ArrayLength</a></li><li><a href="valerie.rules.During.html">During</a></li><li><a href="valerie.rules.Expression.html">Expression</a></li><li><a href="valerie.rules.Length.html">Length</a></li><li><a href="valerie.rules.Matches.html">Matches</a></li><li><a href="valerie.rules.NoneOf.html">NoneOf</a></li><li><a href="valerie.rules.Not.html">Not</a></li><li><a href="valerie.rules.OneOf.html">OneOf</a></li><li><a href="valerie.rules.Range.html">Range</a></li><li><a href="valerie.rules.StringLength.html">StringLength</a></li><li><a href="valerie.ValidationResult.html">ValidationResult</a></li></ul><h3>Namespaces</h3><ul><li><a href="ko.html">ko</a></li><li><a href="ko.bindingHandlers.html">bindingHandlers</a></li><li><a href="valerie.html">valerie</a></li><li><a href="valerie.converters.html">converters</a></li><li><a href="valerie.dom.html">dom</a></li><li><a href="valerie.formatting.html">formatting</a></li><li><a href="valerie.koBindingsHelper.html">koBindingsHelper</a></li><li><a href="valerie.koExtras.html">koExtras</a></li><li><a href="valerie.rules.html">rules</a></li><li><a href="valerie.utils.html">utils</a></li><li><a href="valerie.validationState.html">validationState</a></li></ul>
+</nav>
+
+<br clear="both">
+
+<footer>
+    Documentation generated by <a href="https://github.com/jsdoc3/jsdoc">JSDoc 3.2.0-dev</a> on Wed May 15 2013 20:02:57 GMT+0100 (BST)
+</footer>
+
+<script> prettyPrint(); </script>
+<script src="scripts/linenumber.js"> </script>
+</body>
+</html>

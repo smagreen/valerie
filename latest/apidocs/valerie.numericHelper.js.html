@@ -1,0 +1,257 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8">
+    <title>JSDoc: Source: full/valerie.numericHelper.js</title>
+    
+    <script src="scripts/prettify/prettify.js"> </script>
+    <script src="scripts/prettify/lang-css.js"> </script>
+    <!--[if lt IE 9]>
+      <script src="//html5shiv.googlecode.com/svn/trunk/html5.js"></script>
+    <![endif]-->
+    <link type="text/css" rel="stylesheet" href="styles/prettify-tomorrow.css">
+    <link type="text/css" rel="stylesheet" href="styles/jsdoc-default.css">
+</head>
+
+<body>
+
+<div id="main">
+    
+    <h1 class="page-title">Source: full/valerie.numericHelper.js</h1>
+    
+    
+
+
+    
+    <section>
+        <article>
+            <pre class="prettyprint source"><code>﻿(function () {
+    "use strict";
+
+    var formatting = valerie.formatting,
+        formatStringAsOptions = function (numericHelper, format) {
+            var includeCurrencySign = format.indexOf("C") > -1,
+                includeThousandsSeparator = format.indexOf(",") > -1,
+                decimalPlaceIndex = format.indexOf("."),
+                numberOfDecimalPlaces = 0;
+
+            if (decimalPlaceIndex === format.length - 1) {
+                numberOfDecimalPlaces = null;
+            } else {
+                if (decimalPlaceIndex > -1) {
+                    if (format.charAt(decimalPlaceIndex + 1) === "c") {
+                        numberOfDecimalPlaces = numericHelper.settings.currencyMinorUnitPlaces;
+                    } else {
+                        numberOfDecimalPlaces = Number(format.substr(decimalPlaceIndex + 1));
+                    }
+                }
+            }
+
+            return {
+                "includeCurrencySign": includeCurrencySign,
+                "includeThousandsSeparator": includeThousandsSeparator,
+                "numberOfDecimalPlaces": numberOfDecimalPlaces
+            };
+        };
+
+    /**
+     * A helper for parsing and formatting numeric values.&lt;br/>
+     * &lt;i>[full]&lt;/i>
+     * @constructor
+     */
+    valerie.NumericHelper = function () {
+    };
+
+    valerie.NumericHelper.prototype = {
+        /**
+         * Initialises the helper.&lt;br/>
+         * &lt;i>[fluent]&lt;/i>
+         * @param {char|string} decimalSeparator the character or string to use as the decimal separator
+         * @param {char|string} thousandsSeparator the character or string to use as the thousands separator
+         * @param {char|string} currencySign the character or string to use as the currency sign
+         * @param {number} currencyMinorUnitPlaces the number of decimal places to use when parsing and formatting the
+         * currency's minor units
+         * @returns {valerie.NumericHelper}
+         */
+        "init": function (decimalSeparator, thousandsSeparator, currencySign, currencyMinorUnitPlaces) {
+            var integerExpression = "\\d+(\\" + thousandsSeparator + "\\d{3})*",
+                currencyMajorExpression = "(\\" + currencySign + ")?" + integerExpression,
+                currentMajorMinorExpression = currencyMajorExpression + "(\\" +
+                    decimalSeparator + "\\d{" + currencyMinorUnitPlaces + "})?",
+                floatExpression = integerExpression + "(\\" + decimalSeparator + "\\d+)?";
+
+            this.settings = {
+                "decimalSeparator": decimalSeparator,
+                "thousandsSeparator": thousandsSeparator,
+                "currencySign": currencySign,
+                "currencyMinorUnitPlaces": currencyMinorUnitPlaces
+            };
+
+            this.expressions = {
+                "currencyMajor": new RegExp("^" + currencyMajorExpression + "$"),
+                "currencyMajorMinor": new RegExp("^" + currentMajorMinorExpression + "$"),
+                "float": new RegExp("^" + floatExpression + "$"),
+                "integer": new RegExp("^" + integerExpression + "$")
+            };
+
+            return this;
+        },
+        /**
+         * Adds thousands separators to the given numeric string.
+         * @param {string} numericString the numeric string to add separators to
+         * @return {string} a numeric string with thousands separators
+         */
+        "addThousandsSeparator": function (numericString) {
+            var settings = this.settings;
+
+            return formatting.addThousandsSeparator(numericString, settings.thousandsSeparator,
+                settings.decimalSeparator);
+        },
+        /**
+         * Formats the given numeric value as a string.&lt;br/>
+         * Permitted format strings are:
+         * &lt;ul>
+         *     &lt;li>&lt;code>C,.c&lt;/code>&lt;/li>
+         *     &lt;li>&lt;code>C,.1&lt;/code>&lt;/li>
+         *     &lt;li>&lt;code>C,.2&lt;/code>&lt;/li>
+         *     &lt;li>&lt;code>C,.n&lt;/code>&lt;/li>
+         *     &lt;li>&lt;code>C,.c&lt;/code>&lt;/li>
+         *     &lt;li>&lt;code>.c&lt;/code>&lt;/li>
+         *     &lt;li>&lt;code>.1&lt;/code>&lt;/li>
+         *     &lt;li>&lt;code>.n&lt;/code>&lt;/li>
+         * &lt;/ul>
+         * The formatting characters have the following directives:
+         * &lt;ul>
+         *     &lt;li>&lt;code>C&lt;/code> - include the currency sign in the formatted string&lt;/li>
+         *     &lt;li>&lt;code>,&lt;/code> - include thousands separators in the formatted string&lt;/li>
+         *     &lt;li>&lt;code>.&lt;/code> - include the decimal separator in the formatted string&lt;/li>
+         *     &lt;li>&lt;code>.c&lt;/code> - include the default number of digits after the decimal separator&lt;/li>
+         *     &lt;li>&lt;code>.1&lt;/code> - include 1 digit after the decimal separator&lt;/li>
+         *     &lt;li>&lt;code>.2&lt;/code> - include 2 digits after the decimal separator&lt;/li>
+         *     &lt;li>&lt;code>.n&lt;/code> - include [n] digits after the decimal separator&lt;/li>
+         * @param {number} value the value to format
+         * @param {string} format the format to use
+         * @return {string} the formatted string
+         */
+        "format": function (value, format) {
+            if (value == null) {
+                return "";
+            }
+
+            if (format == null) {
+                format = "";
+            }
+
+            var settings = this.settings,
+                formatOptions = formatStringAsOptions(this, format),
+                numberOfDecimalPlaces = formatOptions.numberOfDecimalPlaces,
+                negative = value &lt; 0;
+
+            if (negative) {
+                value = -value;
+            }
+
+            if (numberOfDecimalPlaces != null) {
+                //noinspection JSValidateTypes
+                value = value.toFixed(numberOfDecimalPlaces);
+            } else {
+                value = value.toString();
+            }
+
+            //noinspection JSUnresolvedFunction
+            value = value.replace(".", settings.decimalSeparator);
+
+            if (formatOptions.includeThousandsSeparator) {
+                //noinspection JSValidateTypes
+                value = this.addThousandsSeparator(value);
+            }
+
+            return (negative ? "-" : "") +
+                (formatOptions.includeCurrencySign ? settings.currencySign : "") +
+                value;
+        },
+        /**
+         * Informs whether the given numeric string represents a currency value with major units only.
+         * @param {string} numericString the numeric string to test
+         * @return {boolean} &lt;code>true&lt;/code> if the given numeric string represents a currency value,
+         * &lt;code>false&lt;/code> otherwise
+         */
+        "isCurrencyMajor": function (numericString) {
+            return this.expressions.currencyMajor.test(numericString);
+        },
+        /**
+         * Informs whether the given numeric string represents a currency value with major units and optionally minor units.
+         * @param {string} numericString the numeric string to test
+         * @return {boolean} &lt;code>true&lt;/code> if the given numeric string represents a currency value,
+         * &lt;code>false&lt;/code> otherwise
+         */
+        "isCurrencyMajorMinor": function (numericString) {
+            return this.expressions.currencyMajorMinor.test(numericString);
+        },
+        /**
+         * Informs whether the given numeric string represents a non-integer numeric value.
+         * @param {string} numericString the numeric string to test
+         * @return {boolean} &lt;code>true&lt;/code> if the given numeric string represents a non-integer numeric value,
+         * &lt;code>false&lt;/code> otherwise
+         */
+        "isFloat": function (numericString) {
+            return this.expressions.float.test(numericString);
+        },
+        /**
+         * Informs whether the given numeric string represents an integer value.
+         * @param {string} numericString the numeric string to test
+         * @return {boolean} &lt;code>true&lt;/code> if the given numeric string represents a integer value,
+         * &lt;code>false&lt;/code> otherwise
+         */
+        "isInteger": function (numericString) {
+            return this.expressions.integer.test(numericString);
+        },
+        /**
+         * Attempts to parse the given numeric string as a number value. The string is unformatted first.
+         * @param numericString
+         * @returns {NaN|number}
+         */
+        "parse": function (numericString) {
+            numericString = this.unformat(numericString);
+
+            return Number(numericString);
+        },
+        /**
+         * Unformats a numeric string; removes currency signs, thousands separators and normalises decimal separators.
+         * @param {string} numericString the numeric string to unformat
+         * @returns {string} the unformatted string
+         */
+        "unformat": function (numericString) {
+            var settings = this.settings;
+
+            numericString = numericString.replace(settings.currencySign, "");
+            numericString = numericString.replace(settings.thousandsSeparator, "");
+            numericString = numericString.replace(settings.decimalSeparator, ".");
+
+            return numericString;
+        }
+    };
+})();
+</code></pre>
+        </article>
+    </section>
+
+
+
+
+</div>
+
+<nav>
+    <h2><a href="index.html">Index</a></h2><h3>Classes</h3><ul><li><a href="ko.computed.html">computed</a></li><li><a href="ko.observable.html">observable</a></li><li><a href="valerie.IConverter.html">IConverter</a></li><li><a href="valerie.IRule.html">IRule</a></li><li><a href="valerie.IValidationState.html">IValidationState</a></li><li><a href="valerie.ModelValidationState.html">ModelValidationState</a></li><li><a href="valerie.NumericHelper.html">NumericHelper</a></li><li><a href="valerie.PropertyValidationState.html">PropertyValidationState</a></li><li><a href="valerie.rules.ArrayLength.html">ArrayLength</a></li><li><a href="valerie.rules.During.html">During</a></li><li><a href="valerie.rules.Expression.html">Expression</a></li><li><a href="valerie.rules.Length.html">Length</a></li><li><a href="valerie.rules.Matches.html">Matches</a></li><li><a href="valerie.rules.NoneOf.html">NoneOf</a></li><li><a href="valerie.rules.Not.html">Not</a></li><li><a href="valerie.rules.OneOf.html">OneOf</a></li><li><a href="valerie.rules.Range.html">Range</a></li><li><a href="valerie.rules.StringLength.html">StringLength</a></li><li><a href="valerie.ValidationResult.html">ValidationResult</a></li></ul><h3>Namespaces</h3><ul><li><a href="ko.html">ko</a></li><li><a href="ko.bindingHandlers.html">bindingHandlers</a></li><li><a href="valerie.html">valerie</a></li><li><a href="valerie.converters.html">converters</a></li><li><a href="valerie.dom.html">dom</a></li><li><a href="valerie.formatting.html">formatting</a></li><li><a href="valerie.koBindingsHelper.html">koBindingsHelper</a></li><li><a href="valerie.koExtras.html">koExtras</a></li><li><a href="valerie.rules.html">rules</a></li><li><a href="valerie.utils.html">utils</a></li><li><a href="valerie.validationState.html">validationState</a></li></ul>
+</nav>
+
+<br clear="both">
+
+<footer>
+    Documentation generated by <a href="https://github.com/jsdoc3/jsdoc">JSDoc 3.2.0-dev</a> on Wed May 15 2013 20:02:56 GMT+0100 (BST)
+</footer>
+
+<script> prettyPrint(); </script>
+<script src="scripts/linenumber.js"> </script>
+</body>
+</html>

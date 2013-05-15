@@ -1,0 +1,323 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8">
+    <title>JSDoc: Source: full/valerie.propertyValidationState-fluentRules.js</title>
+    
+    <script src="scripts/prettify/prettify.js"> </script>
+    <script src="scripts/prettify/lang-css.js"> </script>
+    <!--[if lt IE 9]>
+      <script src="//html5shiv.googlecode.com/svn/trunk/html5.js"></script>
+    <![endif]-->
+    <link type="text/css" rel="stylesheet" href="styles/prettify-tomorrow.css">
+    <link type="text/css" rel="stylesheet" href="styles/jsdoc-default.css">
+</head>
+
+<body>
+
+<div id="main">
+    
+    <h1 class="page-title">Source: full/valerie.propertyValidationState-fluentRules.js</h1>
+    
+    
+
+
+    
+    <section>
+        <article>
+            <pre class="prettyprint source"><code>﻿(function () {
+    "use strict";
+
+    // Shortcuts.
+    var prototype = valerie.PropertyValidationState.prototype,
+        rules = valerie.rules;
+
+    /**
+     * Validate the property further by checking its value falls between two permitted dates.&lt;br/>
+     * &lt;i>[fluent, full]&lt;/i>
+     * @name valerie.PropertyValidationState#during
+     * @method
+     * @param {date|function} earliestValueOrFunction a value or function that specifies the earliest permitted date
+     * @param {date|function} latestValueOrFunction a value or function that specifies the latest permitted date
+     * @param {valerie.IRule.options} [options] the options to use when constructing the rule
+     * @return {valerie.PropertyValidationState} the validation state
+     */
+    prototype.during = function (earliestValueOrFunction, latestValueOrFunction, options) {
+        return this.addRule(new rules.During(earliestValueOrFunction, latestValueOrFunction, options));
+    };
+
+    /**
+     * Validate the property further by checking its value is not before a permitted date.&lt;br/>
+     * &lt;i>[fluent, full]&lt;/i>
+     * @name valerie.PropertyValidationState#earliest
+     * @method
+     * @param {date|function} earliestValueOrFunction a value or function that specifies the earliest permitted date
+     * @param {valerie.IRule.options} [options] the options to use when constructing the rule
+     * @return {valerie.PropertyValidationState} the validation state
+     */
+    prototype.earliest = function (earliestValueOrFunction, options) {
+        return this.addRule(new rules.During(earliestValueOrFunction, null, options));
+    };
+
+    /**
+     * Validate the property further by checking its value matches a regular expression.&lt;br/>
+     * &lt;i>[fluent, full]&lt;/i>
+     * @name valerie.PropertyValidationState#expression
+     * @method
+     * @param {string|RegExp} regularExpressionObjectOrString the regular expression
+     * @param {valerie.IRule.options} [options] the options to use when constructing the rule
+     * @return {valerie.PropertyValidationState} the validation state
+     */
+    prototype.expression = function (regularExpressionObjectOrString, options) {
+        return this.addRule(new rules.Expression(regularExpressionObjectOrString, options));
+    };
+
+    /**
+     * Validate the property further by checking its value is not after a permitted date.&lt;br/>
+     * &lt;i>[fluent, full]&lt;/i>
+     * @name valerie.PropertyValidationState#latest
+     * @method
+     * @param {date|function} latestValueOrFunction a value or function that specifies the latest permitted date
+     * @param {valerie.IRule.options} [options] the options to use when constructing the rule
+     * @return {valerie.PropertyValidationState} the validation state
+     */
+    prototype.latest = function (latestValueOrFunction, options) {
+        return this.addRule(new rules.During(null, latestValueOrFunction, options));
+    };
+
+    /**
+     * Validate the property further by checking its length is within a certain range.&lt;br/>
+     * &lt;i>[fluent, full]&lt;/i>
+     * @name valerie.PropertyValidationState#lengthBetween
+     * @method
+     * @param {number|function} shortestValueOrFunction a value or function that specifies the shortest permitted length
+     * @param {number|function} longestValueOrFunction a value or function that specifies the longest permitted length
+     * @param {valerie.IRule.options} [options] the options to use when constructing the rule
+     * @return {valerie.PropertyValidationState} the validation state
+     */
+    prototype.lengthBetween = function (shortestValueOrFunction, longestValueOrFunction, options) {
+        return this.addRule(new rules.StringLength(shortestValueOrFunction, longestValueOrFunction, options));
+    };
+
+    /**
+     * Validate the property further by checking its value matches another.&lt;br/>
+     * &lt;i>[fluent, full]&lt;/i>
+     * @name valerie.PropertyValidationState#matches
+     * @method
+     * @param {*} permittedValueOrFunction a value or function that specifies the permitted value
+     * @param {valerie.IRule.options} [options] the options to use when constructing the rule
+     * @return {valerie.PropertyValidationState} the validation state
+     */
+    prototype.matches = function (permittedValueOrFunction, options) {
+        return this.addRule(new rules.Matches(permittedValueOrFunction, options));
+    };
+
+    /**
+     * Validate the property further by checking its value doesn't exceed a maximum.&lt;br/>
+     * &lt;i>[fluent, full]&lt;/i>
+     * @name valerie.PropertyValidationState#maximum
+     * @method
+     * @param {*|function} maximumValueOrFunction the value or function that specifies the permitted maximum
+     * @param {valerie.IRule.options} [options] the options to use when constructing the rule
+     * @return {valerie.PropertyValidationState} the validation state
+     */
+    prototype.maximum = function (maximumValueOrFunction, options) {
+        return this.addRule(new rules.Range(null, maximumValueOrFunction, options));
+    };
+
+    /**
+     * Validate the property further by checking the number of items it has doesn't exceed a maximum.&lt;br/>
+     * &lt;i>[fluent, full]&lt;/i>
+     * @name valerie.PropertyValidationState#maximumNumberOfItems
+     * @method
+     * @param {number|function} maximumValueOrFunction a value or function that specifies the maximum number of items
+     * permitted
+     * @param {valerie.IRule.options} [options] the options to use when constructing the rule
+     * @return {valerie.PropertyValidationState} the validation state
+     */
+    prototype.maximumNumberOfItems = function (maximumValueOrFunction, options) {
+        return this.addRule(new rules.ArrayLength(null, maximumValueOrFunction, options));
+    };
+
+    /**
+     * Validate the property further by checking it isn't too long.&lt;br/>
+     * &lt;i>[fluent, full]&lt;/i>
+     * @name valerie.PropertyValidationState#maximumLength
+     * @method
+     * @param {number|function} longestValueOrFunction a value or function that specifies the maximum length permitted
+     * @param {valerie.IRule.options} [options] the options to use when constructing the rule
+     * @return {valerie.PropertyValidationState} the validation state
+     */
+    prototype.maximumLength = function (longestValueOrFunction, options) {
+        return this.addRule(new rules.StringLength(null, longestValueOrFunction, options));
+    };
+
+    /**
+     * Validate the property further by checking its value doesn't exceed a minimum.&lt;br/>
+     * &lt;i>[fluent, full]&lt;/i>
+     * @name valerie.PropertyValidationState#minimum
+     * @method
+     * @param {*|function} minimumValueOrFunction the value or function that specifies the permitted minimum
+     * @param {valerie.IRule.options} [options] the options to use when constructing the rule
+     * @return {valerie.PropertyValidationState} the validation state
+     */
+    prototype.minimum = function (minimumValueOrFunction, options) {
+        return this.addRule(new rules.Range(minimumValueOrFunction, null, options));
+    };
+
+    /**
+     * Validate the property further by checking the number of items it has doesn't exceed a minimum.&lt;br/>
+     * &lt;i>[fluent, full]&lt;/i>
+     * @name valerie.PropertyValidationState#minimumNumberOfItems
+     * @method
+     * @param {number|function} minimumValueOrFunction a value or function that specifies the minimum number of items
+     * permitted
+     * @param {valerie.IRule.options} [options] the options to use when constructing the rule
+     * @return {valerie.PropertyValidationState} the validation state
+     */
+    prototype.minimumNumberOfItems = function (minimumValueOrFunction, options) {
+        return this.addRule(new rules.ArrayLength(minimumValueOrFunction, null, options));
+    };
+
+    /**
+     * Validate the property further by checking it isn't too short.&lt;br/>
+     * &lt;i>[fluent, full]&lt;/i>
+     * @name valerie.PropertyValidationState#minimumLength
+     * @method
+     * @param {number|function} shortestValueOrFunction a value or function that specifies the minimum length permitted
+     * @param {valerie.IRule.options} [options] the options to use when constructing the rule
+     * @return {valerie.PropertyValidationState} the validation state
+     */
+    prototype.minimumLength = function (shortestValueOrFunction, options) {
+        return this.addRule(new rules.StringLength(shortestValueOrFunction, null, options));
+    };
+
+    /**
+     * Validate the property further by checking its value is not in a list of forbidden values.&lt;br/>
+     * &lt;i>[fluent, full]&lt;/i>
+     * @name valerie.PropertyValidationState#noneOf
+     * @method
+     * @param {array|function} forbiddenValuesOrFunction a value or function that specifies the forbidden values
+     * @param {valerie.IRule.options} [options] the options to use when constructing the rule
+     * @return {valerie.PropertyValidationState} the validation state
+     */
+    prototype.noneOf = function (forbiddenValuesOrFunction, options) {
+        return this.addRule(new rules.NoneOf(forbiddenValuesOrFunction, options));
+    };
+
+    /**
+     * Validate the property further by checking its value does not match another.&lt;br/>
+     * &lt;i>[fluent, full]&lt;/i>
+     * @name valerie.PropertyValidationState#not
+     * @method
+     * @param {*} forbiddenValueOrFunction a value or function that specifies the forbidden values
+     * @param {valerie.IRule.options} [options] the options to use when constructing the rule
+     * @return {valerie.PropertyValidationState} the validation state
+     */
+    prototype.not = function (forbiddenValueOrFunction, options) {
+        return this.addRule(new rules.Not(forbiddenValueOrFunction, options));
+    };
+
+    /**
+     * Validate the property further by checking its number of items hasn't exceed a minimum or maximum number.&lt;br/>
+     * &lt;i>[fluent, full]&lt;/i>
+     * @name valerie.PropertyValidationState#numberOfItems
+     * @method
+     * @param {number|function} minimumValueOrFunction a value or function that specifies the minimum number of items
+     * @param {number|function} maximumValueOrFunction a value or function that specifies the maximum number of items
+     * @param {valerie.IRule.options} [options] the options to use when constructing the rule
+     * @return {valerie.PropertyValidationState} the validation state
+     */
+    prototype.numberOfItems = function (minimumValueOrFunction, maximumValueOrFunction, options) {
+        return this.addRule(new rules.ArrayLength(minimumValueOrFunction, maximumValueOrFunction, options));
+    };
+
+    /**
+     * Validate the property further by checking its value is in a list of permitted values.&lt;br/>
+     * &lt;i>[fluent, full]&lt;/i>
+     * @name valerie.PropertyValidationState#oneOf
+     * @method
+     * @param {array|function} permittedValuesOrFunction a value or function that specifies the permitted values
+     * @param {valerie.IRule.options} [options] the options to use when constructing the rule
+     * @return {valerie.PropertyValidationState} the validation state
+     */
+    prototype.oneOf = function (permittedValuesOrFunction, options) {
+        return this.addRule(new rules.OneOf(permittedValuesOrFunction, options));
+    };
+
+    /**
+     * Validate the property further by checking its value doesn't exceed a minimum or maximum value.&lt;br/>
+     * &lt;i>[fluent, full]&lt;/i>
+     * @name valerie.PropertyValidationState#range
+     * @method
+     * @param {number|function} minimumValueOrFunction a value or function that specifies the minimum permitted value
+     * @param {number|function} maximumValueOrFunction a value or function that specifies the maximum permitted value
+     * @param {valerie.IRule.options} [options] the options to use when constructing the rule
+     * @return {valerie.PropertyValidationState} the validation state
+     */
+    prototype.range = function (minimumValueOrFunction, maximumValueOrFunction, options) {
+        return this.addRule(new rules.Range(minimumValueOrFunction, maximumValueOrFunction, options));
+    };
+
+    /**
+     * Validate the property further by add an ad-hoc rule to the rule-chain.&lt;br/>
+     * &lt;i>[fluent, full]&lt;/i>
+     * @name valerie.PropertyValidationState#rule
+     * @method
+     * @param {function} testFunction the function to use to test the property's value
+     * @return {valerie.PropertyValidationState} the validation state
+     */
+    prototype.rule = function (testFunction) {
+        return this.addRule({
+            "settings": {
+            },
+            "test": function (value) {
+                return testFunction(value);
+            }
+        });
+    };
+
+    /**
+     * Sets the message to show if the rule last added to the validation state's rule-chain fails.&lt;br/>
+     * &lt;i>[fluent, full]&lt;/i>
+     * @name valerie.PropertyValidationState#ruleMessage
+     * @method
+     * @param {string} message the validation message
+     * @return {valerie.PropertyValidationState} the validation state
+     */
+    prototype.ruleMessage = function (message) {
+        var stateRules = this.settings.rules,
+            index = stateRules.length - 1,
+            rule;
+
+        if (index >= 0) {
+            rule = stateRules[index];
+            rule.settings.failureMessageFormat = message;
+        }
+
+        return this;
+    };
+})();
+</code></pre>
+        </article>
+    </section>
+
+
+
+
+</div>
+
+<nav>
+    <h2><a href="index.html">Index</a></h2><h3>Classes</h3><ul><li><a href="ko.computed.html">computed</a></li><li><a href="ko.observable.html">observable</a></li><li><a href="valerie.IConverter.html">IConverter</a></li><li><a href="valerie.IRule.html">IRule</a></li><li><a href="valerie.IValidationState.html">IValidationState</a></li><li><a href="valerie.ModelValidationState.html">ModelValidationState</a></li><li><a href="valerie.NumericHelper.html">NumericHelper</a></li><li><a href="valerie.PropertyValidationState.html">PropertyValidationState</a></li><li><a href="valerie.rules.ArrayLength.html">ArrayLength</a></li><li><a href="valerie.rules.During.html">During</a></li><li><a href="valerie.rules.Expression.html">Expression</a></li><li><a href="valerie.rules.Length.html">Length</a></li><li><a href="valerie.rules.Matches.html">Matches</a></li><li><a href="valerie.rules.NoneOf.html">NoneOf</a></li><li><a href="valerie.rules.Not.html">Not</a></li><li><a href="valerie.rules.OneOf.html">OneOf</a></li><li><a href="valerie.rules.Range.html">Range</a></li><li><a href="valerie.rules.StringLength.html">StringLength</a></li><li><a href="valerie.ValidationResult.html">ValidationResult</a></li></ul><h3>Namespaces</h3><ul><li><a href="ko.html">ko</a></li><li><a href="ko.bindingHandlers.html">bindingHandlers</a></li><li><a href="valerie.html">valerie</a></li><li><a href="valerie.converters.html">converters</a></li><li><a href="valerie.dom.html">dom</a></li><li><a href="valerie.formatting.html">formatting</a></li><li><a href="valerie.koBindingsHelper.html">koBindingsHelper</a></li><li><a href="valerie.koExtras.html">koExtras</a></li><li><a href="valerie.rules.html">rules</a></li><li><a href="valerie.utils.html">utils</a></li><li><a href="valerie.validationState.html">validationState</a></li></ul>
+</nav>
+
+<br clear="both">
+
+<footer>
+    Documentation generated by <a href="https://github.com/jsdoc3/jsdoc">JSDoc 3.2.0-dev</a> on Wed May 15 2013 20:02:56 GMT+0100 (BST)
+</footer>
+
+<script> prettyPrint(); </script>
+<script src="scripts/linenumber.js"> </script>
+</body>
+</html>

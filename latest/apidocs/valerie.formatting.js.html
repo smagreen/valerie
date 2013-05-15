@@ -1,0 +1,122 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8">
+    <title>JSDoc: Source: core/valerie.formatting.js</title>
+    
+    <script src="scripts/prettify/prettify.js"> </script>
+    <script src="scripts/prettify/lang-css.js"> </script>
+    <!--[if lt IE 9]>
+      <script src="//html5shiv.googlecode.com/svn/trunk/html5.js"></script>
+    <![endif]-->
+    <link type="text/css" rel="stylesheet" href="styles/prettify-tomorrow.css">
+    <link type="text/css" rel="stylesheet" href="styles/jsdoc-default.css">
+</head>
+
+<body>
+
+<div id="main">
+    
+    <h1 class="page-title">Source: core/valerie.formatting.js</h1>
+    
+    
+
+
+    
+    <section>
+        <article>
+            <pre class="prettyprint source"><code>﻿(function () {
+    "use strict";
+
+    /**
+     * Contains utilities for formatting strings.
+     * @namespace valerie.formatting
+     */
+    valerie.formatting = {};
+
+    // Shortcuts.
+    var formatting = valerie.formatting;
+
+    /**
+     * Adds thousands separators to the given number string.
+     * @memberof valerie.formatting
+     * @param {string} numberString a string representation of a number
+     * @param {char|string} thousandsSeparator the character to use to separate the thousands
+     * @param {char|string} decimalSeparator the character used to separate the whole part of the number from its
+     * fractional part
+     * @return {string} the number string with separators added if required
+     */
+    formatting.addThousandsSeparator = function (numberString, thousandsSeparator, decimalSeparator) {
+        var wholeAndFractionalParts = numberString.toString().split(decimalSeparator),
+            wholePart = wholeAndFractionalParts[0];
+
+        wholePart = wholePart.replace(/\B(?=(\d{3})+(?!\d))/g, thousandsSeparator);
+        wholeAndFractionalParts[0] = wholePart;
+
+        return wholeAndFractionalParts.join(decimalSeparator);
+    };
+
+    /**
+     * Pads the front of the given string to the given width using the given character.
+     * @memberof valerie.formatting
+     * @param {string} stringToPad the string to pad
+     * @param {char|string} paddingCharacter the character to use to pad the string
+     * @param {number} width the width to pad the string to
+     * @return {string} the string padded, if required, to the given width
+     */
+    formatting.pad = function (stringToPad, paddingCharacter, width) {
+        stringToPad = stringToPad.toString();
+
+        if (stringToPad.length >= width) {
+            return stringToPad;
+        }
+
+        return (new Array(width + 1 - stringToPad.length)).join(paddingCharacter) + stringToPad;
+    };
+
+    /**
+     * Replaces placeholders in the given string with the given replacements.
+     * @memberof valerie.formatting
+     * @param {string} stringToFormat the string to format
+     * @param {object|array} replacements a dictionary or array holding the replacements to use
+     * @return {string} the formatted string with placeholders replaced where replacements have been specified
+     */
+    formatting.replacePlaceholders = function (stringToFormat, replacements) {
+        if (replacements == null) {
+            replacements = {};
+        }
+
+        return stringToFormat.replace(/\{(\w+)\}/g, function (match, subMatch) {
+            var replacement = replacements[subMatch];
+
+            if (replacement == null) {
+                return match;
+            }
+
+            return replacement.toString();
+        });
+    };
+})();
+</code></pre>
+        </article>
+    </section>
+
+
+
+
+</div>
+
+<nav>
+    <h2><a href="index.html">Index</a></h2><h3>Classes</h3><ul><li><a href="ko.computed.html">computed</a></li><li><a href="ko.observable.html">observable</a></li><li><a href="valerie.IConverter.html">IConverter</a></li><li><a href="valerie.IRule.html">IRule</a></li><li><a href="valerie.IValidationState.html">IValidationState</a></li><li><a href="valerie.ModelValidationState.html">ModelValidationState</a></li><li><a href="valerie.NumericHelper.html">NumericHelper</a></li><li><a href="valerie.PropertyValidationState.html">PropertyValidationState</a></li><li><a href="valerie.rules.ArrayLength.html">ArrayLength</a></li><li><a href="valerie.rules.During.html">During</a></li><li><a href="valerie.rules.Expression.html">Expression</a></li><li><a href="valerie.rules.Length.html">Length</a></li><li><a href="valerie.rules.Matches.html">Matches</a></li><li><a href="valerie.rules.NoneOf.html">NoneOf</a></li><li><a href="valerie.rules.Not.html">Not</a></li><li><a href="valerie.rules.OneOf.html">OneOf</a></li><li><a href="valerie.rules.Range.html">Range</a></li><li><a href="valerie.rules.StringLength.html">StringLength</a></li><li><a href="valerie.ValidationResult.html">ValidationResult</a></li></ul><h3>Namespaces</h3><ul><li><a href="ko.html">ko</a></li><li><a href="ko.bindingHandlers.html">bindingHandlers</a></li><li><a href="valerie.html">valerie</a></li><li><a href="valerie.converters.html">converters</a></li><li><a href="valerie.dom.html">dom</a></li><li><a href="valerie.formatting.html">formatting</a></li><li><a href="valerie.koBindingsHelper.html">koBindingsHelper</a></li><li><a href="valerie.koExtras.html">koExtras</a></li><li><a href="valerie.rules.html">rules</a></li><li><a href="valerie.utils.html">utils</a></li><li><a href="valerie.validationState.html">validationState</a></li></ul>
+</nav>
+
+<br clear="both">
+
+<footer>
+    Documentation generated by <a href="https://github.com/jsdoc3/jsdoc">JSDoc 3.2.0-dev</a> on Wed May 15 2013 20:02:56 GMT+0100 (BST)
+</footer>
+
+<script> prettyPrint(); </script>
+<script src="scripts/linenumber.js"> </script>
+</body>
+</html>

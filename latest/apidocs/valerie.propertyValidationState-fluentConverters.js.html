@@ -1,0 +1,206 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8">
+    <title>JSDoc: Source: full/valerie.propertyValidationState-fluentConverters.js</title>
+    
+    <script src="scripts/prettify/prettify.js"> </script>
+    <script src="scripts/prettify/lang-css.js"> </script>
+    <!--[if lt IE 9]>
+      <script src="//html5shiv.googlecode.com/svn/trunk/html5.js"></script>
+    <![endif]-->
+    <link type="text/css" rel="stylesheet" href="styles/prettify-tomorrow.css">
+    <link type="text/css" rel="stylesheet" href="styles/jsdoc-default.css">
+</head>
+
+<body>
+
+<div id="main">
+    
+    <h1 class="page-title">Source: full/valerie.propertyValidationState-fluentConverters.js</h1>
+    
+    
+
+
+    
+    <section>
+        <article>
+            <pre class="prettyprint source"><code>﻿(function () {
+    "use strict";
+
+    // Shortcuts.
+    var utils = valerie.utils,
+        converters = valerie.converters,
+        prototype = valerie.PropertyValidationState.prototype;
+
+    /**
+     * Validate the property using &lt;b>valerie.converters.currencyMajor&lt;/b>.&lt;br/>
+     * &lt;b>valerie.PropertyValidationState.prototype.currencyMajor.defaultOptions&lt;/b> holds the default options used by
+     * this fluent method.&lt;br/>
+     * &lt;i>[fluent, full]&lt;/i>
+     * @name valerie.PropertyValidationState#currencyMajor
+     * @method
+     * @param {valerie.PropertyValidationState.options} [options = default options] the options to apply to the
+     * validation state
+     * @return {valerie.PropertyValidationState} the validation state
+     */
+    prototype.currencyMajor = function (options) {
+        options = utils.mergeOptions(this.currencyMajor.defaultOptions, options);
+        this.settings = utils.mergeOptions(this.settings, options);
+        this.settings.converter = converters.currencyMajor;
+
+        return this;
+    };
+
+    prototype.currencyMajor.defaultOptions = {
+        "entryFormat": null,
+        "valueFormat": "C,"
+    };
+
+    /**
+     * Validate the property using &lt;b>valerie.converters.currencyMajorMinor&lt;/b>.&lt;br/>
+     * &lt;b>valerie.PropertyValidationState.prototype.currencyMajorMinor.defaultOptions&lt;/b> holds the default options used
+     * by this fluent method.&lt;br/>
+     * &lt;i>[fluent, full]&lt;/i>
+     * @name valerie.PropertyValidationState#currencyMajorMinor
+     * @method
+     * @param {valerie.PropertyValidationState.options} [options = default options] the options to apply to the
+     * validation state
+     * @return {valerie.PropertyValidationState} the validation state
+     */
+    prototype.currencyMajorMinor = function (options) {
+        options = utils.mergeOptions(this.currencyMajorMinor.defaultOptions, options);
+        this.settings = utils.mergeOptions(this.settings, options);
+        this.settings.converter = converters.currencyMajorMinor;
+
+        return this;
+    };
+
+    prototype.currencyMajorMinor.defaultOptions = {
+        "entryFormat": ".c",
+        "valueFormat": "C,.c"
+    };
+
+    /**
+     * Validate the property using &lt;b>valerie.converters.date&lt;/b>.&lt;br/>
+     * &lt;i>[fluent, full]&lt;/i>
+     * @name valerie.PropertyValidationState#date
+     * @method
+     * @return {valerie.PropertyValidationState} the validation state
+     */
+    prototype.date = function () {
+        this.settings.converter = converters.date;
+
+        return this;
+    };
+
+    /**
+     * Validate the property using &lt;b>valerie.converters.email&lt;/b>.&lt;br/>
+     * &lt;i>[fluent, full]&lt;/i>
+     * @name valerie.PropertyValidationState#email
+     * @method
+     * @return {valerie.PropertyValidationState} the validation state
+     */
+    prototype.email = function () {
+        this.settings.converter = converters.email;
+
+        return this;
+    };
+
+    /**
+     * Validate the property using &lt;b>valerie.converters.float&lt;/b>.&lt;br/>
+     * &lt;b>valerie.PropertyValidationState.prototype.float.defaultOptions&lt;/b> holds the default options used by this
+     * fluent method.&lt;br/>
+     * &lt;i>[fluent, full]&lt;/i>
+     * @name valerie.PropertyValidationState#float
+     * @method
+     * @param {valerie.PropertyValidationState.options} [options = default options] the options to apply to the
+     * validation state
+     * @return {valerie.PropertyValidationState} the validation state
+     */
+    prototype.float = function (options) {
+        options = utils.mergeOptions(this.float.defaultOptions, options);
+        this.settings = utils.mergeOptions(this.settings, options);
+        this.settings.converter = converters.float;
+
+        return this;
+    };
+
+    prototype.float.defaultOptions = {
+        "entryFormat": null,
+        "valueFormat": ",."
+    };
+
+    /**
+     * Validate the property using &lt;b>valerie.converters.integer&lt;/b>.&lt;br/>
+     * &lt;b>valerie.PropertyValidationState.prototype.integer.defaultOptions&lt;/b> holds the default options used by this
+     * fluent method.&lt;br/>
+     * &lt;i>[fluent, full]&lt;/i>
+     * @name valerie.PropertyValidationState#integer
+     * @method
+     * @param {valerie.PropertyValidationState.options} [options = default options] the options to apply to the
+     * validation state
+     * @return {valerie.PropertyValidationState} the validation state
+     */
+    prototype.integer = function (options) {
+        options = utils.mergeOptions(this.integer.defaultOptions, options);
+        this.settings = utils.mergeOptions(this.settings, options);
+        this.settings.converter = converters.integer;
+
+        return this;
+    };
+
+    prototype.integer.defaultOptions = {
+        "entryFormat": null,
+        "valueFormat": ","
+    };
+
+    /**
+     * Validate the property using &lt;b>valerie.converters.number&lt;/b>.&lt;br/>
+     * &lt;i>[fluent, full]&lt;/i>
+     * @name valerie.PropertyValidationState#number
+     * @method
+     * @return {valerie.PropertyValidationState} the validation state
+     */
+    prototype.number = function () {
+        this.settings.converter = converters.number;
+
+        return this;
+    };
+
+    /**
+     * Validate the property using &lt;b>valerie.converters.passThrough&lt;/b>.&lt;br/>
+     * &lt;i>[fluent, full]&lt;/i>
+     * @name valerie.PropertyValidationState#string
+     * @method
+     * @return {valerie.PropertyValidationState} the validation state
+     */
+    prototype.string = function () {
+        this.settings.converter = converters.passThrough;
+
+        return this;
+    };
+})();
+</code></pre>
+        </article>
+    </section>
+
+
+
+
+</div>
+
+<nav>
+    <h2><a href="index.html">Index</a></h2><h3>Classes</h3><ul><li><a href="ko.computed.html">computed</a></li><li><a href="ko.observable.html">observable</a></li><li><a href="valerie.IConverter.html">IConverter</a></li><li><a href="valerie.IRule.html">IRule</a></li><li><a href="valerie.IValidationState.html">IValidationState</a></li><li><a href="valerie.ModelValidationState.html">ModelValidationState</a></li><li><a href="valerie.NumericHelper.html">NumericHelper</a></li><li><a href="valerie.PropertyValidationState.html">PropertyValidationState</a></li><li><a href="valerie.rules.ArrayLength.html">ArrayLength</a></li><li><a href="valerie.rules.During.html">During</a></li><li><a href="valerie.rules.Expression.html">Expression</a></li><li><a href="valerie.rules.Length.html">Length</a></li><li><a href="valerie.rules.Matches.html">Matches</a></li><li><a href="valerie.rules.NoneOf.html">NoneOf</a></li><li><a href="valerie.rules.Not.html">Not</a></li><li><a href="valerie.rules.OneOf.html">OneOf</a></li><li><a href="valerie.rules.Range.html">Range</a></li><li><a href="valerie.rules.StringLength.html">StringLength</a></li><li><a href="valerie.ValidationResult.html">ValidationResult</a></li></ul><h3>Namespaces</h3><ul><li><a href="ko.html">ko</a></li><li><a href="ko.bindingHandlers.html">bindingHandlers</a></li><li><a href="valerie.html">valerie</a></li><li><a href="valerie.converters.html">converters</a></li><li><a href="valerie.dom.html">dom</a></li><li><a href="valerie.formatting.html">formatting</a></li><li><a href="valerie.koBindingsHelper.html">koBindingsHelper</a></li><li><a href="valerie.koExtras.html">koExtras</a></li><li><a href="valerie.rules.html">rules</a></li><li><a href="valerie.utils.html">utils</a></li><li><a href="valerie.validationState.html">validationState</a></li></ul>
+</nav>
+
+<br clear="both">
+
+<footer>
+    Documentation generated by <a href="https://github.com/jsdoc3/jsdoc">JSDoc 3.2.0-dev</a> on Wed May 15 2013 20:02:56 GMT+0100 (BST)
+</footer>
+
+<script> prettyPrint(); </script>
+<script src="scripts/linenumber.js"> </script>
+</body>
+</html>

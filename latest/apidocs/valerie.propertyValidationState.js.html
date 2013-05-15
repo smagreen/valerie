@@ -1,0 +1,393 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8">
+    <title>JSDoc: Source: core/valerie.propertyValidationState.js</title>
+    
+    <script src="scripts/prettify/prettify.js"> </script>
+    <script src="scripts/prettify/lang-css.js"> </script>
+    <!--[if lt IE 9]>
+      <script src="//html5shiv.googlecode.com/svn/trunk/html5.js"></script>
+    <![endif]-->
+    <link type="text/css" rel="stylesheet" href="styles/prettify-tomorrow.css">
+    <link type="text/css" rel="stylesheet" href="styles/jsdoc-default.css">
+</head>
+
+<body>
+
+<div id="main">
+    
+    <h1 class="page-title">Source: core/valerie.propertyValidationState.js</h1>
+    
+    
+
+
+    
+    <section>
+        <article>
+            <pre class="prettyprint source"><code>(function () {
+    "use strict";
+
+    var deferEvaluation = { "deferEvaluation": true },
+    // Shortcuts.
+        utils = valerie.utils,
+        formatting = valerie.formatting,
+        koExtras = valerie.koExtras,
+        koObservable = ko.observable,
+        koComputed = ko.computed,
+        passedValidationResult = valerie.ValidationResult.passedInstance,
+
+    // Functions used by computeds.
+        missingFunction = function (validationState) {
+            var value = validationState.observableOrComputed(),
+                missing = validationState.settings.missingTest(value),
+                required = validationState.settings.required();
+
+            if (missing && required) {
+                return -1;
+            }
+
+            if (missing && !required) {
+                return 0;
+            }
+
+            return 1;
+        },
+        rulesResultFunction = function (validationState) {
+            var value = validationState.observableOrComputed(),
+                rules = validationState.settings.rules,
+                rule,
+                result,
+                index;
+
+            for (index = 0; index &lt; rules.length; index++) {
+                rule = rules[index];
+
+                result = rule.test(value);
+
+                if (result.failed || result.pending) {
+                    return result;
+                }
+            }
+
+            return passedValidationResult;
+        },
+    // Functions for computeds.
+        failedFunction = function () {
+            return this.result().failed;
+        },
+        messageFunction = function () {
+            var message = this.result().message;
+
+            message = formatting.replacePlaceholders(message, { "name": this.settings.name() });
+
+            return message;
+        },
+        passedFunction = function () {
+            return this.result().passed;
+        },
+        pendingFunction = function () {
+            return this.result().pending;
+        },
+        resultFunction = function () {
+            var missingResult,
+                result;
+
+            result = this.boundEntry.result();
+            if (result.failed) {
+                return result;
+            }
+
+            missingResult = missingFunction(this);
+
+            if (missingResult === -1) {
+                return valerie.ValidationResult.createFailedResult(this.settings.missingFailureMessage);
+            }
+
+            if (missingResult === 0) {
+                return result;
+            }
+
+
+            return rulesResultFunction(this);
+        },
+        showMessageFunction = function () {
+            if (!this.settings.applicable()) {
+                return false;
+            }
+
+            return this.touched() && this.result().failed;
+        };
+
+    /**
+     * Construction options for a property validation state.
+     * @typedef {object} valerie.PropertyValidationState.options
+     * @property {function} applicable the function used to determine if the property is applicable
+     * @property {valerie.IConverter} converter the converter used to parse user
+     * entries and format display of the property's value
+     * @property {string} entryFormat the string used to format the property's value for display in a user entry
+     * @property {string} invalidFailureMessage the message shown when the user has entered an invalid value
+     * @property {string} missingFailureMessage the message shown when a value is required but is missing
+     * @property {function} name the function used to determine the name of the property; used in failure messages
+     * @property {function} required the function used to determine if a value is required
+     * @property {valerie.array&lt;IRule>} rules the chain of rules used to validate the property's value
+     * @property {string} valueFormat the string use to format the property's value for display in a message
+     */
+
+    /**
+     * Constructs the validation state for a simple, single, observable or computed property.
+     * @constructor
+     * @param {function} observableOrComputed the observable or computed the validation state is for
+     * @param {valerie.PropertyValidationState.options} [options = default options] the options to use when creating the
+     * validation state
+     */
+    valerie.PropertyValidationState = function (observableOrComputed, options) {
+        //noinspection JSValidateTypes
+        options = utils.mergeOptions(valerie.PropertyValidationState.defaultOptions, options);
+        //noinspection JSUndefinedPropertyAssignment,JSUnresolvedVariable
+        options.applicable = utils.asFunction(options.applicable);
+        //noinspection JSUndefinedPropertyAssignment,JSUnresolvedVariable
+        options.name = utils.asFunction(options.name);
+        //noinspection JSUndefinedPropertyAssignment,JSUnresolvedVariable
+        options.required = utils.asFunction(options.required);
+
+        // Available, but not for "consumer" use.
+        this.boundEntry = {
+            "focused": koObservable(false),
+            "result": koObservable(passedValidationResult),
+            "textualInput": false
+        };
+
+        /**
+         * Gets whether the value held by or entered for the property fails validation.
+         * @method
+         * @return {boolean} &lt;code>true&lt;/code> if validation has failed, &lt;code>false&lt;/code> otherwise
+         */
+        this.failed = koComputed(failedFunction, this, deferEvaluation);
+
+        /**
+         * Gets a message describing the validation state.
+         * @method
+         * @return {string} the message, can be empty
+         */
+        this.message = koExtras.pausableComputed(messageFunction, this, deferEvaluation);
+
+        /**
+         * Gets whether the value held by or entered for the property passes validation.
+         * @method
+         * @return {boolean} &lt;code>true&lt;/code> if validation has passed, &lt;code>false&lt;/code> otherwise
+         */
+        this.passed = koComputed(passedFunction, this, deferEvaluation);
+
+        /**
+         * The observable or computed this validation state is for.
+         * @type {function}
+         */
+        this.observableOrComputed = observableOrComputed;
+
+        /**
+         * Gets whether validation for the property hasn't yet completed.
+         * @method
+         * @return {boolean} &lt;code>true&lt;/code> is validation is pending, &lt;code>false&lt;/code> otherwise
+         */
+        this.pending = koComputed(pendingFunction, this, deferEvaluation);
+
+        /**
+         * Gets the result of the validation.
+         * @method
+         * @return {valerie.ValidationResult} the result
+         */
+        this.result = koComputed(resultFunction, this, deferEvaluation);
+
+        /**
+         * The settings for this validation state.
+         * @type {valerie.PropertyValidationState.options}
+         */
+        this.settings = options;
+
+        /**
+         * Gets the name of the property.
+         * @method
+         * @return {string} the name of the property
+         */
+        this.getName = this.settings.name;
+
+        /**
+         * Gets whether the property is applicable.
+         * @method
+         * @return {boolean} &lt;code>true&lt;/code> if the property is applicable, &lt;code>false&lt;/code> otherwise
+         */
+        this.isApplicable = this.settings.applicable;
+
+        /**
+         * Gets whether the message describing the validation state should be shown.
+         * @method
+         * @return {boolean} &lt;code>true&lt;/code> if the message should be shown, &lt;code>false&lt;/code> otherwise
+         */
+        this.showMessage = koExtras.pausableComputed(showMessageFunction, this, deferEvaluation);
+
+        /**
+         * Gets or sets whether the property has been "touched" by a user action.
+         * @method
+         * @param {boolean} [value] &lt;code>true&lt;/code> if the property should marked as touched, &lt;code>false&lt;/code> if
+         * the property should be marked as untouched
+         * @return {boolean} &lt;code>true&lt;/code> if the property has been "touched", &lt;code>false&lt;/code> otherwise
+         */
+        this.touched = koObservable(false);
+    };
+
+    valerie.PropertyValidationState.prototype = {
+        /**
+         * Adds a rule to the chain of rules used to validate the property's value.&lt;br/>
+         * &lt;i>[fluent]&lt;/i>
+         * @fluent
+         * @param {valerie.IRule} rule the rule to add
+         * @return {valerie.PropertyValidationState}
+         */
+        "addRule": function (rule) {
+            this.settings.rules.push(rule);
+
+            return this;
+        },
+        /**
+         * Sets the value or function used to determine if the property is applicable.&lt;br/>
+         * &lt;i>[fluent]&lt;/i>
+         * @fluent
+         * @param {boolean|function} [valueOrFunction = true] the value or function to use
+         * @return {valerie.PropertyValidationState}
+         */
+        "applicable": function (valueOrFunction) {
+            if (valueOrFunction == null) {
+                valueOrFunction = true;
+            }
+
+            this.settings.applicable = utils.asFunction(valueOrFunction);
+
+            return this;
+        },
+        /**
+         * Ends a chain of fluent method calls on this property validation state.&lt;br/>
+         * Applies the &lt;b>options.valueFormat&lt;/b> format string to all the rules in the rule chain.&lt;br/>
+         * &lt;i>[fluent]&lt;/i>
+         * @fluent
+         * @return {function} the observable or computed the validation state is for
+         */
+        "end": function () {
+            var index,
+                settings = this.settings,
+                valueFormat = settings.valueFormat,
+                rules = settings.rules,
+                ruleSettings;
+
+            for (index = 0; index &lt; rules.length; index++) {
+                ruleSettings = rules[index].settings;
+
+                ruleSettings.valueFormat = valueFormat;
+            }
+
+            return this.observableOrComputed;
+        },
+        /**
+         * Sets the value or function used to determine the name of the property.&lt;br/>
+         * &lt;i>[fluent]&lt;/i>
+         * @fluent
+         * @param {string|function} valueOrFunction the value or function to use
+         * @return {valerie.PropertyValidationState}
+         */
+        "name": function (valueOrFunction) {
+            this.settings.name = utils.asFunction(valueOrFunction);
+
+            return this;
+        },
+        /**
+         * Sets the value or function used to determine the if the property is required.&lt;br/>
+         * &lt;i>[fluent]&lt;/i>
+         * @fluent
+         * @param {boolean|function} [valueOrFunction = false] the value or function to use
+         * @return {valerie.PropertyValidationState}
+         */
+        "required": function (valueOrFunction) {
+            if (valueOrFunction == null) {
+                valueOrFunction = true;
+            }
+
+            this.settings.required = utils.asFunction(valueOrFunction);
+
+            return this;
+        },
+        /**
+         * Sets the format string used to format the display of the value.&lt;br/>
+         * &lt;i>[fluent]&lt;/i>
+         * @fluent
+         * @param {string} format the format string to use
+         * @return {valerie.PropertyValidationState}
+         */
+        "valueFormat": function (format) {
+            this.settings.valueFormat = format;
+
+            return this;
+        }
+    };
+
+    /**
+     * The default options used when constructing a property validation state.
+     * @name valerie.PropertyValidationState.defaultOptions
+     * @lends valerie.PropertyValidationState.options
+     */
+    valerie.PropertyValidationState.defaultOptions = {
+        "applicable": utils.asFunction(true),
+        "converter": valerie.converters.passThrough,
+        "entryFormat": null,
+        "invalidEntryFailureMessage": "",
+        "missingFailureMessage": "",
+        "missingTest": utils.isMissing,
+        "name": utils.asFunction(),
+        "required": utils.asFunction(false),
+        "rules": [],
+        "valueFormat": null
+    };
+
+    /**
+     * Makes the passed-in property validatable. After invocation the property will have a validation state.
+     * &lt;br/>&lt;b>fluent&lt;/b>
+     * @param {function} observableOrComputed the Knockout observable or computed to make validatable
+     * @param {valerie.PropertyValidationState.options} [options] the options to use when creating the property's
+     * validation state
+     * @return {valerie.PropertyValidationState} the validation state belonging to the property
+     * @throws {string} Only observables or computeds can be made validatable properties.
+     */
+    valerie.validatableProperty = function (observableOrComputed, options) {
+        if (!ko.isSubscribable(observableOrComputed)) {
+            throw "Only observables or computeds can be made validatable properties.";
+        }
+
+        var validationState = new valerie.PropertyValidationState(observableOrComputed, options);
+
+        valerie.validationState.setFor(observableOrComputed, validationState);
+
+        return validationState;
+    };
+})();
+</code></pre>
+        </article>
+    </section>
+
+
+
+
+</div>
+
+<nav>
+    <h2><a href="index.html">Index</a></h2><h3>Classes</h3><ul><li><a href="ko.computed.html">computed</a></li><li><a href="ko.observable.html">observable</a></li><li><a href="valerie.IConverter.html">IConverter</a></li><li><a href="valerie.IRule.html">IRule</a></li><li><a href="valerie.IValidationState.html">IValidationState</a></li><li><a href="valerie.ModelValidationState.html">ModelValidationState</a></li><li><a href="valerie.NumericHelper.html">NumericHelper</a></li><li><a href="valerie.PropertyValidationState.html">PropertyValidationState</a></li><li><a href="valerie.rules.ArrayLength.html">ArrayLength</a></li><li><a href="valerie.rules.During.html">During</a></li><li><a href="valerie.rules.Expression.html">Expression</a></li><li><a href="valerie.rules.Length.html">Length</a></li><li><a href="valerie.rules.Matches.html">Matches</a></li><li><a href="valerie.rules.NoneOf.html">NoneOf</a></li><li><a href="valerie.rules.Not.html">Not</a></li><li><a href="valerie.rules.OneOf.html">OneOf</a></li><li><a href="valerie.rules.Range.html">Range</a></li><li><a href="valerie.rules.StringLength.html">StringLength</a></li><li><a href="valerie.ValidationResult.html">ValidationResult</a></li></ul><h3>Namespaces</h3><ul><li><a href="ko.html">ko</a></li><li><a href="ko.bindingHandlers.html">bindingHandlers</a></li><li><a href="valerie.html">valerie</a></li><li><a href="valerie.converters.html">converters</a></li><li><a href="valerie.dom.html">dom</a></li><li><a href="valerie.formatting.html">formatting</a></li><li><a href="valerie.koBindingsHelper.html">koBindingsHelper</a></li><li><a href="valerie.koExtras.html">koExtras</a></li><li><a href="valerie.rules.html">rules</a></li><li><a href="valerie.utils.html">utils</a></li><li><a href="valerie.validationState.html">validationState</a></li></ul>
+</nav>
+
+<br clear="both">
+
+<footer>
+    Documentation generated by <a href="https://github.com/jsdoc3/jsdoc">JSDoc 3.2.0-dev</a> on Wed May 15 2013 20:02:56 GMT+0100 (BST)
+</footer>
+
+<script> prettyPrint(); </script>
+<script src="scripts/linenumber.js"> </script>
+</body>
+</html>

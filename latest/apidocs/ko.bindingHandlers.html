@@ -1,0 +1,938 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8">
+    <title>JSDoc: Namespace: bindingHandlers</title>
+    
+    <script src="scripts/prettify/prettify.js"> </script>
+    <script src="scripts/prettify/lang-css.js"> </script>
+    <!--[if lt IE 9]>
+      <script src="//html5shiv.googlecode.com/svn/trunk/html5.js"></script>
+    <![endif]-->
+    <link type="text/css" rel="stylesheet" href="styles/prettify-tomorrow.css">
+    <link type="text/css" rel="stylesheet" href="styles/jsdoc-default.css">
+</head>
+
+<body>
+
+<div id="main">
+    
+    <h1 class="page-title">Namespace: bindingHandlers</h1>
+    
+    
+
+
+
+<section>
+    
+<header>
+    <h2>
+        <span class="ancestors"><a href="ko.html">ko</a>.</span>
+    
+    bindingHandlers
+    </h2>
+    
+</header>  
+
+<article>
+    <div class="container-overview">
+    
+    
+    
+        
+            <div class="description">Knockout binding handlers.<br/>
+<br/>
+<h3>NOTE: How valerie's Binding Handlers Choose a Property or Model</h3>
+Most valerie binding handlers allow the property or model to work against to be specified in a number of ways.
+For these handlers, the following algorithm describes how a property or model is chosen:
+<ul>
+    <li>
+        use the value given for the binding, unless it's <code>true</code> in which case use the first found
+        from:
+    <ul>
+        <li>the value of the element's <b>value</b> binding</li>
+        <li>the value of the element's <b>checked</b> binding</li>
+        <li>the value of the element's <b>validatedChecked</b> binding</li>
+        <li>the value of the element's <b>validatedValue</b> binding</li>
+        <li>the view-model object in the current context <code>($data)</code></li>
+    </ul>
+</ul></div>
+        
+        
+        
+<dl class="details">
+    
+        
+    
+    
+    
+
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    <dt class="tag-source">Source:</dt>
+    <dd class="tag-source"><ul class="dummy"><li>
+        <a href="documentation-extras.js.html">documentation-extras.js</a>, <a href="documentation-extras.js.html#line29">line 29</a>
+    </li></ul></dd>
+    
+    
+    
+    
+    
+    
+    
+</dl>
+
+        
+        
+    
+    </div>
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+        <h3 class="subsection-title">Members</h3>
+        
+        <dl>
+            
+<dt>
+    <h4 class="name" id="disabledWhenNotValid"><span class="type-signature">&lt;static> </span>disabledWhenNotValid<span class="type-signature"></span></h4>
+    
+    
+</dt>
+<dd>
+    
+    <div class="description">
+        Disables the element when the chosen property or model has failed or is pending validation, enabled
+otherwise.
+    </div>
+    
+    
+    
+
+    
+<dl class="details">
+    
+        
+    
+    
+    
+
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    <dt class="tag-source">Source:</dt>
+    <dd class="tag-source"><ul class="dummy"><li>
+        <a href="ko.bindingHandlers.js.html">core/ko.bindingHandlers.js</a>, <a href="ko.bindingHandlers.js.html#line229">line 229</a>
+    </li></ul></dd>
+    
+    
+    
+    
+    
+    
+    
+</dl>
+
+    
+    
+</dd>
+
+        
+            
+<dt>
+    <h4 class="name" id="disabledWhenTouchedAndNotValid"><span class="type-signature">&lt;static> </span>disabledWhenTouchedAndNotValid<span class="type-signature"></span></h4>
+    
+    
+</dt>
+<dd>
+    
+    <div class="description">
+        Disables the element when the chosen property or model has been touched and has failed or is pending
+validation, enabled otherwise.<br/>
+    </div>
+    
+    
+    
+
+    
+<dl class="details">
+    
+        
+    
+    
+    
+
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    <dt class="tag-source">Source:</dt>
+    <dd class="tag-source"><ul class="dummy"><li>
+        <a href="ko.bindingHandlers.js.html">core/ko.bindingHandlers.js</a>, <a href="ko.bindingHandlers.js.html#line243">line 243</a>
+    </li></ul></dd>
+    
+    
+    
+    
+    
+    
+    
+</dl>
+
+    
+    
+</dd>
+
+        
+            
+<dt>
+    <h4 class="name" id="enabledWhenApplicable"><span class="type-signature">&lt;static> </span>enabledWhenApplicable<span class="type-signature"></span></h4>
+    
+    
+</dt>
+<dd>
+    
+    <div class="description">
+        Enables the element when the chosen property or model is applicable, disabled otherwise.
+    </div>
+    
+    
+    
+
+    
+<dl class="details">
+    
+        
+    
+    
+    
+
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    <dt class="tag-source">Source:</dt>
+    <dd class="tag-source"><ul class="dummy"><li>
+        <a href="ko.bindingHandlers.js.html">core/ko.bindingHandlers.js</a>, <a href="ko.bindingHandlers.js.html#line257">line 257</a>
+    </li></ul></dd>
+    
+    
+    
+    
+    
+    
+    
+</dl>
+
+    
+    
+</dd>
+
+        
+            
+<dt>
+    <h4 class="name" id="formattedValue"><span class="type-signature">&lt;static> </span>formattedValue<span class="type-signature"></span></h4>
+    
+    
+</dt>
+<dd>
+    
+    <div class="description">
+        Sets the text of the element to be a formatted representation of the specified property.
+    </div>
+    
+    
+    
+
+    
+<dl class="details">
+    
+        
+    
+    
+    
+
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    <dt class="tag-source">Source:</dt>
+    <dd class="tag-source"><ul class="dummy"><li>
+        <a href="ko.bindingHandlers.js.html">core/ko.bindingHandlers.js</a>, <a href="ko.bindingHandlers.js.html#line270">line 270</a>
+    </li></ul></dd>
+    
+    
+    
+    
+    
+    
+    
+</dl>
+
+    
+    
+</dd>
+
+        
+            
+<dt>
+    <h4 class="name" id="validatedValue"><span class="type-signature">&lt;static> </span>validatedValue<span class="type-signature"></span></h4>
+    
+    
+</dt>
+<dd>
+    
+    <div class="description">
+        Validates entries that can be checked, i.e. check boxes and radio buttons.
+Functions in the same way as the <b>ko.bindingHandlers.checked</b> binding handler, with the following
+alterations:
+<ul>
+    <li>registers a blur event handler so validation messages for missing selections can be displayed</li>
+</ul>
+    </div>
+    
+    
+    
+
+    
+<dl class="details">
+    
+        
+    
+    
+    
+
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    <dt class="tag-source">Source:</dt>
+    <dd class="tag-source"><ul class="dummy"><li>
+        <a href="ko.bindingHandlers.js.html">core/ko.bindingHandlers.js</a>, <a href="ko.bindingHandlers.js.html#line85">line 85</a>
+    </li></ul></dd>
+    
+    
+    
+    
+    
+    
+    
+</dl>
+
+    
+    
+</dd>
+
+        
+            
+<dt>
+    <h4 class="name" id="validatedValue"><span class="type-signature">&lt;static> </span>validatedValue<span class="type-signature"></span></h4>
+    
+    
+</dt>
+<dd>
+    
+    <div class="description">
+        Validates entries that can be keyed or selected.
+Functions in the same way as the <b>ko.bindingHandlers.value</b> binding handler, with the following
+alterations:
+<ul>
+    <li>registers a blur event handler:
+    <ul>
+        <li>to display validation messages as entries or selections lose focus</li>
+        <li>to reformat successfully parsed textual entries</li>
+    </ul>
+    </li>
+    <li>
+        registers a focus event handler to pause the update of any existing visible validation message
+    </li>
+    <li>
+        registers a key-up event handler which validates the entry as it's being entered; this allows other
+        entries that are shown conditionally to be available before the user tabs out of this entry
+    </li>
+</ul>
+    </div>
+    
+    
+    
+
+    
+<dl class="details">
+    
+        
+    
+    
+    
+
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    <dt class="tag-source">Source:</dt>
+    <dd class="tag-source"><ul class="dummy"><li>
+        <a href="ko.bindingHandlers.js.html">core/ko.bindingHandlers.js</a>, <a href="ko.bindingHandlers.js.html#line116">line 116</a>
+    </li></ul></dd>
+    
+    
+    
+    
+    
+    
+    
+</dl>
+
+    
+    
+</dd>
+
+        
+            
+<dt>
+    <h4 class="name" id="validationCss"><span class="type-signature">&lt;static> </span>validationCss<span class="type-signature"></span></h4>
+    
+    
+</dt>
+<dd>
+    
+    <div class="description">
+        Sets CSS classes on the element based on the validation state of the chosen property or model.</br>
+The names of the CSS classes used are held in the <b>ko.bindingHandlers.validationCss.classNames</b> object,
+by default they are:
+<ul>
+    <li><b>failed</b> - if validation failed</li>
+    <li><b>focused</b> - if the element is in focus</li>
+    <li><b>passed</b> - if validation passed</li>
+    <li><b>pending</b> - if validation is pending</li>
+    <li><b>touched</b> - set if the element has been "touched"</li>
+    <li><b>untouched</b> - set if the element has not been "touched"</li>
+</ul>
+    </div>
+    
+    
+    
+
+    
+<dl class="details">
+    
+        
+    
+    
+    
+
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    <dt class="tag-source">Source:</dt>
+    <dd class="tag-source"><ul class="dummy"><li>
+        <a href="ko.bindingHandlers.js.html">core/ko.bindingHandlers.js</a>, <a href="ko.bindingHandlers.js.html#line297">line 297</a>
+    </li></ul></dd>
+    
+    
+    
+    
+    
+    
+    
+</dl>
+
+    
+    
+</dd>
+
+        
+            
+<dt>
+    <h4 class="name" id="validationMessageFor"><span class="type-signature">&lt;static> </span>validationMessageFor<span class="type-signature"></span></h4>
+    
+    
+</dt>
+<dd>
+    
+    <div class="description">
+        Makes the element behave like a validation message for the chosen property or model:
+<ul>
+    <li>makes the element visible if the value is invalid</li>
+    <li>sets the text of the element to be the underlying validation state's message</li>
+</ul>
+    </div>
+    
+    
+    
+
+    
+<dl class="details">
+    
+        
+    
+    
+    
+
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    <dt class="tag-source">Source:</dt>
+    <dd class="tag-source"><ul class="dummy"><li>
+        <a href="ko.bindingHandlers.js.html">core/ko.bindingHandlers.js</a>, <a href="ko.bindingHandlers.js.html#line353">line 353</a>
+    </li></ul></dd>
+    
+    
+    
+    
+    
+    
+    
+</dl>
+
+    
+    
+</dd>
+
+        
+            
+<dt>
+    <h4 class="name" id="visibleWhenFocused"><span class="type-signature">&lt;static> </span>visibleWhenFocused<span class="type-signature"></span></h4>
+    
+    
+</dt>
+<dd>
+    
+    <div class="description">
+        Makes the element visible when the entry bound to the chosen property is in focus, invisible otherwise.
+    </div>
+    
+    
+    
+
+    
+<dl class="details">
+    
+        
+    
+    
+    
+
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    <dt class="tag-source">Source:</dt>
+    <dd class="tag-source"><ul class="dummy"><li>
+        <a href="ko.bindingHandlers.js.html">core/ko.bindingHandlers.js</a>, <a href="ko.bindingHandlers.js.html#line371">line 371</a>
+    </li></ul></dd>
+    
+    
+    
+    
+    
+    
+    
+</dl>
+
+    
+    
+</dd>
+
+        
+            
+<dt>
+    <h4 class="name" id="visibleWhenInvalid"><span class="type-signature">&lt;static> </span>visibleWhenInvalid<span class="type-signature"></span></h4>
+    
+    
+</dt>
+<dd>
+    
+    <div class="description">
+        Makes the element visible when the chosen property or model has failed validation, invisible otherwise.
+    </div>
+    
+    
+    
+
+    
+<dl class="details">
+    
+        
+    
+    
+    
+
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    <dt class="tag-source">Source:</dt>
+    <dd class="tag-source"><ul class="dummy"><li>
+        <a href="ko.bindingHandlers.js.html">core/ko.bindingHandlers.js</a>, <a href="ko.bindingHandlers.js.html#line384">line 384</a>
+    </li></ul></dd>
+    
+    
+    
+    
+    
+    
+    
+</dl>
+
+    
+    
+</dd>
+
+        
+            
+<dt>
+    <h4 class="name" id="visibleWhenSummaryNotEmpty"><span class="type-signature">&lt;static> </span>visibleWhenSummaryNotEmpty<span class="type-signature"></span></h4>
+    
+    
+</dt>
+<dd>
+    
+    <div class="description">
+        Makes the element visible when the summary for the chosen model is not empty, invisible otherwise.
+    </div>
+    
+    
+    
+
+    
+<dl class="details">
+    
+        
+    
+    
+    
+
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    <dt class="tag-source">Source:</dt>
+    <dd class="tag-source"><ul class="dummy"><li>
+        <a href="ko.bindingHandlers.js.html">core/ko.bindingHandlers.js</a>, <a href="ko.bindingHandlers.js.html#line397">line 397</a>
+    </li></ul></dd>
+    
+    
+    
+    
+    
+    
+    
+</dl>
+
+    
+    
+</dd>
+
+        
+            
+<dt>
+    <h4 class="name" id="visibleWhenTouched"><span class="type-signature">&lt;static> </span>visibleWhenTouched<span class="type-signature"></span></h4>
+    
+    
+</dt>
+<dd>
+    
+    <div class="description">
+        Makes the element visible if the chosen property or model has been touched, invisible otherwise.
+    </div>
+    
+    
+    
+
+    
+<dl class="details">
+    
+        
+    
+    
+    
+
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    <dt class="tag-source">Source:</dt>
+    <dd class="tag-source"><ul class="dummy"><li>
+        <a href="ko.bindingHandlers.js.html">core/ko.bindingHandlers.js</a>, <a href="ko.bindingHandlers.js.html#line410">line 410</a>
+    </li></ul></dd>
+    
+    
+    
+    
+    
+    
+    
+</dl>
+
+    
+    
+</dd>
+
+        
+            
+<dt>
+    <h4 class="name" id="visibleWhenUntouched"><span class="type-signature">&lt;static> </span>visibleWhenUntouched<span class="type-signature"></span></h4>
+    
+    
+</dt>
+<dd>
+    
+    <div class="description">
+        Makes the element visible if the chosen property or model is untouched, invisible otherwise.
+    </div>
+    
+    
+    
+
+    
+<dl class="details">
+    
+        
+    
+    
+    
+
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    <dt class="tag-source">Source:</dt>
+    <dd class="tag-source"><ul class="dummy"><li>
+        <a href="ko.bindingHandlers.js.html">core/ko.bindingHandlers.js</a>, <a href="ko.bindingHandlers.js.html#line423">line 423</a>
+    </li></ul></dd>
+    
+    
+    
+    
+    
+    
+    
+</dl>
+
+    
+    
+</dd>
+
+        
+            
+<dt>
+    <h4 class="name" id="visibleWhenValid"><span class="type-signature">&lt;static> </span>visibleWhenValid<span class="type-signature"></span></h4>
+    
+    
+</dt>
+<dd>
+    
+    <div class="description">
+        Makes the element visible if the chosen property or model has passed validation.
+    </div>
+    
+    
+    
+
+    
+<dl class="details">
+    
+        
+    
+    
+    
+
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    <dt class="tag-source">Source:</dt>
+    <dd class="tag-source"><ul class="dummy"><li>
+        <a href="ko.bindingHandlers.js.html">core/ko.bindingHandlers.js</a>, <a href="ko.bindingHandlers.js.html#line436">line 436</a>
+    </li></ul></dd>
+    
+    
+    
+    
+    
+    
+    
+</dl>
+
+    
+    
+</dd>
+
+        </dl>
+    
+    
+    
+    
+    
+    
+    
+</article>
+
+</section>  
+
+
+
+
+</div>
+
+<nav>
+    <h2><a href="index.html">Index</a></h2><h3>Classes</h3><ul><li><a href="ko.computed.html">computed</a></li><li><a href="ko.observable.html">observable</a></li><li><a href="valerie.IConverter.html">IConverter</a></li><li><a href="valerie.IRule.html">IRule</a></li><li><a href="valerie.IValidationState.html">IValidationState</a></li><li><a href="valerie.ModelValidationState.html">ModelValidationState</a></li><li><a href="valerie.NumericHelper.html">NumericHelper</a></li><li><a href="valerie.PropertyValidationState.html">PropertyValidationState</a></li><li><a href="valerie.rules.ArrayLength.html">ArrayLength</a></li><li><a href="valerie.rules.During.html">During</a></li><li><a href="valerie.rules.Expression.html">Expression</a></li><li><a href="valerie.rules.Length.html">Length</a></li><li><a href="valerie.rules.Matches.html">Matches</a></li><li><a href="valerie.rules.NoneOf.html">NoneOf</a></li><li><a href="valerie.rules.Not.html">Not</a></li><li><a href="valerie.rules.OneOf.html">OneOf</a></li><li><a href="valerie.rules.Range.html">Range</a></li><li><a href="valerie.rules.StringLength.html">StringLength</a></li><li><a href="valerie.ValidationResult.html">ValidationResult</a></li></ul><h3>Namespaces</h3><ul><li><a href="ko.html">ko</a></li><li><a href="ko.bindingHandlers.html">bindingHandlers</a></li><li><a href="valerie.html">valerie</a></li><li><a href="valerie.converters.html">converters</a></li><li><a href="valerie.dom.html">dom</a></li><li><a href="valerie.formatting.html">formatting</a></li><li><a href="valerie.koBindingsHelper.html">koBindingsHelper</a></li><li><a href="valerie.koExtras.html">koExtras</a></li><li><a href="valerie.rules.html">rules</a></li><li><a href="valerie.utils.html">utils</a></li><li><a href="valerie.validationState.html">validationState</a></li></ul>
+</nav>
+
+<br clear="both">
+
+<footer>
+    Documentation generated by <a href="https://github.com/jsdoc3/jsdoc">JSDoc 3.2.0-dev</a> on Wed May 15 2013 20:02:57 GMT+0100 (BST)
+</footer>
+
+<script> prettyPrint(); </script>
+<script src="scripts/linenumber.js"> </script>
+</body>
+</html>
