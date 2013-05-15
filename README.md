@@ -20,4 +20,6 @@ Features include:
 - easy to localise
 - designed to work with older browsers _(just like Knockout itself)_
 
-_documentation and examples to come_
+View the [API documentation](https://rawgithub.com/egrove/valeriejs/master/latest/apidocs/index.html).
+
+_samples to come_
