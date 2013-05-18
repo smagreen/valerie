@@ -1,0 +1,26 @@
+- var menu = [];
+- var subMenuItems;
+
+- subMenuItems = [];
+- menu.push({ "name": "home", "title": "Home", "link": "index.html", "items": subMenuItems });
+
+- subMenuItems = [];
+- menu.push({ "name": "input-fields", "title": "Input Fields", "items": subMenuItems });
+- subMenuItems.push({ "name": "one", "title": "One", "link": "input-fields-one.html" });
+- subMenuItems.push({ "name": "two", "title": "Two", "link": "input-fields-two.html" });
+
+ul.nav.nav-list
+    each sectionMenu in menu
+        - cssClass = "header ";
+        - cssClass += (page.section === sectionMenu.name && sectionMenu.items.length === 0) ? "active " : " ";
+        - cssClass += (sectionMenu.link === undefined) ? "no-page" : "";
+        li(class=cssClass)
+            a(href=sectionMenu.link)
+                if sectionMenu.link !== undefined
+                    i.icon-chevron-right
+                =sectionMenu.title
+        each sectionItem in sectionMenu.items
+            li(class=((page.subSection === sectionItem.name) ? "active" : ""))
+                a(href=sectionItem.link)
+                    i.icon-chevron-right
+                    =sectionItem.title
