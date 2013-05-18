@@ -15,7 +15,7 @@ module.exports = function (grunt) {
                     {
                         "expand": true,
                         "cwd": "build",
-                        "src": ["valerie-*.js"],
+                        "src": ["valerie*.js"],
                         "dest": "latest/code"
                     }
                 ]
@@ -59,47 +59,47 @@ module.exports = function (grunt) {
                     "code/valerie/core/ko.bindingHandlers.js",
                     "code/valerie/core/valerie.koBindingsHelper.js"
                 ],
-                "dest": "build/valerie-for-knockout-core.js"
+                "dest": "build/valerie-core.js"
             },
             "full": {
                 "src": [
-                    "build/valerie-for-knockout-core.js",
+                    "build/valerie-core.js",
                     "code/valerie/full/valerie.numericHelper.js",
                     "code/valerie/full/valerie.converters.js",
                     "code/valerie/full/valerie.rules.js",
                     "code/valerie/full/valerie.propertyValidationState-fluentConverters.js",
                     "code/valerie/full/valerie.propertyValidationState-fluentRules.js"
                 ],
-                "dest": "build/valerie-for-knockout.js"
+                "dest": "build/valerie.js"
             },
             "en": {
                 "src": [
-                    "build/valerie-for-knockout.js",
+                    "build/valerie.js",
                     "code/valerie/localisation/en/core-en.js",
                     "code/valerie/localisation/en/full-en.js"
                 ],
-                "dest": "build/valerie-for-knockout-en.js"
+                "dest": "build/valerie-en.js"
             },
             "en-gb": {
                 "src": [
-                    "build/valerie-for-knockout-en.js",
+                    "build/valerie-en.js",
                     "code/valerie/localisation/en-gb/full-en-gb.js",
                     "code/valerie/localisation/en-gb/valerie.converters-en-gb.js",
                     "code/valerie/localisation/en-gb/valerie.propertyValidationState-fluentConverters-en-gb.js"
                 ],
-                "dest": "build/valerie-for-knockout-en-gb.js"
+                "dest": "build/valerie-en-gb.js"
             },
             "en-us": {
                 "src": [
-                    "build/valerie-for-knockout-en.js",
+                    "build/valerie-en.js",
                     "code/valerie/localisation/en-us/full-en-us.js"
                 ],
-                "dest": "build/valerie-for-knockout-en-us.js"
+                "dest": "build/valerie-en-us.js"
             }
         },
         "jasmine": {
             "build": {
-                "src": "build/valerie-for-knockout-en-gb.js",
+                "src": "build/valerie-en-gb.js",
                 "options": {
                     "keepRunner": true,
                     "specs": [
@@ -153,7 +153,7 @@ module.exports = function (grunt) {
         },
         "uglify": {
             "options": {
-                "banner": '/* valeriejs - MIT license - (c) egrove Ltd (egrove.co.uk) */\n'
+                "banner": '/* valerie - MIT license - (c) egrove Ltd (egrove.co.uk) */\n'
             },
             "build": {
                 "files": [

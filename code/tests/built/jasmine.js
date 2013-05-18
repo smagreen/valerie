@@ -135,7 +135,7 @@ jasmine.getEnv = function() {
  * @ignore
  * @private
  * @param value
- * @return {Boolean}
+ * @returns {Boolean}
  */
 jasmine.isArray_ = function(value) {
   return jasmine.isA_("Array", value);
@@ -145,7 +145,7 @@ jasmine.isArray_ = function(value) {
  * @ignore
  * @private
  * @param value
- * @return {Boolean}
+ * @returns {Boolean}
  */
 jasmine.isString_ = function(value) {
   return jasmine.isA_("String", value);
@@ -155,7 +155,7 @@ jasmine.isString_ = function(value) {
  * @ignore
  * @private
  * @param value
- * @return {Boolean}
+ * @returns {Boolean}
  */
 jasmine.isNumber_ = function(value) {
   return jasmine.isA_("Number", value);
@@ -166,7 +166,7 @@ jasmine.isNumber_ = function(value) {
  * @private
  * @param {String} typeName
  * @param value
- * @return {Boolean}
+ * @returns {Boolean}
  */
 jasmine.isA_ = function(typeName, value) {
   return Object.prototype.toString.apply(value) === '[object ' + typeName + ']';
@@ -176,7 +176,7 @@ jasmine.isA_ = function(typeName, value) {
  * Pretty printer for expecations.  Takes any object and turns it into a human-readable string.
  *
  * @param value {Object} an object to be outputted
- * @return {String}
+ * @returns {String}
  */
 jasmine.pp = function(value) {
   var stringPrettyPrinter = new jasmine.StringPrettyPrinter();
@@ -188,7 +188,7 @@ jasmine.pp = function(value) {
  * Returns true if the object is a DOM Node.
  *
  * @param {Object} obj object to check
- * @return {Boolean}
+ * @returns {Boolean}
  */
 jasmine.isDomNode = function(obj) {
   return obj.nodeType > 0;
@@ -202,7 +202,7 @@ jasmine.isDomNode = function(obj) {
  * expect(mySpy).toHaveBeenCalledWith(jasmine.any(Function));
  *
  * @param {Class} clazz
- * @return matchable object of the type clazz
+ * @returns matchable object of the type clazz
  */
 jasmine.any = function(clazz) {
   return new jasmine.Matchers.Any(clazz);
@@ -217,7 +217,7 @@ jasmine.any = function(clazz) {
  * expect(mySpy).toHaveBeenCalledWith(jasmine.objectContaining({foo: "bar"});
  *
  * @param sample {Object} sample
- * @return matchable object for the sample
+ * @returns matchable object for the sample
  */
 jasmine.objectContaining = function (sample) {
     return new jasmine.Matchers.ObjectContaining(sample);
@@ -428,7 +428,7 @@ jasmine.createSpy = function(name) {
  * Determines whether an object is a spy.
  *
  * @param {jasmine.Spy|Object} putativeSpy
- * @return {Boolean}
+ * @returns {Boolean}
  */
 jasmine.isSpy = function(putativeSpy) {
   return putativeSpy && putativeSpy.isSpy;
@@ -749,7 +749,7 @@ jasmine.Env.prototype.setInterval = jasmine.setInterval;
 jasmine.Env.prototype.clearInterval = jasmine.clearInterval;
 
 /**
- * @return an object containing jasmine version build info, if set.
+ * @returns an object containing jasmine version build info, if set.
  */
 jasmine.Env.prototype.version = function () {
   if (jasmine.version_) {
@@ -760,7 +760,7 @@ jasmine.Env.prototype.version = function () {
 };
 
 /**
- * @return string containing jasmine version build info, if set.
+ * @returns string containing jasmine version build info, if set.
  */
 jasmine.Env.prototype.versionString = function() {
   if (!jasmine.version_) {
@@ -777,14 +777,14 @@ jasmine.Env.prototype.versionString = function() {
 };
 
 /**
- * @return a sequential integer starting at 0
+ * @returns a sequential integer starting at 0
  */
 jasmine.Env.prototype.nextSpecId = function () {
   return this.nextSpecId_++;
 };
 
 /**
- * @return a sequential integer starting at 0
+ * @returns a sequential integer starting at 0
  */
 jasmine.Env.prototype.nextSuiteId = function () {
   return this.nextSuiteId_++;
@@ -1867,7 +1867,7 @@ jasmine.NestedResults.prototype.addResult = function(result) {
 };
 
 /**
- * @return {Boolean} True if <b>everything</b> below passed
+ * @returns {Boolean} True if <b>everything</b> below passed
  */
 jasmine.NestedResults.prototype.passed = function() {
   return this.passedCount === this.totalCount;

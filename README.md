@@ -1,9 +1,9 @@
-valeriejs
-=========
+valerie
+=======
 
-[![Build Status](https://travis-ci.org/egrove/valeriejs.png?branch=master)](https://travis-ci.org/egrove/valeriejs)
+[![Build Status](https://travis-ci.org/egrove/valerie.png?branch=master)](https://travis-ci.org/egrove/valerie)
 
-[![browser support](https://ci.testling.com/egrove/valeriejs.png)](https://ci.testling.com/egrove/valeriejs)
+[![browser support](https://ci.testling.com/egrove/valerie.png)](https://ci.testling.com/egrove/valerie)
 
 A validation library for Knockout.
 
@@ -20,6 +20,6 @@ Features include:
 - easy to localise
 - designed to work with older browsers _(just like Knockout itself)_
 
-View the [API documentation](https://rawgithub.com/egrove/valeriejs/master/latest/apidocs/index.html).
+View the [API documentation](https://rawgithub.com/egrove/valerie/master/latest/apidocs/index.html).
 
 _samples to come_
