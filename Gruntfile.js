@@ -35,7 +35,7 @@ module.exports = function (grunt) {
                     {
                         "expand": true,
                         "cwd": "build",
-                        "src": ["valerie-*.js"],
+                        "src": ["valerie*.js"],
                         "dest": "code/tests/built/"
                     }
                 ]

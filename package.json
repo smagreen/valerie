@@ -12,7 +12,7 @@
     "license": "MIT",
     "repository": {
         "type": "git",
-        "url": "https://github.com/egrove/valerie-for-knockout"
+        "url": "https://github.com/egrove/valerie"
     },
     "keywords": [
         "validation",

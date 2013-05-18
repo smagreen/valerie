@@ -1,4 +1,4 @@
-valerie-for-knockout - A validation library for KnockoutJS.
+valerie - A validation library for KnockoutJS.
 
 Copyright (c) 2013 egrove Ltd
 
