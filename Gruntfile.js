@@ -108,7 +108,7 @@ module.exports = function (grunt) {
                     "vendor": [
                         "code/tests/runnerScripts/ddr-ecma5-1.2.1-min.js",
                         "code/tests/runnerScripts/jasmine-tap.js",
-                        "code/tests/runnerScripts/jasmine-tap-helper.js",
+                        "code/tests/runnerScripts/testling.js",
                         "code/thirdParty/html5shiv.js",
                         "code/thirdParty/json3.min.js",
                         "code/thirdParty/knockout-2.2.1.debug.js",
