@@ -22,4 +22,4 @@ Features include:
 
 View the [API documentation](https://rawgithub.com/egrove/valerie/master/latest/apidocs/index.html).
 
-_samples to come_
+View the [Samples](https://rawgithub.com/egrove/valerie/master/code/samples/index.html). _WIP_
