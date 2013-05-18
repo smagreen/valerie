@@ -2,11 +2,13 @@ var viewModel = valerie.validatableModel({
     "firstName": ko.observable()
         .validate()
         .string()
+        .minimumLength(2)
         .required()
         .end(),
     "surname": ko.observable()
         .validate()
         .string()
+        .minimumLength(2)
         .required()
         .end(),
     "submit": function () {

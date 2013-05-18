@@ -158,7 +158,7 @@
             return rangeRule.test(length);
         };
 
-        return passedValidationResult;
+        return rangeRule;
     };
 
     /**
