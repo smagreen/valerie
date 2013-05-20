@@ -97,14 +97,20 @@ module.exports = function (grunt) {
                 "dest": "build/valerie-en-us.js"
             }
         },
-        "jade" : {
+        "jade": {
             "samples": {
-                "options" : {
+                "options": {
                     "pretty": true
                 },
-                "files": {
-                    "code/samples": ["code/samples/jade/*.jade"]
-                }
+                "files": [
+                    {
+                        "cwd": "code/samples/jade",
+                        "expand": true,
+                        "src": ["*.jade"],
+                        "dest": "code/samples",
+                        "ext": ".html"
+                    }
+                ]
             }
         },
         "jasmine": {
@@ -203,11 +209,6 @@ module.exports = function (grunt) {
         "jshint"
     ]);
 
-    grunt.registerTask("test", [
-        "concatAndHint",
-        "jasmine"
-    ]);
-
     grunt.registerTask("build", [
         "test",
         "copy:updateRunner",
@@ -220,6 +221,15 @@ module.exports = function (grunt) {
     grunt.registerTask("docs", [
         "clean:docs",
         "shell:docs"
+    ]);
+
+    grunt.registerTask("samples", [
+        "jade:samples"
+    ]);
+
+    grunt.registerTask("test", [
+        "concatAndHint",
+        "jasmine"
     ]);
 
     grunt.registerTask("updateLatest", [
