@@ -14,13 +14,13 @@ block sample-form
                 label(for='firstName').control-label First Name
                 .controls
                     input(id='firstName',type='text', data-bind='validatedValue: firstName')
-                    span(data-bind='validationMessageFor: firstName').help-inline
+                    span(data-bind='validationMessage: firstName').help-block
 
             .control-group(data-bind='validationCss: surname')
                 label(for='surname').control-label Surname
                 .controls
                     input(id='surname',type='text', data-bind='validatedValue: surname')
-                    span(data-bind='validationMessageFor: surname').help-inline
+                    span(data-bind='validationMessage: surname').help-block
 
 
         .form-actions

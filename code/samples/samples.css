@@ -3,11 +3,7 @@ header h1 {
     font-size: 60px;
 }
 
-.icon-chevron-right {
-    float: right;
-    opacity: 0.4;
-}
-
+/* Bootstrap - Nav List */
 .nav-list {
     border: #ccc solid 1px;
     margin-top: 20px;
@@ -40,6 +36,17 @@ header h1 {
 
 .nav-list a:hover .icon-chevron-right {
     opacity: 0.6;
+}
+
+.icon-chevron-right {
+    float: right;
+    opacity: 0.4;
+}
+
+/* Bootstrap - Forms */
+
+.success .help-block {
+    display: none;
 }
 
 /* Samples */
@@ -75,15 +82,21 @@ form {
     margin: 0;
 }
 
-input, select, textarea {
+input,
+select,
+textarea {
     border: 1px #cccccc solid;
 }
 
-.untouched, .untouched * {
+.untouched,
+.untouched input,
+.untouched label,
+.untouched select,
+.untouched textarea {
     color: #333333 !important;
     border-color: #cccccc !important;
 }
 
-.help-inline {
-    margin-left: 1em;
+.untouched .help-block {
+    display: none;
 }
