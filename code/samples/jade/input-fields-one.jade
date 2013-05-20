@@ -13,13 +13,13 @@ block sample-form
             .control-group(data-bind='validationCss: firstName')
                 label(for='firstName').control-label First Name
                 .controls
-                    input(type='text', data-bind='validatedValue: firstName')
+                    input(id='firstName',type='text', data-bind='validatedValue: firstName')
                     span(data-bind='validationMessageFor: firstName').help-inline
 
             .control-group(data-bind='validationCss: surname')
                 label(for='surname').control-label Surname
                 .controls
-                    input(type='text', data-bind='validatedValue: surname')
+                    input(id='surname',type='text', data-bind='validatedValue: surname')
                     span(data-bind='validationMessageFor: surname').help-inline
 
 

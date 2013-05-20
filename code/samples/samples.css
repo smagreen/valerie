@@ -75,17 +75,13 @@ form {
     margin: 0;
 }
 
-input.error, select.error {
-    border-color: #b94a48
-}
-
-input.success, select.success {
-    border-color: #468847;
+input, select, textarea {
+    border: 1px #cccccc solid;
 }
 
 .untouched, .untouched * {
-    color: inherit !important;
-    border-color: inherit !important;
+    color: #333333 !important;
+    border-color: #cccccc !important;
 }
 
 .help-inline {
