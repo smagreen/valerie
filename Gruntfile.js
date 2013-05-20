@@ -65,7 +65,7 @@ module.exports = function (grunt) {
                 "src": [
                     "build/valerie-core.js",
                     "code/valerie/full/valerie.numericHelper.js",
-                    "code/valerie/full/valerie.converters.js",
+                    "code/valerie/full/valerie.converters.full.js",
                     "code/valerie/full/valerie.rules.js",
                     "code/valerie/full/valerie.propertyValidationState-fluentConverters.js",
                     "code/valerie/full/valerie.propertyValidationState-fluentRules.js"
