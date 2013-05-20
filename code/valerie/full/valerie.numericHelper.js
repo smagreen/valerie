@@ -86,9 +86,10 @@
          * <ul>
          *     <li><code>C,.c</code></li>
          *     <li><code>C,.1</code></li>
-         *     <li><code>C,.2</code></li>
          *     <li><code>C,.n</code></li>
-         *     <li><code>C,.c</code></li>
+         *     <li><code>C.c</code></li>
+         *     <li><code>C.1</code></li>
+         *     <li><code>C.n</code></li>
          *     <li><code>.c</code></li>
          *     <li><code>.1</code></li>
          *     <li><code>.n</code></li>
@@ -100,8 +101,8 @@
          *     <li><code>.</code> - include the decimal separator in the formatted string</li>
          *     <li><code>.c</code> - include the default number of digits after the decimal separator</li>
          *     <li><code>.1</code> - include 1 digit after the decimal separator</li>
-         *     <li><code>.2</code> - include 2 digits after the decimal separator</li>
          *     <li><code>.n</code> - include [n] digits after the decimal separator</li>
+         * </ul>
          * @param {number} value the value to format
          * @param {string} format the format to use
          * @return {string} the formatted string
