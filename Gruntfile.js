@@ -10,7 +10,7 @@ module.exports = function (grunt) {
             ]
         },
         "copy": {
-            "updateLatest": {
+            "updateLatestCode": {
                 "files": [
                     {
                         "expand": true,
@@ -233,9 +233,13 @@ module.exports = function (grunt) {
         "jasmine"
     ]);
 
-    grunt.registerTask("updateLatest", [
+    grunt.registerTask("updateLatestCode", [
         "build",
-        "docs",
-        "copy:updateLatest"
+        "copy:updateLatestCode"
+    ]);
+
+    grunt.registerTask("updateLatest", [
+        "updateLatestCode",
+        "docs"
     ]);
 };

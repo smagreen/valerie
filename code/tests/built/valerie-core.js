@@ -1880,7 +1880,7 @@ var valerie = {};
          * </ul>
          * @name ko.bindingHandlers.validationMessage
          */
-        koBindingHandlers.validationMessageFor = isolatedBindingHandler(
+        koBindingHandlers.validationMessage = isolatedBindingHandler(
             function (element, valueAccessor, allBindingsAccessor, viewModel) {
                 var functionToApply = function (validationState) {
                     setElementVisibility(element, validationState.showMessage());
@@ -1894,7 +1894,7 @@ var valerie = {};
          * Sets the text of the element to be the underlying validation state's message.
          * @name ko.bindingHandlers.validationMessageText
          */
-        koBindingHandlers.validationMessage = isolatedBindingHandler(
+        koBindingHandlers.validationMessageText = isolatedBindingHandler(
             function (element, valueAccessor, allBindingsAccessor, viewModel) {
                 var functionToApply = function (validationState) {
                     ko.utils.setTextContent(element, validationState.message());
