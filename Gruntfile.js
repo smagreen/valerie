@@ -97,6 +97,16 @@ module.exports = function (grunt) {
                 "dest": "build/valerie-en-us.js"
             }
         },
+        "jade" : {
+            "samples": {
+                "options" : {
+                    "pretty": true
+                },
+                "files": {
+                    "code/samples": ["code/samples/jade/*.jade"]
+                }
+            }
+        },
         "jasmine": {
             "build": {
                 "src": "build/valerie-en-gb.js",
@@ -171,6 +181,7 @@ module.exports = function (grunt) {
 
     grunt.loadNpmTasks("grunt-contrib-clean");
     grunt.loadNpmTasks("grunt-contrib-concat");
+    grunt.loadNpmTasks('grunt-contrib-jade');
     grunt.loadNpmTasks('grunt-contrib-jasmine');
     grunt.loadNpmTasks('grunt-contrib-jshint');
     grunt.loadNpmTasks("grunt-contrib-copy");
