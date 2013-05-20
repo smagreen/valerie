@@ -21,7 +21,7 @@
      * @type valerie.IRule
      * @constructor
      * @param {number|function} minimumValueOrFunction a value or function that specifies the minimum permitted length
-     * @param {number|function} [maximumValueOrFunction] a value or function that specifies the maximum permitted length
+     * @param {number|function} maximumValueOrFunction a value or function that specifies the maximum permitted length
      * @param {valerie.IRule.options} [options] the options to use when constructing the rule
      */
     rules.ArrayLength = function(minimumValueOrFunction, maximumValueOrFunction, options) {
@@ -55,7 +55,7 @@
      * @type valerie.IRule
      * @constructor
      * @param {date|function} minimumValueOrFunction a value or function that specifies the earliest permitted date
-     * @param {date|function} [maximumValueOrFunction] a value or function that specifies the latest permitted date
+     * @param {date|function} maximumValueOrFunction a value or function that specifies the latest permitted date
      * @param {valerie.IRule.options} [options] the options to use when constructing the rule
      */
     rules.During = function(minimumValueOrFunction, maximumValueOrFunction, options) {
@@ -136,7 +136,7 @@
      * @type valerie.IRule
      * @constructor
      * @param {number|function} minimumValueOrFunction a value or function that specifies the minimum permitted value
-     * @param {number|function} [maximumValueOrFunction] a value or function that specifies the maximum permitted value
+     * @param {number|function} maximumValueOrFunction a value or function that specifies the maximum permitted value
      * @param {valerie.IRule.options} [options] the options to use when constructing the rule
      */
     rules.Length = function(minimumValueOrFunction, maximumValueOrFunction, options) {
@@ -158,7 +158,7 @@
             return rangeRule.test(length);
         };
 
-        return rangeRule;
+        this.settings = options;
     };
 
     /**
@@ -326,7 +326,7 @@
      * @type valerie.IRule
      * @constructor
      * @param {number|function} minimumValueOrFunction a value or function that specifies the minimum permitted value
-     * @param {number|function} [maximumValueOrFunction] a value or function that specifies the maximum permitted value
+     * @param {number|function} maximumValueOrFunction a value or function that specifies the maximum permitted value
      * @param {valerie.IRule.options} [options] the options to use when constructing the rule
      */
     rules.Range = function(minimumValueOrFunction, maximumValueOrFunction, options) {
@@ -405,7 +405,7 @@
      * @type valerie.IRule
      * @constructor
      * @param {number|function} minimumValueOrFunction a value or function that specifies the minimum permitted length
-     * @param {number|function} [maximumValueOrFunction] a value or function that specifies the maximum permitted length
+     * @param {number|function} maximumValueOrFunction a value or function that specifies the maximum permitted length
      * @param {valerie.IRule.options} [options] the options to use when constructing the rule
      */
     rules.StringLength = function(minimumValueOrFunction, maximumValueOrFunction, options) {
