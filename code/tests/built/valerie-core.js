@@ -1391,6 +1391,18 @@ var valerie = {};
             return this.observableOrComputed;
         },
         /**
+         * Sets the format string used to format the display of the value in an entry.<br/>
+         * <i>[fluent]</i>
+         * @fluent
+         * @param {string} format the format string to use
+         * @return {valerie.PropertyValidationState}
+         */
+        "entryFormat": function (format) {
+            this.settings.entryFormat = format;
+
+            return this;
+        },
+        /**
          * Sets the value or function used to determine the name of the property.<br/>
          * <i>[fluent]</i>
          * @fluent

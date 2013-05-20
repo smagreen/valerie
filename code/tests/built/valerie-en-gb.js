@@ -1391,6 +1391,18 @@ var valerie = {};
             return this.observableOrComputed;
         },
         /**
+         * Sets the format string used to format the display of the value in an entry.<br/>
+         * <i>[fluent]</i>
+         * @fluent
+         * @param {string} format the format string to use
+         * @return {valerie.PropertyValidationState}
+         */
+        "entryFormat": function (format) {
+            this.settings.entryFormat = format;
+
+            return this;
+        },
+        /**
          * Sets the value or function used to determine the name of the property.<br/>
          * <i>[fluent]</i>
          * @fluent
@@ -2078,9 +2090,10 @@ var valerie = {};
          * <ul>
          *     <li><code>C,.c</code></li>
          *     <li><code>C,.1</code></li>
-         *     <li><code>C,.2</code></li>
          *     <li><code>C,.n</code></li>
-         *     <li><code>C,.c</code></li>
+         *     <li><code>C.c</code></li>
+         *     <li><code>C.1</code></li>
+         *     <li><code>C.n</code></li>
          *     <li><code>.c</code></li>
          *     <li><code>.1</code></li>
          *     <li><code>.n</code></li>
@@ -2092,8 +2105,8 @@ var valerie = {};
          *     <li><code>.</code> - include the decimal separator in the formatted string</li>
          *     <li><code>.c</code> - include the default number of digits after the decimal separator</li>
          *     <li><code>.1</code> - include 1 digit after the decimal separator</li>
-         *     <li><code>.2</code> - include 2 digits after the decimal separator</li>
          *     <li><code>.n</code> - include [n] digits after the decimal separator</li>
+         * </ul>
          * @param {number} value the value to format
          * @param {string} format the format to use
          * @return {string} the formatted string
@@ -2476,7 +2489,7 @@ var valerie = {};
      * @type valerie.IRule
      * @constructor
      * @param {number|function} minimumValueOrFunction a value or function that specifies the minimum permitted length
-     * @param {number|function} [maximumValueOrFunction] a value or function that specifies the maximum permitted length
+     * @param {number|function} maximumValueOrFunction a value or function that specifies the maximum permitted length
      * @param {valerie.IRule.options} [options] the options to use when constructing the rule
      */
     rules.ArrayLength = function(minimumValueOrFunction, maximumValueOrFunction, options) {
@@ -2510,7 +2523,7 @@ var valerie = {};
      * @type valerie.IRule
      * @constructor
      * @param {date|function} minimumValueOrFunction a value or function that specifies the earliest permitted date
-     * @param {date|function} [maximumValueOrFunction] a value or function that specifies the latest permitted date
+     * @param {date|function} maximumValueOrFunction a value or function that specifies the latest permitted date
      * @param {valerie.IRule.options} [options] the options to use when constructing the rule
      */
     rules.During = function(minimumValueOrFunction, maximumValueOrFunction, options) {
@@ -2591,7 +2604,7 @@ var valerie = {};
      * @type valerie.IRule
      * @constructor
      * @param {number|function} minimumValueOrFunction a value or function that specifies the minimum permitted value
-     * @param {number|function} [maximumValueOrFunction] a value or function that specifies the maximum permitted value
+     * @param {number|function} maximumValueOrFunction a value or function that specifies the maximum permitted value
      * @param {valerie.IRule.options} [options] the options to use when constructing the rule
      */
     rules.Length = function(minimumValueOrFunction, maximumValueOrFunction, options) {
@@ -2613,7 +2626,7 @@ var valerie = {};
             return rangeRule.test(length);
         };
 
-        return passedValidationResult;
+        this.settings = options;
     };
 
     /**
@@ -2781,7 +2794,7 @@ var valerie = {};
      * @type valerie.IRule
      * @constructor
      * @param {number|function} minimumValueOrFunction a value or function that specifies the minimum permitted value
-     * @param {number|function} [maximumValueOrFunction] a value or function that specifies the maximum permitted value
+     * @param {number|function} maximumValueOrFunction a value or function that specifies the maximum permitted value
      * @param {valerie.IRule.options} [options] the options to use when constructing the rule
      */
     rules.Range = function(minimumValueOrFunction, maximumValueOrFunction, options) {
@@ -2860,7 +2873,7 @@ var valerie = {};
      * @type valerie.IRule
      * @constructor
      * @param {number|function} minimumValueOrFunction a value or function that specifies the minimum permitted length
-     * @param {number|function} [maximumValueOrFunction] a value or function that specifies the maximum permitted length
+     * @param {number|function} maximumValueOrFunction a value or function that specifies the maximum permitted length
      * @param {valerie.IRule.options} [options] the options to use when constructing the rule
      */
     rules.StringLength = function(minimumValueOrFunction, maximumValueOrFunction, options) {
