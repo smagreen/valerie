@@ -119,7 +119,8 @@ module.exports = function (grunt) {
                 "options": {
                     "keepRunner": true,
                     "specs": [
-                        "code/tests/core/*.tests.js"
+                        "code/tests/core/*.tests.js",
+                        "code/tests/full/*.tests.js"
                     ],
                     "vendor": [
                         "code/tests/runnerScripts/ddr-ecma5-1.2.1-min.js",
@@ -210,7 +211,7 @@ module.exports = function (grunt) {
     ]);
 
     grunt.registerTask("build", [
-        "test",
+        "tests",
         "copy:updateRunner",
         "sed:updateRunner1",
         "sed:updateRunner2",
@@ -227,7 +228,7 @@ module.exports = function (grunt) {
         "jade:samples"
     ]);
 
-    grunt.registerTask("test", [
+    grunt.registerTask("tests", [
         "concatAndHint",
         "jasmine"
     ]);
