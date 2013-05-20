@@ -351,8 +351,26 @@
         };
 
         /**
-         * Sets the text of the element to be the underlying validation state's message.
+         * Makes the element behave like a validation message for the chosen property or model:
+         * <ul>
+         *     <li>makes the element visible if the value is invalid</li>
+         *     <li>sets the text of the element to be the underlying validation state's message</li>
+         * </ul>
          * @name ko.bindingHandlers.validationMessage
+         */
+        koBindingHandlers.validationMessageFor = isolatedBindingHandler(
+            function (element, valueAccessor, allBindingsAccessor, viewModel) {
+                var functionToApply = function (validationState) {
+                    setElementVisibility(element, validationState.showMessage());
+                    ko.utils.setTextContent(element, validationState.message());
+                };
+
+                applyForValidationState(functionToApply, element, valueAccessor, allBindingsAccessor, viewModel);
+            });
+
+        /**
+         * Sets the text of the element to be the underlying validation state's message.
+         * @name ko.bindingHandlers.validationMessageText
          */
         koBindingHandlers.validationMessage = isolatedBindingHandler(
             function (element, valueAccessor, allBindingsAccessor, viewModel) {

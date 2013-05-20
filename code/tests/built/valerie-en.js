@@ -1878,12 +1878,25 @@ var valerie = {};
          *     <li>makes the element visible if the value is invalid</li>
          *     <li>sets the text of the element to be the underlying validation state's message</li>
          * </ul>
-         * @name ko.bindingHandlers.validationMessageFor
+         * @name ko.bindingHandlers.validationMessage
          */
         koBindingHandlers.validationMessageFor = isolatedBindingHandler(
             function (element, valueAccessor, allBindingsAccessor, viewModel) {
                 var functionToApply = function (validationState) {
                     setElementVisibility(element, validationState.showMessage());
+                    ko.utils.setTextContent(element, validationState.message());
+                };
+
+                applyForValidationState(functionToApply, element, valueAccessor, allBindingsAccessor, viewModel);
+            });
+
+        /**
+         * Sets the text of the element to be the underlying validation state's message.
+         * @name ko.bindingHandlers.validationMessageText
+         */
+        koBindingHandlers.validationMessage = isolatedBindingHandler(
+            function (element, valueAccessor, allBindingsAccessor, viewModel) {
+                var functionToApply = function (validationState) {
                     ko.utils.setTextContent(element, validationState.message());
                 };
 
