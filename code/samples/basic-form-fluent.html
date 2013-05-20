@@ -1,0 +1,171 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <title>valerie Samples - Basic Form / Fluent</title><!--[if lte IE 8]>
+    <script type="text/javascript" src="../thirdParty/html5shiv.js"></script><![endif]-->
+    <link rel="stylesheet" type="text/css" href="../thirdParty/bootstrap/css/bootstrap.min.css"><!--[if lte IE 6]>
+    <link rel="stylesheet" type="text/css" href="../thirdParty/bootstrap/css/bootstrap-ie6.min.css">
+    <link rel="stylesheet" type="text/css" href="../thirdParty/bootstrap/css/ie.css"><![endif]-->
+    <link rel="stylesheet" type="text/css" href="samples.css">
+    <link rel="stylesheet" type="text/css" href="../thirdParty/syntaxHighlighter/styles/shCoreEmacs.css">
+  </head>
+  <body>
+    <header>
+      <div class="container">
+        <h1>valerie</h1>
+        <h3>samples</h3>
+      </div>
+    </header>
+    <div class="container">
+      <div class="row">
+        <div class="span3">
+          <ul class="nav nav-list">
+            <li class="header  "><a href="index.html"><i class="icon-chevron-right"></i>Home</a>
+            </li>
+            <li class="header  no-page"><a>Basic Form</a>
+            </li>
+            <li class="active"><a href="basic-form-fluent.html"><i class="icon-chevron-right"></i>Fluent</a></li>
+          </ul>
+        </div>
+        <div class="span9">
+          <div class="page-header">
+            <h1>Basic Form / Fluent</h1>
+          </div>
+          <p>This sample shows <strong>valerie</strong> being used to validate a basic form.</p>
+          <div class="tabbable">
+            <ul class="nav nav-tabs">
+              <li class="active"><a href="#sample-live" data-toggle="tab">Live</a></li>
+              <li><a href="#sample-html" data-toggle="tab">HTML</a></li>
+              <li><a href="#sample-script-pane" data-toggle="tab">Javascript</a></li>
+            </ul>
+            <div class="tab-content">
+              <div id="sample-live" class="tab-pane active">
+<form class="form-horizontal sample">
+  <fieldset>
+    <legend>Your Name</legend>
+    <div data-bind="validationCss: firstName" class="control-group">
+      <label for="firstName" class="control-label">First Name</label>
+      <div class="controls">
+        <input id="firstName" type="text" data-bind="validatedValue: firstName"/>
+        <div data-bind="validationMessageText: firstName" class="help-block"></div>
+      </div>
+    </div>
+    <div data-bind="validationCss: surname" class="control-group">
+      <label for="surname" class="control-label">Surname</label>
+      <div class="controls">
+        <input id="surname" type="text" data-bind="validatedValue: surname"/>
+        <div data-bind="validationMessageText: surname" class="help-block"></div>
+      </div>
+    </div>
+  </fieldset>
+  <div class="form-actions">
+    <button data-bind="click: submit" class="btn btn-primary">Submit</button>
+    <button data-bind="click: reset" class="btn">Reset</button>
+  </div>
+</form>
+              </div>
+              <div id="sample-html" class="tab-pane">
+                <pre class=".brush: xml"></pre><script type="text/html">
+<form class="form-horizontal sample">
+  <fieldset>
+    <legend>Your Name</legend>
+    <div data-bind="validationCss: firstName" class="control-group">
+      <label for="firstName" class="control-label">First Name</label>
+      <div class="controls">
+        <input id="firstName" type="text" data-bind="validatedValue: firstName"/>
+        <div data-bind="validationMessageText: firstName" class="help-block"></div>
+      </div>
+    </div>
+    <div data-bind="validationCss: surname" class="control-group">
+      <label for="surname" class="control-label">Surname</label>
+      <div class="controls">
+        <input id="surname" type="text" data-bind="validatedValue: surname"/>
+        <div data-bind="validationMessageText: surname" class="help-block"></div>
+      </div>
+    </div>
+  </fieldset>
+  <div class="form-actions">
+    <button data-bind="click: submit" class="btn btn-primary">Submit</button>
+    <button data-bind="click: reset" class="btn">Reset</button>
+  </div>
+</form></script>
+              </div>
+              <div id="sample-script-pane" class="tab-pane">
+                <pre class=".brush: js"></pre>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div><!--[if lt IE 8]>
+    <script type="text/javascript" src="../thirdParty/json3.min.js"></script><![endif]-->
+    <script type="text/javascript" src="../thirdParty/jquery-1.9.1.min.js"></script>
+    <script type="text/javascript" src="../thirdParty/bootstrap/js/bootstrap.min.js"></script><!--[if lte IE 6]>
+    <script type="text/javascript" src="../thirdParty/bootstrap/js/ie6.js"></script><![endif]-->
+    <script type="text/javascript" src="../thirdParty/knockout-2.2.1.debug.js"></script>
+    <!-- valerie - core-->
+    <script type="text/javascript" src="../valerie/core/valerie.namespace.js"></script>
+    <script type="text/javascript" src="../valerie/core/valerie.utils.js"></script>
+    <script type="text/javascript" src="../valerie/core/valerie.formatting.js"></script>
+    <script type="text/javascript" src="../valerie/core/valerie.dom.js"></script>
+    <script type="text/javascript" src="../valerie/core/valerie.koExtras.js"></script>
+    <script type="text/javascript" src="../valerie/core/valerie.converters.js"></script>
+    <script type="text/javascript" src="../valerie/core/valerie.validationResult.js"></script>
+    <script type="text/javascript" src="../valerie/core/valerie.validationState.js"></script>
+    <script type="text/javascript" src="../valerie/core/valerie.modelValidationState.js"></script>
+    <script type="text/javascript" src="../valerie/core/valerie.propertyValidationState.js"></script>
+    <script type="text/javascript" src="../valerie/core/ko.computed.fn.js"></script>
+    <script type="text/javascript" src="../valerie/core/ko.observable.fn.js"></script>
+    <script type="text/javascript" src="../valerie/core/ko.bindingHandlers.js"></script>
+    <script type="text/javascript" src="../valerie/core/valerie.koBindingsHelper.js"></script>
+    <!-- valerie - full-->
+    <script type="text/javascript" src="../valerie/full/valerie.numericHelper.js"></script>
+    <script type="text/javascript" src="../valerie/full/valerie.converters.full.js"></script>
+    <script type="text/javascript" src="../valerie/full/valerie.rules.js"></script>
+    <script type="text/javascript" src="../valerie/full/valerie.propertyValidationState-fluentConverters.js"></script>
+    <script type="text/javascript" src="../valerie/full/valerie.propertyValidationState-fluentRules.js"></script>
+    <!-- valerie - en-->
+    <script type="text/javascript" src="../valerie/localisation/en/core-en.js"></script>
+    <script type="text/javascript" src="../valerie/localisation/en/full-en.js"></script>
+    <!-- syntax highlighter-->
+    <script type="text/javascript" src="../thirdParty/syntaxHighlighter/scripts/shCore.js"></script>
+    <script type="text/javascript" src="../thirdParty/syntaxHighlighter/scripts/shBrushJScript.js"></script>
+    <script type="text/javascript" src="../thirdParty/syntaxHighlighter/scripts/shBrushXml.js"></script>
+    <!-- samples-->
+    <script type="text/javascript" src="samples.js"></script>
+    <!-- sample script-->
+    <div id="sample-script"><script type="text/javascript">
+function RunSample() {
+    var viewModel = valerie.validatableModel({
+        "firstName": ko.observable()
+            .validate()
+            .string()
+            .minimumLength(2)
+            .required()
+            .end(),
+        "surname": ko.observable()
+            .validate()
+            .string()
+            .minimumLength(2)
+            .required()
+            .end(),
+        "submit": function () {
+            viewModel.validation().touched(true);
+        },
+        "reset": function () {
+            viewModel.firstName("");
+            viewModel.surname("");
+            viewModel.validation().touched(false);
+        }
+    })
+        .validateAll()
+        .end();
+
+    ko.bindingHandlers.validationCss.classNames.failed = "error";
+    ko.bindingHandlers.validationCss.classNames.passed = "success";
+
+    ko.applyBindings(viewModel, document.getElementById("sample"));
+};</script>
+    </div>
+  </body>
+</html>

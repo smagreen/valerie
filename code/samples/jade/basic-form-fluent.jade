@@ -1,0 +1,16 @@
+block page-definition
+    - var page = { "title": "Basic Form / Fluent", "section": "basic-form", "subSection": "fluent" }
+
+extends templates/sample
+
+block sample-introduction
+    p This sample shows <strong>valerie</strong> being used to validate a basic form.
+
+block sample-live
+    include basic-form-fluent-markup.html
+
+block sample-html
+    include basic-form-fluent-markup.html
+
+block sample-script
+    include basic-form-fluent-script.js

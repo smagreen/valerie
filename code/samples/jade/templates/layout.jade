@@ -15,6 +15,8 @@ html
             link(rel='stylesheet',type='text/css',href='../thirdParty/bootstrap/css/ie.css')
 
         link(rel='stylesheet',type='text/css',href='samples.css')
+
+        block styles
     body
         header
             .container
@@ -31,46 +33,5 @@ html
 
                     block introduction
 
-                    block sample-form
-
-        //if lt IE 8
-            script(type='text/javascript',src='../thirdParty/json3.min.js')
-
-        script(type='text/javascript',src='../thirdParty/jquery-1.9.1.min.js')
-
-        script(type='text/javascript',src='../thirdParty/bootstrap/js/bootstrap.min.js')
-
-        //if lte IE 6
-            script(type='text/javascript',src='../thirdParty/bootstrap/js/ie6.js')
-
-        script(type='text/javascript',src='../thirdParty/knockout-2.2.1.debug.js')
-
-        // valerie - core
-        script(type='text/javascript',src='../valerie/core/valerie.namespace.js')
-        script(type='text/javascript',src='../valerie/core/valerie.utils.js')
-        script(type='text/javascript',src='../valerie/core/valerie.formatting.js')
-        script(type='text/javascript',src='../valerie/core/valerie.dom.js')
-        script(type='text/javascript',src='../valerie/core/valerie.koExtras.js')
-        script(type='text/javascript',src='../valerie/core/valerie.converters.js')
-        script(type='text/javascript',src='../valerie/core/valerie.validationResult.js')
-        script(type='text/javascript',src='../valerie/core/valerie.validationState.js')
-        script(type='text/javascript',src='../valerie/core/valerie.modelValidationState.js')
-        script(type='text/javascript',src='../valerie/core/valerie.propertyValidationState.js')
-        script(type='text/javascript',src='../valerie/core/ko.computed.fn.js')
-        script(type='text/javascript',src='../valerie/core/ko.observable.fn.js')
-        script(type='text/javascript',src='../valerie/core/ko.bindingHandlers.js')
-        script(type='text/javascript',src='../valerie/core/valerie.koBindingsHelper.js')
-
-        // valerie - full
-        script(type='text/javascript',src='../valerie/full/valerie.numericHelper.js')
-        script(type='text/javascript',src='../valerie/full/valerie.converters.full.js')
-        script(type='text/javascript',src='../valerie/full/valerie.rules.js')
-        script(type='text/javascript',src='../valerie/full/valerie.propertyValidationState-fluentConverters.js')
-        script(type='text/javascript',src='../valerie/full/valerie.propertyValidationState-fluentRules.js')
-
-        // valerie - en
-        script(type='text/javascript',src='../valerie/localisation/en/core-en.js')
-        script(type='text/javascript',src='../valerie/localisation/en/full-en.js')
-
-        // sample scripts
+                    block content
         block scripts
