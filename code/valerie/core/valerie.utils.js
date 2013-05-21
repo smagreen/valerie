@@ -11,6 +11,21 @@
     var utils = valerie.utils;
 
     /**
+     * Creates a function that returns the given value as an array of one item, or simply returns the given value if it
+     * is already an array.
+     * @memberof valerie.utils
+     * @param {*|Array} [valueOrArray] the value or function
+     * @return {Array} a newly created array, or the array passed in
+     */
+    utils.asArray = function (valueOrArray) {
+        if (utils.isArray(valueOrArray)) {
+            return valueOrArray;
+        }
+
+        return [valueOrArray];
+    };
+
+    /**
      * Creates a function that returns the given value, or simply returns the given value if it is already a function.
      * @memberof valerie.utils
      * @param {*|function} [valueOrFunction] the value or function
@@ -71,11 +86,7 @@
      * @return {boolean} whether the value is missing
      */
     utils.isMissing = function (value) {
-        if (value == null) {
-            return true;
-        }
-
-        return value.length === 0;
+        return value == null;
     };
 
     /**

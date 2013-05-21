@@ -101,6 +101,7 @@
      * Construction options for a model validation state.
      * @typedef {object} valerie.ModelValidationState.options
      * @property {function} applicable the function used to determine if the model is applicable
+     * @property {boolean} excludeFromSummary whether any validation failures for this model are excluded from a summary
      * @property {string} failureMessage the message shown when the model is in an invalid state
      * @property {function} name the function used to determine the name of the model; used in failure messages
      * @property {function} paused a value, observable or computed used to control whether the computation that updates
@@ -204,7 +205,9 @@
          * @method
          * @return {string} the name of the model
          */
-        this.getName = this.settings.name;
+        this.getName = function () {
+            return this.settings.name()
+        };
 
         /**
          * Gets whether the model is applicable.
@@ -249,12 +252,14 @@
          * <i>[fluent]</i>
          * @name valerie.ModelValidationState#addValidationStates
          * @fluent
-         * @param {array.<valerie.IValidationState>} validationStates the validation states to add
+         * @param {object|array.<valerie.IValidationState>} validationStateOrStates the validation states to add
          * @return {valerie.ModelValidationState}
          */
-        "addValidationStates": function (validationStates) {
+        "addValidationStates": function (validationStateOrStates) {
+            validationStateOrStates = utils.asArray(validationStateOrStates);
+
             //noinspection JSValidateTypes
-            this.validationStates.push.apply(this.validationStates, validationStates);
+            this.validationStates.push.apply(this.validationStates, validationStateOrStates);
 
             return this;
         },
@@ -297,7 +302,7 @@
                     state = states[index];
 
                     if (state.clearSummary) {
-                        state.clearSummary();
+                        state.clearSummary(true);
                     }
                 }
             }
@@ -310,6 +315,15 @@
          */
         "end": function () {
             return this.model;
+        },
+        /**
+         * Includes any validation failures for this model from a validation summary.
+         */
+        "includeInSummary": function () {
+            this.settings.excludeFromSummary = false;
+
+            return this;
+
         },
         /**
          * Sets the value or function used to determine the name of the model.<br/>
@@ -327,21 +341,33 @@
          * Removes validation states.<br/>
          * <i>[fluent]</i>
          * @fluent
-         * @param {array.<valerie.IValidationState>} validationStates the validation states to remove
+         * @param {object|array.<valerie.IValidationState>} validationStateOrStates the validation states to remove
          * @return {valerie.ModelValidationState}
          */
-        "removeValidationStates": function (validationStates) {
-            this.validationStates.removeAll(validationStates);
+        "removeValidationStates": function (validationStateOrStates) {
+            validationStateOrStates = utils.asArray(validationStateOrStates);
+
+            this.validationStates.removeAll(validationStateOrStates);
 
             return this;
         },
         /**
-         * Stops validating the given sub-model by removing the validation states that belong to it.
+         * Stops validating the given sub-model by adding the validation state that belongs to it.
+         * @param {*} validatableSubModel the sub-model to start validating
+         * @return {valerie.ModelValidationState}
+         */
+        "startValidatingSubModel": function (validatableSubModel) {
+            this.validationStates.push(validatableSubModel.validation());
+
+            return this;
+        },
+        /**
+         * Stops validating the given sub-model by removing the validation state that belongs to it.
          * @param {*} validatableSubModel the sub-model to stop validating
          * @return {valerie.ModelValidationState}
          */
         "stopValidatingSubModel": function (validatableSubModel) {
-            this.validationStates.removeAll(validatableSubModel.validation().validationStates.peek());
+            this.validationStates.remove(validatableSubModel.validation());
 
             return this;
         },
@@ -361,10 +387,12 @@
             for (index = 0; index < states.length; index++) {
                 state = states[index];
 
-                failures.push({
-                    "name": state.getName(),
-                    "message": state.message()
-                });
+                if (!state.settings.excludeFromSummary) {
+                    failures.push({
+                        "name": state.getName(),
+                        "message": state.message()
+                    });
+                }
             }
 
             this.summary(failures);
@@ -376,7 +404,7 @@
                     state = states[index];
 
                     if (state.updateSummary) {
-                        state.updateSummary();
+                        state.updateSummary(true);
                     }
                 }
             }
@@ -440,6 +468,7 @@
      */
     valerie.ModelValidationState.defaultOptions = {
         "applicable": utils.asFunction(true),
+        "excludeFromSummary": true,
         "failureMessageFormat": "",
         "name": utils.asFunction("(?)"),
         "paused": null

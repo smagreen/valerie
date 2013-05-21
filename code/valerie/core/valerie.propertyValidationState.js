@@ -99,6 +99,7 @@
      * @property {valerie.IConverter} converter the converter used to parse user
      * entries and format display of the property's value
      * @property {string} entryFormat the string used to format the property's value for display in a user entry
+     * @property {boolean} excludeFromSummary whether any validation failures for this property are excluded from a summary
      * @property {string} invalidFailureMessage the message shown when the user has entered an invalid value
      * @property {string} missingFailureMessage the message shown when a value is required but is missing
      * @property {function} name the function used to determine the name of the property; used in failure messages
@@ -183,14 +184,14 @@
          * @method
          * @return {string} the name of the property
          */
-        this.getName = this.settings.name;
+        this.getName = function () { return this.settings.name() };
 
         /**
          * Gets whether the property is applicable.
          * @method
          * @return {boolean} <code>true</code> if the property is applicable, <code>false</code> otherwise
          */
-        this.isApplicable = this.settings.applicable;
+        this.isApplicable = function () { return this.settings.applicable() };
 
         /**
          * Gets whether the message describing the validation state should be shown.
@@ -273,6 +274,15 @@
             return this;
         },
         /**
+         * Excludes any validation failures for this property from a validation summary.
+         */
+        "excludeFromSummary": function () {
+            this.settings.excludeFromSummary = true;
+
+            return this;
+
+        },
+        /**
          * Sets the value or function used to determine the name of the property.<br/>
          * <i>[fluent]</i>
          * @fluent
@@ -323,6 +333,7 @@
         "applicable": utils.asFunction(true),
         "converter": valerie.converters.passThrough,
         "entryFormat": null,
+        "excludeFromSummary": false,
         "invalidEntryFailureMessage": "",
         "missingFailureMessage": "",
         "missingTest": utils.isMissing,
