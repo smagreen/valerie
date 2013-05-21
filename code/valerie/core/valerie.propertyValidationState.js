@@ -184,14 +184,18 @@
          * @method
          * @return {string} the name of the property
          */
-        this.getName = function () { return this.settings.name() };
+        this.getName = function () {
+            return this.settings.name();
+        };
 
         /**
          * Gets whether the property is applicable.
          * @method
          * @return {boolean} <code>true</code> if the property is applicable, <code>false</code> otherwise
          */
-        this.isApplicable = function () { return this.settings.applicable() };
+        this.isApplicable = function () {
+            return this.settings.applicable();
+        };
 
         /**
          * Gets whether the message describing the validation state should be shown.
@@ -274,7 +278,10 @@
             return this;
         },
         /**
-         * Excludes any validation failures for this property from a validation summary.
+         * Excludes any validation failures for this property from a validation summary.<br/>
+         * <i>[fluent]</i>
+         * @fluent
+         * @return {valerie.PropertyValidationState}
          */
         "excludeFromSummary": function () {
             this.settings.excludeFromSummary = true;

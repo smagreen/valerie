@@ -206,7 +206,7 @@
          * @return {string} the name of the model
          */
         this.getName = function () {
-            return this.settings.name()
+            return this.settings.name();
         };
 
         /**
@@ -214,7 +214,9 @@
          * @method
          * @return {boolean} <code>true</code> if the model is applicable, <code>false</code> otherwise
          */
-        this.isApplicable = this.settings.applicable;
+        this.isApplicable = function() {
+            return this.settings.applicable;
+        };
 
         //noinspection JSValidateJSDoc
         /**
@@ -317,7 +319,10 @@
             return this.model;
         },
         /**
-         * Includes any validation failures for this model from a validation summary.
+         * Includes any validation failures for this property in a validation summary.<br/>
+         * <i>[fluent]</i>
+         * @fluent
+         * @return {valerie.ModelValidationState}
          */
         "includeInSummary": function () {
             this.settings.excludeFromSummary = false;

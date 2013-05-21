@@ -101,15 +101,14 @@
     describe("isMissing", function () {
         var isMissing = utils.isMissing;
 
-        it("should return true for undefined, null, zero-length strings and arrays", function () {
+        it("should return true for undefined, null and zero-length strings", function () {
             expect(isMissing()).toBeTruthy();
             expect(isMissing(undefined)).toBeTruthy();
             expect(isMissing(null)).toBeTruthy();
             expect(isMissing("")).toBeTruthy();
-            expect(isMissing([])).toBeTruthy();
         });
 
-        it("should return false for objects, strings and arrays with non-zero lengths", function () {
+        it("should return false for objects, arrays and strings with non-zero lengths", function () {
             expect(isMissing({})).toBeFalsy();
             expect(isMissing(new Object())).toBeFalsy();
             expect(isMissing([1])).toBeFalsy();

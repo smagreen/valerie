@@ -86,7 +86,15 @@
      * @return {boolean} whether the value is missing
      */
     utils.isMissing = function (value) {
-        return value == null;
+        if (value == null) {
+            return true;
+        }
+
+        if(utils.isString(value)) {
+            return value.length === 0;
+        }
+
+        return false;
     };
 
     /**

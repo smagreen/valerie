@@ -17,6 +17,21 @@ var valerie = {};
     var utils = valerie.utils;
 
     /**
+     * Creates a function that returns the given value as an array of one item, or simply returns the given value if it
+     * is already an array.
+     * @memberof valerie.utils
+     * @param {*|Array} [valueOrArray] the value or function
+     * @return {Array} a newly created array, or the array passed in
+     */
+    utils.asArray = function (valueOrArray) {
+        if (utils.isArray(valueOrArray)) {
+            return valueOrArray;
+        }
+
+        return [valueOrArray];
+    };
+
+    /**
      * Creates a function that returns the given value, or simply returns the given value if it is already a function.
      * @memberof valerie.utils
      * @param {*|function} [valueOrFunction] the value or function
@@ -81,7 +96,11 @@ var valerie = {};
             return true;
         }
 
-        return value.length === 0;
+        if(utils.isString(value)) {
+            return value.length === 0;
+        }
+
+        return false;
     };
 
     /**
@@ -767,6 +786,7 @@ var valerie = {};
      * Construction options for a model validation state.
      * @typedef {object} valerie.ModelValidationState.options
      * @property {function} applicable the function used to determine if the model is applicable
+     * @property {boolean} excludeFromSummary whether any validation failures for this model are excluded from a summary
      * @property {string} failureMessage the message shown when the model is in an invalid state
      * @property {function} name the function used to determine the name of the model; used in failure messages
      * @property {function} paused a value, observable or computed used to control whether the computation that updates
@@ -870,14 +890,18 @@ var valerie = {};
          * @method
          * @return {string} the name of the model
          */
-        this.getName = this.settings.name;
+        this.getName = function () {
+            return this.settings.name();
+        };
 
         /**
          * Gets whether the model is applicable.
          * @method
          * @return {boolean} <code>true</code> if the model is applicable, <code>false</code> otherwise
          */
-        this.isApplicable = this.settings.applicable;
+        this.isApplicable = function() {
+            return this.settings.applicable;
+        };
 
         //noinspection JSValidateJSDoc
         /**
@@ -915,12 +939,14 @@ var valerie = {};
          * <i>[fluent]</i>
          * @name valerie.ModelValidationState#addValidationStates
          * @fluent
-         * @param {array.<valerie.IValidationState>} validationStates the validation states to add
+         * @param {object|array.<valerie.IValidationState>} validationStateOrStates the validation states to add
          * @return {valerie.ModelValidationState}
          */
-        "addValidationStates": function (validationStates) {
+        "addValidationStates": function (validationStateOrStates) {
+            validationStateOrStates = utils.asArray(validationStateOrStates);
+
             //noinspection JSValidateTypes
-            this.validationStates.push.apply(this.validationStates, validationStates);
+            this.validationStates.push.apply(this.validationStates, validationStateOrStates);
 
             return this;
         },
@@ -963,7 +989,7 @@ var valerie = {};
                     state = states[index];
 
                     if (state.clearSummary) {
-                        state.clearSummary();
+                        state.clearSummary(true);
                     }
                 }
             }
@@ -976,6 +1002,18 @@ var valerie = {};
          */
         "end": function () {
             return this.model;
+        },
+        /**
+         * Includes any validation failures for this property in a validation summary.<br/>
+         * <i>[fluent]</i>
+         * @fluent
+         * @return {valerie.ModelValidationState}
+         */
+        "includeInSummary": function () {
+            this.settings.excludeFromSummary = false;
+
+            return this;
+
         },
         /**
          * Sets the value or function used to determine the name of the model.<br/>
@@ -993,21 +1031,33 @@ var valerie = {};
          * Removes validation states.<br/>
          * <i>[fluent]</i>
          * @fluent
-         * @param {array.<valerie.IValidationState>} validationStates the validation states to remove
+         * @param {object|array.<valerie.IValidationState>} validationStateOrStates the validation states to remove
          * @return {valerie.ModelValidationState}
          */
-        "removeValidationStates": function (validationStates) {
-            this.validationStates.removeAll(validationStates);
+        "removeValidationStates": function (validationStateOrStates) {
+            validationStateOrStates = utils.asArray(validationStateOrStates);
+
+            this.validationStates.removeAll(validationStateOrStates);
 
             return this;
         },
         /**
-         * Stops validating the given sub-model by removing the validation states that belong to it.
+         * Stops validating the given sub-model by adding the validation state that belongs to it.
+         * @param {*} validatableSubModel the sub-model to start validating
+         * @return {valerie.ModelValidationState}
+         */
+        "startValidatingSubModel": function (validatableSubModel) {
+            this.validationStates.push(validatableSubModel.validation());
+
+            return this;
+        },
+        /**
+         * Stops validating the given sub-model by removing the validation state that belongs to it.
          * @param {*} validatableSubModel the sub-model to stop validating
          * @return {valerie.ModelValidationState}
          */
         "stopValidatingSubModel": function (validatableSubModel) {
-            this.validationStates.removeAll(validatableSubModel.validation().validationStates.peek());
+            this.validationStates.remove(validatableSubModel.validation());
 
             return this;
         },
@@ -1027,10 +1077,12 @@ var valerie = {};
             for (index = 0; index < states.length; index++) {
                 state = states[index];
 
-                failures.push({
-                    "name": state.getName(),
-                    "message": state.message()
-                });
+                if (!state.settings.excludeFromSummary) {
+                    failures.push({
+                        "name": state.getName(),
+                        "message": state.message()
+                    });
+                }
             }
 
             this.summary(failures);
@@ -1042,7 +1094,7 @@ var valerie = {};
                     state = states[index];
 
                     if (state.updateSummary) {
-                        state.updateSummary();
+                        state.updateSummary(true);
                     }
                 }
             }
@@ -1106,6 +1158,7 @@ var valerie = {};
      */
     valerie.ModelValidationState.defaultOptions = {
         "applicable": utils.asFunction(true),
+        "excludeFromSummary": true,
         "failureMessageFormat": "",
         "name": utils.asFunction("(?)"),
         "paused": null
@@ -1229,6 +1282,7 @@ var valerie = {};
      * @property {valerie.IConverter} converter the converter used to parse user
      * entries and format display of the property's value
      * @property {string} entryFormat the string used to format the property's value for display in a user entry
+     * @property {boolean} excludeFromSummary whether any validation failures for this property are excluded from a summary
      * @property {string} invalidFailureMessage the message shown when the user has entered an invalid value
      * @property {string} missingFailureMessage the message shown when a value is required but is missing
      * @property {function} name the function used to determine the name of the property; used in failure messages
@@ -1313,14 +1367,18 @@ var valerie = {};
          * @method
          * @return {string} the name of the property
          */
-        this.getName = this.settings.name;
+        this.getName = function () {
+            return this.settings.name();
+        };
 
         /**
          * Gets whether the property is applicable.
          * @method
          * @return {boolean} <code>true</code> if the property is applicable, <code>false</code> otherwise
          */
-        this.isApplicable = this.settings.applicable;
+        this.isApplicable = function () {
+            return this.settings.applicable();
+        };
 
         /**
          * Gets whether the message describing the validation state should be shown.
@@ -1403,6 +1461,18 @@ var valerie = {};
             return this;
         },
         /**
+         * Excludes any validation failures for this property from a validation summary.<br/>
+         * <i>[fluent]</i>
+         * @fluent
+         * @return {valerie.PropertyValidationState}
+         */
+        "excludeFromSummary": function () {
+            this.settings.excludeFromSummary = true;
+
+            return this;
+
+        },
+        /**
          * Sets the value or function used to determine the name of the property.<br/>
          * <i>[fluent]</i>
          * @fluent
@@ -1453,6 +1523,7 @@ var valerie = {};
         "applicable": utils.asFunction(true),
         "converter": valerie.converters.passThrough,
         "entryFormat": null,
+        "excludeFromSummary": false,
         "invalidEntryFailureMessage": "",
         "missingFailureMessage": "",
         "missingTest": utils.isMissing,

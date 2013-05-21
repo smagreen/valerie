@@ -128,6 +128,7 @@
      * Construction options for a model validation state.
      * @typedef {object} valerie.ModelValidationState.options
      * @property {function} applicable the function used to determine if the model is applicable
+     * @property {boolean} excludeFromSummary whether any validation failures for this model are excluded from a summary
      * @property {string} failureMessage the message shown when the model is in an invalid state
      * @property {function} name the function used to determine the name of the model; used in failure messages
      * @property {function} paused a value, observable or computed used to control whether the computation that updates
@@ -231,14 +232,18 @@
          * @method
          * @return {string} the name of the model
          */
-        this.getName = this.settings.name;
+        this.getName = function () {
+            return this.settings.name();
+        };
 
         /**
          * Gets whether the model is applicable.
          * @method
          * @return {boolean} &lt;code>true&lt;/code> if the model is applicable, &lt;code>false&lt;/code> otherwise
          */
-        this.isApplicable = this.settings.applicable;
+        this.isApplicable = function() {
+            return this.settings.applicable;
+        };
 
         //noinspection JSValidateJSDoc
         /**
@@ -276,12 +281,14 @@
          * &lt;i>[fluent]&lt;/i>
          * @name valerie.ModelValidationState#addValidationStates
          * @fluent
-         * @param {array.&lt;valerie.IValidationState>} validationStates the validation states to add
+         * @param {object|array.&lt;valerie.IValidationState>} validationStateOrStates the validation states to add
          * @return {valerie.ModelValidationState}
          */
-        "addValidationStates": function (validationStates) {
+        "addValidationStates": function (validationStateOrStates) {
+            validationStateOrStates = utils.asArray(validationStateOrStates);
+
             //noinspection JSValidateTypes
-            this.validationStates.push.apply(this.validationStates, validationStates);
+            this.validationStates.push.apply(this.validationStates, validationStateOrStates);
 
             return this;
         },
@@ -324,7 +331,7 @@
                     state = states[index];
 
                     if (state.clearSummary) {
-                        state.clearSummary();
+                        state.clearSummary(true);
                     }
                 }
             }
@@ -337,6 +344,18 @@
          */
         "end": function () {
             return this.model;
+        },
+        /**
+         * Includes any validation failures for this property in a validation summary.&lt;br/>
+         * &lt;i>[fluent]&lt;/i>
+         * @fluent
+         * @return {valerie.ModelValidationState}
+         */
+        "includeInSummary": function () {
+            this.settings.excludeFromSummary = false;
+
+            return this;
+
         },
         /**
          * Sets the value or function used to determine the name of the model.&lt;br/>
@@ -354,21 +373,33 @@
          * Removes validation states.&lt;br/>
          * &lt;i>[fluent]&lt;/i>
          * @fluent
-         * @param {array.&lt;valerie.IValidationState>} validationStates the validation states to remove
+         * @param {object|array.&lt;valerie.IValidationState>} validationStateOrStates the validation states to remove
          * @return {valerie.ModelValidationState}
          */
-        "removeValidationStates": function (validationStates) {
-            this.validationStates.removeAll(validationStates);
+        "removeValidationStates": function (validationStateOrStates) {
+            validationStateOrStates = utils.asArray(validationStateOrStates);
+
+            this.validationStates.removeAll(validationStateOrStates);
 
             return this;
         },
         /**
-         * Stops validating the given sub-model by removing the validation states that belong to it.
+         * Stops validating the given sub-model by adding the validation state that belongs to it.
+         * @param {*} validatableSubModel the sub-model to start validating
+         * @return {valerie.ModelValidationState}
+         */
+        "startValidatingSubModel": function (validatableSubModel) {
+            this.validationStates.push(validatableSubModel.validation());
+
+            return this;
+        },
+        /**
+         * Stops validating the given sub-model by removing the validation state that belongs to it.
          * @param {*} validatableSubModel the sub-model to stop validating
          * @return {valerie.ModelValidationState}
          */
         "stopValidatingSubModel": function (validatableSubModel) {
-            this.validationStates.removeAll(validatableSubModel.validation().validationStates.peek());
+            this.validationStates.remove(validatableSubModel.validation());
 
             return this;
         },
@@ -388,10 +419,12 @@
             for (index = 0; index &lt; states.length; index++) {
                 state = states[index];
 
-                failures.push({
-                    "name": state.getName(),
-                    "message": state.message()
-                });
+                if (!state.settings.excludeFromSummary) {
+                    failures.push({
+                        "name": state.getName(),
+                        "message": state.message()
+                    });
+                }
             }
 
             this.summary(failures);
@@ -403,7 +436,7 @@
                     state = states[index];
 
                     if (state.updateSummary) {
-                        state.updateSummary();
+                        state.updateSummary(true);
                     }
                 }
             }
@@ -467,6 +500,7 @@
      */
     valerie.ModelValidationState.defaultOptions = {
         "applicable": utils.asFunction(true),
+        "excludeFromSummary": true,
         "failureMessageFormat": "",
         "name": utils.asFunction("(?)"),
         "paused": null
@@ -504,7 +538,7 @@
 <br clear="both">
 
 <footer>
-    Documentation generated by <a href="https://github.com/jsdoc3/jsdoc">JSDoc 3.2.0-dev</a> on Mon May 20 2013 13:08:19 GMT+0100 (BST)
+    Documentation generated by <a href="https://github.com/jsdoc3/jsdoc">JSDoc 3.2.0-dev</a> on Tue May 21 2013 16:38:30 GMT+0100 (BST)
 </footer>
 
 <script> prettyPrint(); </script>
