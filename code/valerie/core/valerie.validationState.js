@@ -62,20 +62,21 @@
                     continue;
                 }
 
-                if (utils.isArrayOrObject(value)) {
-                    if (includeSubModels && validationState) {
-                        //noinspection JSUnresolvedFunction
+                if (validationState) {
+                    if (utils.isObject(value)) {
+                        if (includeSubModels) {
+                            validationStates.push(validationState);
+                        }
+                    }
+                    else {
                         validationStates.push(validationState);
                     }
+                }
 
+                if (utils.isArrayOrObject(value)) {
                     if (recurse) {
                         //noinspection JSValidateTypes
                         valerie.validationState.findIn(value, includeSubModels, true, validationStates);
-                    }
-                } else {
-                    if (validationState) {
-                        //noinspection JSUnresolvedFunction
-                        validationStates.push(validationState);
                     }
                 }
             }
