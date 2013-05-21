@@ -1,24 +1,27 @@
+<div class="form-horizontal sample">
+    <fieldset>
+        <legend>Your Name</legend>
+        <div data-bind="validationCss: firstName" class="control-group">
+            <label for="firstName" class="control-label">First Name</label>
 
-<form class="form-horizontal sample">
-  <fieldset>
-    <legend>Your Name</legend>
-    <div data-bind="validationCss: firstName" class="control-group">
-      <label for="firstName" class="control-label">First Name</label>
-      <div class="controls">
-        <input id="firstName" type="text" data-bind="validatedValue: firstName"/>
-        <div data-bind="validationMessageText: firstName" class="help-block"></div>
-      </div>
+            <div class="controls">
+                <input id="firstName" type="text" data-bind="validatedValue: firstName"/>
+
+                <div data-bind="validationMessageText: firstName" class="help-block"></div>
+            </div>
+        </div>
+        <div data-bind="validationCss: surname" class="control-group">
+            <label for="surname" class="control-label">Surname</label>
+
+            <div class="controls">
+                <input id="surname" type="text" data-bind="validatedValue: surname"/>
+
+                <div data-bind="validationMessageText: surname" class="help-block"></div>
+            </div>
+        </div>
+    </fieldset>
+    <div class="form-actions">
+        <button data-bind="click: submit" class="btn btn-primary">Submit</button>
+        <button data-bind="click: reset" class="btn">Reset</button>
     </div>
-    <div data-bind="validationCss: surname" class="control-group">
-      <label for="surname" class="control-label">Surname</label>
-      <div class="controls">
-        <input id="surname" type="text" data-bind="validatedValue: surname"/>
-        <div data-bind="validationMessageText: surname" class="help-block"></div>
-      </div>
-    </div>
-  </fieldset>
-  <div class="form-actions">
-    <button data-bind="click: submit" class="btn btn-primary">Submit</button>
-    <button data-bind="click: reset" class="btn">Reset</button>
-  </div>
-</form>
+</div>

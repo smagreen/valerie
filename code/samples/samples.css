@@ -71,3 +71,15 @@ textarea {
 .untouched .help-block {
     display: none;
 }
+
+ul.alert {
+    margin: 0.5em 0 0.5em 0;
+}
+
+ul.alert li {
+    list-style: none;
+}
+
+th {
+    text-align: left;
+}

@@ -64,6 +64,8 @@ block content
             li.active
                 a(href='#sample-live',data-toggle='tab') Live
             li
+                a(href='#sample-live-model',data-toggle='tab') Live Model
+            li
                 a(href='#sample-html',data-toggle='tab') HTML
             li
                 a(href='#sample-script-pane',data-toggle='tab') Javascript
@@ -72,10 +74,14 @@ block content
             div.tab-pane.active#sample-live
                 block sample-live
 
+            div.tab-pane#sample-live-model
+                pre(data-bind='text: JSON.stringify(ko.toJS($data), null, 2)')
+
             div.tab-pane#sample-html
                 pre(class='.brush: xml')
                 | <script type="text/html">
                 block sample-html
                 | </script>
+
             div.tab-pane#sample-script-pane
                 pre(class='.brush: js')

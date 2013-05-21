@@ -1,0 +1,16 @@
+block page-definition
+    - var page = { "title": "Complex Forms / Contacts", "section": "complex-forms", "subSection": "contact" }
+
+extends templates/sample
+
+block sample-introduction
+    p This sample shows <strong>valerie</strong> being used to validate a contacts form.
+
+block sample-live
+    include complex-forms-contacts-markup.html
+
+block sample-html
+    include complex-forms-contacts-markup.html
+
+block sample-script
+    include complex-forms-contacts-script.js

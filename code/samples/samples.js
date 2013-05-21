@@ -9,6 +9,6 @@ $(function () {
     SyntaxHighlighter.highlight();
 
     if(window.RunSample) {
-        window.RunSample();
+        ko.applyBindings(window.RunSample(), document.getElementById("sample-live-model"));
     }
 });

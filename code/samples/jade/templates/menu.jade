@@ -8,6 +8,10 @@
 - menu.push({ "name": "basic-form", "title": "Basic Form", "items": subMenuItems });
 - subMenuItems.push({ "name": "fluent", "title": "Fluent", "link": "basic-form-fluent.html" });
 
+- subMenuItems = [];
+- menu.push({ "name": "complex-forms", "title": "Complex Forms", "items": subMenuItems });
+- subMenuItems.push({ "name": "fluent", "title": "Contacts", "link": "complex-forms-contacts.html" });
+
 ul.nav.nav-list
     each sectionMenu in menu
         - cssClass = "header ";

@@ -25,6 +25,9 @@
             <li class="header  no-page"><a>Basic Form</a>
             </li>
             <li class="active"><a href="basic-form-fluent.html"><i class="icon-chevron-right"></i>Fluent</a></li>
+            <li class="header  no-page"><a>Complex Forms</a>
+            </li>
+            <li class="active"><a href="complex-forms-contacts.html"><i class="icon-chevron-right"></i>Contacts</a></li>
           </ul>
         </div>
         <div class="span9">
@@ -35,60 +38,70 @@
           <div class="tabbable">
             <ul class="nav nav-tabs">
               <li class="active"><a href="#sample-live" data-toggle="tab">Live</a></li>
+              <li><a href="#sample-live-model" data-toggle="tab">Live Model</a></li>
               <li><a href="#sample-html" data-toggle="tab">HTML</a></li>
               <li><a href="#sample-script-pane" data-toggle="tab">Javascript</a></li>
             </ul>
             <div class="tab-content">
-              <div id="sample-live" class="tab-pane active">
-<form class="form-horizontal sample">
-  <fieldset>
-    <legend>Your Name</legend>
-    <div data-bind="validationCss: firstName" class="control-group">
-      <label for="firstName" class="control-label">First Name</label>
-      <div class="controls">
-        <input id="firstName" type="text" data-bind="validatedValue: firstName"/>
-        <div data-bind="validationMessageText: firstName" class="help-block"></div>
-      </div>
+              <div id="sample-live" class="tab-pane active"><div class="form-horizontal sample">
+    <fieldset>
+        <legend>Your Name</legend>
+        <div data-bind="validationCss: firstName" class="control-group">
+            <label for="firstName" class="control-label">First Name</label>
+
+            <div class="controls">
+                <input id="firstName" type="text" data-bind="validatedValue: firstName"/>
+
+                <div data-bind="validationMessageText: firstName" class="help-block"></div>
+            </div>
+        </div>
+        <div data-bind="validationCss: surname" class="control-group">
+            <label for="surname" class="control-label">Surname</label>
+
+            <div class="controls">
+                <input id="surname" type="text" data-bind="validatedValue: surname"/>
+
+                <div data-bind="validationMessageText: surname" class="help-block"></div>
+            </div>
+        </div>
+    </fieldset>
+    <div class="form-actions">
+        <button data-bind="click: submit" class="btn btn-primary">Submit</button>
+        <button data-bind="click: reset" class="btn">Reset</button>
     </div>
-    <div data-bind="validationCss: surname" class="control-group">
-      <label for="surname" class="control-label">Surname</label>
-      <div class="controls">
-        <input id="surname" type="text" data-bind="validatedValue: surname"/>
-        <div data-bind="validationMessageText: surname" class="help-block"></div>
-      </div>
-    </div>
-  </fieldset>
-  <div class="form-actions">
-    <button data-bind="click: submit" class="btn btn-primary">Submit</button>
-    <button data-bind="click: reset" class="btn">Reset</button>
-  </div>
-</form>
+</div>
+              </div>
+              <div id="sample-live-model" class="tab-pane">
+                <pre data-bind="text: JSON.stringify(ko.toJS($data), null, 2)"></pre>
               </div>
               <div id="sample-html" class="tab-pane">
-                <pre class=".brush: xml"></pre><script type="text/html">
-<form class="form-horizontal sample">
-  <fieldset>
-    <legend>Your Name</legend>
-    <div data-bind="validationCss: firstName" class="control-group">
-      <label for="firstName" class="control-label">First Name</label>
-      <div class="controls">
-        <input id="firstName" type="text" data-bind="validatedValue: firstName"/>
-        <div data-bind="validationMessageText: firstName" class="help-block"></div>
-      </div>
+                <pre class=".brush: xml"></pre><script type="text/html"><div class="form-horizontal sample">
+    <fieldset>
+        <legend>Your Name</legend>
+        <div data-bind="validationCss: firstName" class="control-group">
+            <label for="firstName" class="control-label">First Name</label>
+
+            <div class="controls">
+                <input id="firstName" type="text" data-bind="validatedValue: firstName"/>
+
+                <div data-bind="validationMessageText: firstName" class="help-block"></div>
+            </div>
+        </div>
+        <div data-bind="validationCss: surname" class="control-group">
+            <label for="surname" class="control-label">Surname</label>
+
+            <div class="controls">
+                <input id="surname" type="text" data-bind="validatedValue: surname"/>
+
+                <div data-bind="validationMessageText: surname" class="help-block"></div>
+            </div>
+        </div>
+    </fieldset>
+    <div class="form-actions">
+        <button data-bind="click: submit" class="btn btn-primary">Submit</button>
+        <button data-bind="click: reset" class="btn">Reset</button>
     </div>
-    <div data-bind="validationCss: surname" class="control-group">
-      <label for="surname" class="control-label">Surname</label>
-      <div class="controls">
-        <input id="surname" type="text" data-bind="validatedValue: surname"/>
-        <div data-bind="validationMessageText: surname" class="help-block"></div>
-      </div>
-    </div>
-  </fieldset>
-  <div class="form-actions">
-    <button data-bind="click: submit" class="btn btn-primary">Submit</button>
-    <button data-bind="click: reset" class="btn">Reset</button>
-  </div>
-</form></script>
+</div></script>
               </div>
               <div id="sample-script-pane" class="tab-pane">
                 <pre class=".brush: js"></pre>
@@ -165,6 +178,8 @@ function RunSample() {
     ko.bindingHandlers.validationCss.classNames.passed = "success";
 
     ko.applyBindings(viewModel, document.getElementById("sample"));
+
+    return viewModel;
 };</script>
     </div>
   </body>

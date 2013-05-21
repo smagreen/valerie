@@ -1,0 +1,316 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <title>valerie Samples - Complex Forms / Contacts</title><!--[if lte IE 8]>
+    <script type="text/javascript" src="../thirdParty/html5shiv.js"></script><![endif]-->
+    <link rel="stylesheet" type="text/css" href="../thirdParty/bootstrap/css/bootstrap.min.css"><!--[if lte IE 6]>
+    <link rel="stylesheet" type="text/css" href="../thirdParty/bootstrap/css/bootstrap-ie6.min.css">
+    <link rel="stylesheet" type="text/css" href="../thirdParty/bootstrap/css/ie.css"><![endif]-->
+    <link rel="stylesheet" type="text/css" href="samples.css">
+    <link rel="stylesheet" type="text/css" href="../thirdParty/syntaxHighlighter/styles/shCoreEmacs.css">
+  </head>
+  <body>
+    <header>
+      <div class="container">
+        <h1>valerie</h1>
+        <h3>samples</h3>
+      </div>
+    </header>
+    <div class="container">
+      <div class="row">
+        <div class="span3">
+          <ul class="nav nav-list">
+            <li class="header  "><a href="index.html"><i class="icon-chevron-right"></i>Home</a>
+            </li>
+            <li class="header  no-page"><a>Basic Form</a>
+            </li>
+            <li class=""><a href="basic-form-fluent.html"><i class="icon-chevron-right"></i>Fluent</a></li>
+            <li class="header  no-page"><a>Complex Forms</a>
+            </li>
+            <li class=""><a href="complex-forms-contacts.html"><i class="icon-chevron-right"></i>Contacts</a></li>
+          </ul>
+        </div>
+        <div class="span9">
+          <div class="page-header">
+            <h1>Complex Forms / Contacts</h1>
+          </div>
+          <p>This sample shows <strong>valerie</strong> being used to validate a contacts form.</p>
+          <div class="tabbable">
+            <ul class="nav nav-tabs">
+              <li class="active"><a href="#sample-live" data-toggle="tab">Live</a></li>
+              <li><a href="#sample-live-model" data-toggle="tab">Live Model</a></li>
+              <li><a href="#sample-html" data-toggle="tab">HTML</a></li>
+              <li><a href="#sample-script-pane" data-toggle="tab">Javascript</a></li>
+            </ul>
+            <div class="tab-content">
+              <div id="sample-live" class="tab-pane active"><div id="sample" class="form-horizontal">
+    <fieldset>
+        <legend>List Details</legend>
+        <div data-bind="validationCss: listName" class="control-group">
+            <label for="listName" class="control-label">Name</label>
+
+            <div class="controls">
+                <input id="listName" type="text" data-bind="value: listName"/>
+
+                <div data-bind="validationMessageText: listName" class="help-block"></div>
+            </div>
+        </div>
+    </fieldset>
+
+    <fieldset data-bind="with: contactList">
+        <legend>Contacts</legend>
+        <table width="100%">
+            <thead>
+                <tr>
+                    <th width="30%">First Name</th>
+                    <th width="30%">Surname</th>
+                    <th width="30%">Number</th>
+                    <th width="10%"></th>
+                </tr>
+            </thead>
+            <tbody data-bind="foreach: contacts">
+                <tr>
+                    <td data-bind="validationCss: firstName" class="control-group">
+                        <input type="text" data-bind="value: firstName" class="input-medium"/>
+                    </td>
+                    <td data-bind="validationCss: surname" class="control-group">
+                        <input type="text" data-bind="value: surname" class="input-medium"/>
+                    </td>
+                    <td data-bind="validationCss: number" class="control-group">
+                        <input type="text" data-bind="value: number" class="input-medium"/>
+                    </td>
+                    <td>
+                        <button data-bind="click: $parent.removeContact" class="btn btn-danger">Delete</button>
+                    </td>
+                </tr>
+                <tr data-bind="visibleWhenSummaryNotEmpty: true">
+                    <td colspan="4">
+                        <ul data-bind="foreach: validation().summary()" class="alert alert-error">
+                            <li><span data-bind="text: name"></span>: <span data-bind="text: message"></span></li>
+                        </ul>
+                    </td>
+                </tr>
+            </tbody>
+        </table>
+
+        <ul data-bind="foreach: validation().summary(), visibleWhenSummaryNotEmpty: true" class="alert alert-error">
+            <li><span data-bind="text: name"></span>: <span data-bind="text: message"></span></li>
+        </ul>
+
+        <div class="clearfix">
+            <button data-bind="click: addContact" class="btn btn-success btn-block">Add Contact</button>
+        </div>
+    </fieldset>
+
+    <ul data-bind="foreach: validation().summary(), visibleWhenSummaryNotEmpty: true" class="alert alert-error">
+        <li><span data-bind="text: name"></span>: <span data-bind="text: message"></span></li>
+    </ul>
+
+    <div class="form-actions">
+        <button data-bind="click: submit" class="btn btn-primary">Submit</button>
+    </div>
+</div>
+              </div>
+              <div id="sample-live-model" class="tab-pane">
+                <pre data-bind="text: JSON.stringify(ko.toJS($data), null, 2)"></pre>
+              </div>
+              <div id="sample-html" class="tab-pane">
+                <pre class=".brush: xml"></pre><script type="text/html"><div id="sample" class="form-horizontal">
+    <fieldset>
+        <legend>List Details</legend>
+        <div data-bind="validationCss: listName" class="control-group">
+            <label for="listName" class="control-label">Name</label>
+
+            <div class="controls">
+                <input id="listName" type="text" data-bind="value: listName"/>
+
+                <div data-bind="validationMessageText: listName" class="help-block"></div>
+            </div>
+        </div>
+    </fieldset>
+
+    <fieldset data-bind="with: contactList">
+        <legend>Contacts</legend>
+        <table width="100%">
+            <thead>
+                <tr>
+                    <th width="30%">First Name</th>
+                    <th width="30%">Surname</th>
+                    <th width="30%">Number</th>
+                    <th width="10%"></th>
+                </tr>
+            </thead>
+            <tbody data-bind="foreach: contacts">
+                <tr>
+                    <td data-bind="validationCss: firstName" class="control-group">
+                        <input type="text" data-bind="value: firstName" class="input-medium"/>
+                    </td>
+                    <td data-bind="validationCss: surname" class="control-group">
+                        <input type="text" data-bind="value: surname" class="input-medium"/>
+                    </td>
+                    <td data-bind="validationCss: number" class="control-group">
+                        <input type="text" data-bind="value: number" class="input-medium"/>
+                    </td>
+                    <td>
+                        <button data-bind="click: $parent.removeContact" class="btn btn-danger">Delete</button>
+                    </td>
+                </tr>
+                <tr data-bind="visibleWhenSummaryNotEmpty: true">
+                    <td colspan="4">
+                        <ul data-bind="foreach: validation().summary()" class="alert alert-error">
+                            <li><span data-bind="text: name"></span>: <span data-bind="text: message"></span></li>
+                        </ul>
+                    </td>
+                </tr>
+            </tbody>
+        </table>
+
+        <ul data-bind="foreach: validation().summary(), visibleWhenSummaryNotEmpty: true" class="alert alert-error">
+            <li><span data-bind="text: name"></span>: <span data-bind="text: message"></span></li>
+        </ul>
+
+        <div class="clearfix">
+            <button data-bind="click: addContact" class="btn btn-success btn-block">Add Contact</button>
+        </div>
+    </fieldset>
+
+    <ul data-bind="foreach: validation().summary(), visibleWhenSummaryNotEmpty: true" class="alert alert-error">
+        <li><span data-bind="text: name"></span>: <span data-bind="text: message"></span></li>
+    </ul>
+
+    <div class="form-actions">
+        <button data-bind="click: submit" class="btn btn-primary">Submit</button>
+    </div>
+</div></script>
+              </div>
+              <div id="sample-script-pane" class="tab-pane">
+                <pre class=".brush: js"></pre>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div><!--[if lt IE 8]>
+    <script type="text/javascript" src="../thirdParty/json3.min.js"></script><![endif]-->
+    <script type="text/javascript" src="../thirdParty/jquery-1.9.1.min.js"></script>
+    <script type="text/javascript" src="../thirdParty/bootstrap/js/bootstrap.min.js"></script><!--[if lte IE 6]>
+    <script type="text/javascript" src="../thirdParty/bootstrap/js/ie6.js"></script><![endif]-->
+    <script type="text/javascript" src="../thirdParty/knockout-2.2.1.debug.js"></script>
+    <!-- valerie - core-->
+    <script type="text/javascript" src="../valerie/core/valerie.namespace.js"></script>
+    <script type="text/javascript" src="../valerie/core/valerie.utils.js"></script>
+    <script type="text/javascript" src="../valerie/core/valerie.formatting.js"></script>
+    <script type="text/javascript" src="../valerie/core/valerie.dom.js"></script>
+    <script type="text/javascript" src="../valerie/core/valerie.koExtras.js"></script>
+    <script type="text/javascript" src="../valerie/core/valerie.converters.js"></script>
+    <script type="text/javascript" src="../valerie/core/valerie.validationResult.js"></script>
+    <script type="text/javascript" src="../valerie/core/valerie.validationState.js"></script>
+    <script type="text/javascript" src="../valerie/core/valerie.modelValidationState.js"></script>
+    <script type="text/javascript" src="../valerie/core/valerie.propertyValidationState.js"></script>
+    <script type="text/javascript" src="../valerie/core/ko.computed.fn.js"></script>
+    <script type="text/javascript" src="../valerie/core/ko.observable.fn.js"></script>
+    <script type="text/javascript" src="../valerie/core/ko.bindingHandlers.js"></script>
+    <script type="text/javascript" src="../valerie/core/valerie.koBindingsHelper.js"></script>
+    <!-- valerie - full-->
+    <script type="text/javascript" src="../valerie/full/valerie.numericHelper.js"></script>
+    <script type="text/javascript" src="../valerie/full/valerie.converters.full.js"></script>
+    <script type="text/javascript" src="../valerie/full/valerie.rules.js"></script>
+    <script type="text/javascript" src="../valerie/full/valerie.propertyValidationState-fluentConverters.js"></script>
+    <script type="text/javascript" src="../valerie/full/valerie.propertyValidationState-fluentRules.js"></script>
+    <!-- valerie - en-->
+    <script type="text/javascript" src="../valerie/localisation/en/core-en.js"></script>
+    <script type="text/javascript" src="../valerie/localisation/en/full-en.js"></script>
+    <!-- syntax highlighter-->
+    <script type="text/javascript" src="../thirdParty/syntaxHighlighter/scripts/shCore.js"></script>
+    <script type="text/javascript" src="../thirdParty/syntaxHighlighter/scripts/shBrushJScript.js"></script>
+    <script type="text/javascript" src="../thirdParty/syntaxHighlighter/scripts/shBrushXml.js"></script>
+    <!-- samples-->
+    <script type="text/javascript" src="samples.js"></script>
+    <!-- sample script-->
+    <div id="sample-script"><script type="text/javascript">
+function RunSample() {
+    function Contact() {
+        var self = valerie.validatableModel({
+            "firstName": ko.observable()
+                .validate()
+                .string()
+                .name("First Name")
+                .required()
+                .end(),
+            "surname": ko.observable()
+                .validate()
+                .string()
+                .name("Surname")
+                .end(),
+            "number": ko.observable()
+                .validate()
+                .name("Number")
+                .required()
+                .expression(/^\d{11}$/)
+                .ruleMessage("Digits only.")
+                .end()
+        })
+            .name("Contact")
+            .validateChildProperties()
+            .end();
+
+        return self;
+    }
+
+    function ContactList() {
+        var self = valerie.validatableModel({
+            "contacts": ko.observableArray()
+                .validate()
+                .name("Contacts")
+                .minimumNumberOfItems(2)
+                .ruleMessage("At least two contacts are required.")
+                .end(),
+            "addContact": function () {
+                var contact = new Contact();
+                self.validation().startValidatingSubModel(contact);
+                self.contacts.push(contact);
+            },
+            "removeContact": function (contact) {
+                self.validation().stopValidatingSubModel(contact);
+                self.contacts.remove(contact);
+            }
+        })
+            .name("Contact List")
+            .validateChildPropertiesAndSubModels()
+            .end();
+
+        return self;
+    }
+
+    var viewModel = valerie.validatableModel({
+        "listName": ko.observable()
+            .validate()
+            .string()
+            .name("List Name")
+            .required()
+            .minimumLength(5)
+            .end(),
+        "contactList": new ContactList(),
+        "submit": function () {
+            viewModel.validation().touched(true);
+            viewModel.validation().updateSummary(true);
+        },
+        "reset": function () {
+            viewModel.validation().touched(false);
+            viewModel.validation().clearSummary(true);
+        }
+    })
+        .validateChildPropertiesAndSubModels()
+        .end();
+
+    ko.bindingHandlers.validationCss.classNames.failed = "error";
+    ko.bindingHandlers.validationCss.classNames.passed = "success";
+
+    valerie.koBindingsHelper.useValidatingBindingHandlers();
+    ko.applyBindings(viewModel, document.getElementById("sample"));
+
+    return viewModel;
+};</script>
+    </div>
+  </body>
+</html>

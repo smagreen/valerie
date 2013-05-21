@@ -28,4 +28,6 @@ function RunSample() {
     ko.bindingHandlers.validationCss.classNames.passed = "success";
 
     ko.applyBindings(viewModel, document.getElementById("sample"));
+
+    return viewModel;
 };
