@@ -57,45 +57,41 @@
         </div>
     </fieldset>
 
-    <fieldset data-bind="with: contactList">
+    <fieldset>
         <legend>Contacts</legend>
         <table width="100%">
             <thead>
-                <tr>
-                    <th width="30%">First Name</th>
-                    <th width="30%">Surname</th>
-                    <th width="30%">Number</th>
-                    <th width="10%"></th>
-                </tr>
+            <tr>
+                <th width="30%">First Name</th>
+                <th width="30%">Surname</th>
+                <th width="30%">Number</th>
+                <th width="10%"></th>
+            </tr>
             </thead>
             <tbody data-bind="foreach: contacts">
-                <tr>
-                    <td data-bind="validationCss: firstName" class="control-group">
-                        <input type="text" data-bind="value: firstName" class="input-medium"/>
-                    </td>
-                    <td data-bind="validationCss: surname" class="control-group">
-                        <input type="text" data-bind="value: surname" class="input-medium"/>
-                    </td>
-                    <td data-bind="validationCss: number" class="control-group">
-                        <input type="text" data-bind="value: number" class="input-medium"/>
-                    </td>
-                    <td>
-                        <button data-bind="click: $parent.removeContact" class="btn btn-danger">Delete</button>
-                    </td>
-                </tr>
-                <tr data-bind="visibleWhenSummaryNotEmpty: true">
-                    <td colspan="4">
-                        <ul data-bind="foreach: validation().summary()" class="alert alert-error">
-                            <li><span data-bind="text: name"></span>: <span data-bind="text: message"></span></li>
-                        </ul>
-                    </td>
-                </tr>
+            <tr>
+                <td data-bind="validationCss: firstName" class="control-group">
+                    <input type="text" data-bind="value: firstName" class="input-medium"/>
+                </td>
+                <td data-bind="validationCss: surname" class="control-group">
+                    <input type="text" data-bind="value: surname" class="input-medium"/>
+                </td>
+                <td data-bind="validationCss: number" class="control-group">
+                    <input type="text" data-bind="value: number" class="input-medium"/>
+                </td>
+                <td>
+                    <button data-bind="click: $root.removeContact" class="btn btn-danger">Delete</button>
+                </td>
+            </tr>
+            <tr data-bind="visibleWhenSummaryNotEmpty: true">
+                <td colspan="4">
+                    <ul data-bind="foreach: validation().summary()" class="alert alert-error">
+                        <li><span data-bind="text: name"></span>: <span data-bind="text: message"></span></li>
+                    </ul>
+                </td>
+            </tr>
             </tbody>
         </table>
-
-        <ul data-bind="foreach: validation().summary(), visibleWhenSummaryNotEmpty: true" class="alert alert-error">
-            <li><span data-bind="text: name"></span>: <span data-bind="text: message"></span></li>
-        </ul>
 
         <div class="clearfix">
             <button data-bind="click: addContact" class="btn btn-success btn-block">Add Contact</button>
@@ -129,45 +125,41 @@
         </div>
     </fieldset>
 
-    <fieldset data-bind="with: contactList">
+    <fieldset>
         <legend>Contacts</legend>
         <table width="100%">
             <thead>
-                <tr>
-                    <th width="30%">First Name</th>
-                    <th width="30%">Surname</th>
-                    <th width="30%">Number</th>
-                    <th width="10%"></th>
-                </tr>
+            <tr>
+                <th width="30%">First Name</th>
+                <th width="30%">Surname</th>
+                <th width="30%">Number</th>
+                <th width="10%"></th>
+            </tr>
             </thead>
             <tbody data-bind="foreach: contacts">
-                <tr>
-                    <td data-bind="validationCss: firstName" class="control-group">
-                        <input type="text" data-bind="value: firstName" class="input-medium"/>
-                    </td>
-                    <td data-bind="validationCss: surname" class="control-group">
-                        <input type="text" data-bind="value: surname" class="input-medium"/>
-                    </td>
-                    <td data-bind="validationCss: number" class="control-group">
-                        <input type="text" data-bind="value: number" class="input-medium"/>
-                    </td>
-                    <td>
-                        <button data-bind="click: $parent.removeContact" class="btn btn-danger">Delete</button>
-                    </td>
-                </tr>
-                <tr data-bind="visibleWhenSummaryNotEmpty: true">
-                    <td colspan="4">
-                        <ul data-bind="foreach: validation().summary()" class="alert alert-error">
-                            <li><span data-bind="text: name"></span>: <span data-bind="text: message"></span></li>
-                        </ul>
-                    </td>
-                </tr>
+            <tr>
+                <td data-bind="validationCss: firstName" class="control-group">
+                    <input type="text" data-bind="value: firstName" class="input-medium"/>
+                </td>
+                <td data-bind="validationCss: surname" class="control-group">
+                    <input type="text" data-bind="value: surname" class="input-medium"/>
+                </td>
+                <td data-bind="validationCss: number" class="control-group">
+                    <input type="text" data-bind="value: number" class="input-medium"/>
+                </td>
+                <td>
+                    <button data-bind="click: $root.removeContact" class="btn btn-danger">Delete</button>
+                </td>
+            </tr>
+            <tr data-bind="visibleWhenSummaryNotEmpty: true">
+                <td colspan="4">
+                    <ul data-bind="foreach: validation().summary()" class="alert alert-error">
+                        <li><span data-bind="text: name"></span>: <span data-bind="text: message"></span></li>
+                    </ul>
+                </td>
+            </tr>
             </tbody>
         </table>
-
-        <ul data-bind="foreach: validation().summary(), visibleWhenSummaryNotEmpty: true" class="alert alert-error">
-            <li><span data-bind="text: name"></span>: <span data-bind="text: message"></span></li>
-        </ul>
 
         <div class="clearfix">
             <button data-bind="click: addContact" class="btn btn-success btn-block">Add Contact</button>
@@ -247,7 +239,7 @@ function RunSample() {
                 .name("Number")
                 .required()
                 .expression(/^\d{11}$/)
-                .ruleMessage("Digits only.")
+                .ruleMessage("11 digits required.")
                 .end()
         })
             .name("Contact")
@@ -257,51 +249,50 @@ function RunSample() {
         return self;
     }
 
-    function ContactList() {
-        var self = valerie.validatableModel({
-            "contacts": ko.observableArray()
-                .validate()
+    function ViewModel() {
+        var contacts = ko.observableArray()
+                .validateAsModel()
+                .name("Contacts")
+                .end(),
+            contactsPropertyValidationState = contacts.propertyValidationState()
                 .name("Contacts")
                 .minimumNumberOfItems(2)
-                .ruleMessage("At least two contacts are required.")
-                .end(),
-            "addContact": function () {
-                var contact = new Contact();
-                self.validation().startValidatingSubModel(contact);
-                self.contacts.push(contact);
-            },
-            "removeContact": function (contact) {
-                self.validation().stopValidatingSubModel(contact);
-                self.contacts.remove(contact);
-            }
-        })
-            .name("Contact List")
-            .validateChildPropertiesAndSubModels()
-            .end();
+                .ruleMessage("At least two contacts are required."),
+            self = valerie.validatableModel({
+                "listName": ko.observable()
+                    .validate()
+                    .string()
+                    .name("List Name")
+                    .required()
+                    .minimumLength(5)
+                    .end(),
+                "contacts": contacts,
+                "addContact": function () {
+                    var contact = new Contact();
+                    contacts.validation().startValidatingSubModel(contact);
+                    contacts.push(contact);
+                },
+                "removeContact": function (contact) {
+                    contacts.validation().stopValidatingSubModel(contact);
+                    contacts.remove(contact);
+                },
+                "submit": function () {
+                    self.validation().touched(true);
+                    self.validation().updateSummary(true);
+                },
+                "reset": function () {
+                    self.validation().touched(false);
+                    self.validation().clearSummary(true);
+                }
+            })
+                .validateChildPropertiesAndSubModels()
+                .addValidationStates(contactsPropertyValidationState)
+                .end();
 
         return self;
     }
 
-    var viewModel = valerie.validatableModel({
-        "listName": ko.observable()
-            .validate()
-            .string()
-            .name("List Name")
-            .required()
-            .minimumLength(5)
-            .end(),
-        "contactList": new ContactList(),
-        "submit": function () {
-            viewModel.validation().touched(true);
-            viewModel.validation().updateSummary(true);
-        },
-        "reset": function () {
-            viewModel.validation().touched(false);
-            viewModel.validation().clearSummary(true);
-        }
-    })
-        .validateChildPropertiesAndSubModels()
-        .end();
+    var viewModel = new ViewModel();
 
     ko.bindingHandlers.validationCss.classNames.failed = "error";
     ko.bindingHandlers.validationCss.classNames.passed = "success";

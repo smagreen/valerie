@@ -12,45 +12,41 @@
         </div>
     </fieldset>
 
-    <fieldset data-bind="with: contactList">
+    <fieldset>
         <legend>Contacts</legend>
         <table width="100%">
             <thead>
-                <tr>
-                    <th width="30%">First Name</th>
-                    <th width="30%">Surname</th>
-                    <th width="30%">Number</th>
-                    <th width="10%"></th>
-                </tr>
+            <tr>
+                <th width="30%">First Name</th>
+                <th width="30%">Surname</th>
+                <th width="30%">Number</th>
+                <th width="10%"></th>
+            </tr>
             </thead>
             <tbody data-bind="foreach: contacts">
-                <tr>
-                    <td data-bind="validationCss: firstName" class="control-group">
-                        <input type="text" data-bind="value: firstName" class="input-medium"/>
-                    </td>
-                    <td data-bind="validationCss: surname" class="control-group">
-                        <input type="text" data-bind="value: surname" class="input-medium"/>
-                    </td>
-                    <td data-bind="validationCss: number" class="control-group">
-                        <input type="text" data-bind="value: number" class="input-medium"/>
-                    </td>
-                    <td>
-                        <button data-bind="click: $parent.removeContact" class="btn btn-danger">Delete</button>
-                    </td>
-                </tr>
-                <tr data-bind="visibleWhenSummaryNotEmpty: true">
-                    <td colspan="4">
-                        <ul data-bind="foreach: validation().summary()" class="alert alert-error">
-                            <li><span data-bind="text: name"></span>: <span data-bind="text: message"></span></li>
-                        </ul>
-                    </td>
-                </tr>
+            <tr>
+                <td data-bind="validationCss: firstName" class="control-group">
+                    <input type="text" data-bind="value: firstName" class="input-medium"/>
+                </td>
+                <td data-bind="validationCss: surname" class="control-group">
+                    <input type="text" data-bind="value: surname" class="input-medium"/>
+                </td>
+                <td data-bind="validationCss: number" class="control-group">
+                    <input type="text" data-bind="value: number" class="input-medium"/>
+                </td>
+                <td>
+                    <button data-bind="click: $root.removeContact" class="btn btn-danger">Delete</button>
+                </td>
+            </tr>
+            <tr data-bind="visibleWhenSummaryNotEmpty: true">
+                <td colspan="4">
+                    <ul data-bind="foreach: validation().summary()" class="alert alert-error">
+                        <li><span data-bind="text: name"></span>: <span data-bind="text: message"></span></li>
+                    </ul>
+                </td>
+            </tr>
             </tbody>
         </table>
-
-        <ul data-bind="foreach: validation().summary(), visibleWhenSummaryNotEmpty: true" class="alert alert-error">
-            <li><span data-bind="text: name"></span>: <span data-bind="text: message"></span></li>
-        </ul>
 
         <div class="clearfix">
             <button data-bind="click: addContact" class="btn btn-success btn-block">Add Contact</button>

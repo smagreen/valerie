@@ -17,7 +17,7 @@ function RunSample() {
                 .name("Number")
                 .required()
                 .expression(/^\d{11}$/)
-                .ruleMessage("Digits only.")
+                .ruleMessage("11 digits required.")
                 .end()
         })
             .name("Contact")
@@ -27,51 +27,50 @@ function RunSample() {
         return self;
     }
 
-    function ContactList() {
-        var self = valerie.validatableModel({
-            "contacts": ko.observableArray()
-                .validate()
+    function ViewModel() {
+        var contacts = ko.observableArray()
+                .validateAsModel()
+                .name("Contacts")
+                .end(),
+            contactsPropertyValidationState = contacts.propertyValidationState()
                 .name("Contacts")
                 .minimumNumberOfItems(2)
-                .ruleMessage("At least two contacts are required.")
-                .end(),
-            "addContact": function () {
-                var contact = new Contact();
-                self.validation().startValidatingSubModel(contact);
-                self.contacts.push(contact);
-            },
-            "removeContact": function (contact) {
-                self.validation().stopValidatingSubModel(contact);
-                self.contacts.remove(contact);
-            }
-        })
-            .name("Contact List")
-            .validateChildPropertiesAndSubModels()
-            .end();
+                .ruleMessage("At least two contacts are required."),
+            self = valerie.validatableModel({
+                "listName": ko.observable()
+                    .validate()
+                    .string()
+                    .name("List Name")
+                    .required()
+                    .minimumLength(5)
+                    .end(),
+                "contacts": contacts,
+                "addContact": function () {
+                    var contact = new Contact();
+                    contacts.validation().startValidatingSubModel(contact);
+                    contacts.push(contact);
+                },
+                "removeContact": function (contact) {
+                    contacts.validation().stopValidatingSubModel(contact);
+                    contacts.remove(contact);
+                },
+                "submit": function () {
+                    self.validation().touched(true);
+                    self.validation().updateSummary(true);
+                },
+                "reset": function () {
+                    self.validation().touched(false);
+                    self.validation().clearSummary(true);
+                }
+            })
+                .validateChildPropertiesAndSubModels()
+                .addValidationStates(contactsPropertyValidationState)
+                .end();
 
         return self;
     }
 
-    var viewModel = valerie.validatableModel({
-        "listName": ko.observable()
-            .validate()
-            .string()
-            .name("List Name")
-            .required()
-            .minimumLength(5)
-            .end(),
-        "contactList": new ContactList(),
-        "submit": function () {
-            viewModel.validation().touched(true);
-            viewModel.validation().updateSummary(true);
-        },
-        "reset": function () {
-            viewModel.validation().touched(false);
-            viewModel.validation().clearSummary(true);
-        }
-    })
-        .validateChildPropertiesAndSubModels()
-        .end();
+    var viewModel = new ViewModel();
 
     ko.bindingHandlers.validationCss.classNames.failed = "error";
     ko.bindingHandlers.validationCss.classNames.passed = "success";
