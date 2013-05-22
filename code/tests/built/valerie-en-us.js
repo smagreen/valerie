@@ -195,8 +195,8 @@ var valerie = {};
      * Adds thousands separators to the given number string.
      * @memberof valerie.formatting
      * @param {string} numberString a string representation of a number
-     * @param {char|string} thousandsSeparator the character to use to separate the thousands
-     * @param {char|string} decimalSeparator the character used to separate the whole part of the number from its
+     * @param {string} thousandsSeparator the character to use to separate the thousands
+     * @param {string} decimalSeparator the character used to separate the whole part of the number from its
      * fractional part
      * @return {string} the number string with separators added if required
      */
@@ -214,7 +214,7 @@ var valerie = {};
      * Pads the front of the given string to the given width using the given character.
      * @memberof valerie.formatting
      * @param {string} stringToPad the string to pad
-     * @param {char|string} paddingCharacter the character to use to pad the string
+     * @param {string} paddingCharacter the character to use to pad the string
      * @param {number} width the width to pad the string to
      * @return {string} the string padded, if required, to the given width
      */
@@ -615,10 +615,12 @@ var valerie = {};
                 }
 
                 if (validationState instanceof valerie.PropertyValidationState) {
+                    //noinspection JSUnresolvedFunction
                     validationStates.push(validationState);
                 }
                 else {
                     if (includeSubModels) {
+                        //noinspection JSUnresolvedFunction
                         validationStates.push(validationState);
                     }
                 }
@@ -2152,9 +2154,9 @@ var valerie = {};
         /**
          * Initialises the helper.<br/>
          * <i>[fluent]</i>
-         * @param {char|string} decimalSeparator the character or string to use as the decimal separator
-         * @param {char|string} thousandsSeparator the character or string to use as the thousands separator
-         * @param {char|string} currencySign the character or string to use as the currency sign
+         * @param {string} decimalSeparator the character or string to use as the decimal separator
+         * @param {string} thousandsSeparator the character or string to use as the thousands separator
+         * @param {string} currencySign the character or string to use as the currency sign
          * @param {number} currencyMinorUnitPlaces the number of decimal places to use when parsing and formatting the
          * currency's minor units
          * @returns {valerie.NumericHelper}
