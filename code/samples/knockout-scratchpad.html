@@ -2,7 +2,7 @@
 <html>
 <head>
     <!--[if lte IE 8]>
-    <script type="text/javascript" src="../../thirdParty/html5shiv.js"></script>
+    <script type="text/javascript" src="../thirdParty/html5shiv.js"></script>
     <![endif]-->
     <meta charset="utf-8">
     <title>valerie knockout Scratchpad</title>
@@ -135,7 +135,7 @@
             <section data-bind="visibleWhenSummaryNotEmpty: houseDetails">
                 <h3>Validation Summary</h3>
                 <ul data-bind="foreach: houseDetails.validation().summary()">
-                    <li><span data-bind="text: name"></span>: <span data-bind="    text: message"></span></li>
+                    <li><span data-bind="text: name"></span>: <span data-bind="text: message"></span></li>
                 </ul>
             </section>
         </section>
@@ -158,9 +158,9 @@
             <div data-bind="visibleWhenValid: housePrice">
                 <p>
                     You can borrow between:
-                    <strong data-bind="formattedValue: loanAmountMin, formatter: valerie.converters.currencyMajor.format, valueFormat: 'C,'"></strong>
+                    <strong data-bind="formattedText: loanAmountMin, formatter: valerie.converters.currencyMajor.format, valueFormat: 'C,'"></strong>
                     &nbsp;and
-                    <strong data-bind="formattedValue: loanAmountMax"></strong>.
+                    <strong data-bind="formattedText: loanAmountMax"></strong>.
                 </p>
             </div>
             <div>
@@ -191,15 +191,40 @@
 </div>
 
 <!--[if lt IE 8]>
-<script type="text/javascript" src="../../thirdParty/json3.min.js"></script>
+<script type="text/javascript" src="../thirdParty/json3.min.js"></script>
 <![endif]-->
 
 <!-- KnockoutJS -->
-<script type="text/javascript" src="../../thirdParty/knockout-2.2.1.debug.js"></script>
+<script type="text/javascript" src="../thirdParty/knockout-2.2.1.debug.js"></script>
 
-<!-- Valerie -->
-<script type="text/javascript" src="../../build/valerie-for-knockout-en-gb.js"></script>
-
+<!-- valerie - core -->
+<script type="text/javascript" src="../valerie/core/valerie.namespace.js"></script>
+<script type="text/javascript" src="../valerie/core/valerie.utils.js"></script>
+<script type="text/javascript" src="../valerie/core/valerie.formatting.js"></script>
+<script type="text/javascript" src="../valerie/core/valerie.dom.js"></script>
+<script type="text/javascript" src="../valerie/core/valerie.koExtras.js"></script>
+<script type="text/javascript" src="../valerie/core/valerie.converters.js"></script>
+<script type="text/javascript" src="../valerie/core/valerie.validationResult.js"></script>
+<script type="text/javascript" src="../valerie/core/valerie.validationState.js"></script>
+<script type="text/javascript" src="../valerie/core/valerie.modelValidationState.js"></script>
+<script type="text/javascript" src="../valerie/core/valerie.propertyValidationState.js"></script>
+<script type="text/javascript" src="../valerie/core/ko.computed.fn.js"></script>
+<script type="text/javascript" src="../valerie/core/ko.observable.fn.js"></script>
+<script type="text/javascript" src="../valerie/core/ko.bindingHandlers.js"></script>
+<script type="text/javascript" src="../valerie/core/valerie.koBindingsHelper.js"></script>
+<!-- valerie - full -->
+<script type="text/javascript" src="../valerie/full/valerie.numericHelper.js"></script>
+<script type="text/javascript" src="../valerie/full/valerie.converters.full.js"></script>
+<script type="text/javascript" src="../valerie/full/valerie.rules.js"></script>
+<script type="text/javascript" src="../valerie/full/valerie.propertyValidationState-fluentConverters.js"></script>
+<script type="text/javascript" src="../valerie/full/valerie.propertyValidationState-fluentRules.js"></script>
+<!-- valerie - en -->
+<script type="text/javascript" src="../valerie/localisation/en/core-en.js"></script>
+<script type="text/javascript" src="../valerie/localisation/en/full-en.js"></script>
+<!-- valerie -en-gb -->
+<script type="text/javascript" src="../valerie/localisation/en-gb/full-en-gb.js"></script>
+<script type="text/javascript" src="../valerie/localisation/en-gb/valerie.converters-en-gb.js"></script>
+<script type="text/javascript" src="../valerie/localisation/en-gb/valerie.propertyValidationState-fluentConverters-en-gb.js"></script>
 <script type="text/javascript">
     window.onload = function () {
         var v = valerie;
