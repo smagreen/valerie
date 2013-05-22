@@ -1,0 +1,17 @@
+block page-definition
+    - var page = { "title": "Complex Forms / Applicability", "section": "complex-forms", "subSection": "applicability" }
+
+extends templates/sample
+
+block sample-introduction
+    p This sample shows <strong>valerie</strong> being used to validate a form with sections and entries that can become
+    | inapplicable.
+
+block sample-live
+    include complex-forms-applicability-markup.html
+
+block sample-html
+    include complex-forms-applicability-markup.html
+
+block sample-script
+    include complex-forms-applicability-script.js

@@ -1,7 +1,7 @@
 <!DOCTYPE html>
 <html>
   <head>
-    <title>valerie Samples - Complex Forms / Contacts</title><!--[if lte IE 8]>
+    <title>valerie Samples - Complex Forms / Applicability</title><!--[if lte IE 8]>
     <script type="text/javascript" src="../thirdParty/html5shiv.js"></script><![endif]-->
     <link rel="stylesheet" type="text/css" href="../thirdParty/bootstrap/css/bootstrap.min.css"><!--[if lte IE 6]>
     <link rel="stylesheet" type="text/css" href="../thirdParty/bootstrap/css/bootstrap-ie6.min.css">
@@ -27,16 +27,16 @@
             <li class=""><a href="basic-form-fluent.html"><i class="icon-chevron-right"></i>Fluent</a></li>
             <li class="header  no-page"><a>Complex Forms</a>
             </li>
-            <li class=""><a href="complex-forms-applicability.html"><i class="icon-chevron-right"></i>Applicability</a></li>
-            <li class="active"><a href="complex-forms-contacts.html"><i class="icon-chevron-right"></i>Contacts</a></li>
+            <li class="active"><a href="complex-forms-applicability.html"><i class="icon-chevron-right"></i>Applicability</a></li>
+            <li class=""><a href="complex-forms-contacts.html"><i class="icon-chevron-right"></i>Contacts</a></li>
           </ul>
         </div>
         <div class="span9">
           <div class="page-header">
-            <h1>Complex Forms / Contacts</h1>
+            <h1>Complex Forms / Applicability</h1>
           </div>
           <div class="introduction">
-            <p>This sample shows <strong>valerie</strong> being used to validate a contacts form.</p>
+            <p>This sample shows <strong>valerie</strong> being used to validate a form with sections and entries that can become</p>inapplicable.
           </div>
           <div class="tabbable">
             <ul class="nav nav-tabs">
@@ -48,67 +48,68 @@
             <div class="tab-content">
               <div id="sample-live" class="tab-pane active"><div id="sample" class="form-horizontal">
     <fieldset>
-        <legend>List Details</legend>
-        <div data-bind="validationCss: listName" class="control-group">
-            <label for="listName" class="control-label">Name</label>
-
-            <div class="controls">
-                <input id="listName" type="text" data-bind="value: listName"/>
-
-                <div data-bind="validationMessageText: listName" class="help-block"></div>
-            </div>
-        </div>
+        <legend>Order Details</legend>
+        <fieldset>
+            <label class="checkbox">
+                <input name="shipToBillingAddress" type="checkbox" data-bind="checked: shipToBillingAddress"/>
+                Ship to Billing Address
+            </label>
+        </fieldset>
+        <fieldset>
+            <legend>Billing Address</legend>
+            <!-- ko template: { name: 'address-template', data: billingAddress } --><!-- /ko -->
+            <!-- ko template: { name: 'summary-template', data: billingAddress } --><!-- /ko -->
+        </fieldset>
+        <fieldset data-bind="visibleWhenApplicable: shippingAddress">
+            <legend>Shipping Address</legend>
+            <!-- ko template: { name: 'address-template', data: shippingAddress } --><!-- /ko -->
+            <!-- ko template: { name: 'summary-template', data: shippingAddress } --><!-- /ko -->
+        </fieldset>
     </fieldset>
 
-    <fieldset>
-        <legend>Contacts</legend>
-        <table width="100%">
-            <thead>
-            <tr>
-                <th width="30%">First Name</th>
-                <th width="30%">Surname</th>
-                <th width="30%">Number</th>
-                <th width="10%"></th>
-            </tr>
-            </thead>
-            <tbody data-bind="foreach: contacts">
-            <tr>
-                <td data-bind="validationCss: firstName" class="control-group">
-                    <input type="text" data-bind="value: firstName" class="input-medium"/>
-                </td>
-                <td data-bind="validationCss: surname" class="control-group">
-                    <input type="text" data-bind="value: surname" class="input-medium"/>
-                </td>
-                <td data-bind="validationCss: number" class="control-group">
-                    <input type="text" data-bind="value: number" class="input-medium"/>
-                </td>
-                <td>
-                    <button data-bind="click: $root.removeContact" class="btn btn-danger">Delete</button>
-                </td>
-            </tr>
-            <tr data-bind="visibleWhenSummaryNotEmpty: true">
-                <td colspan="4">
-                    <ul data-bind="foreach: validation().summary()" class="alert alert-error">
-                        <li><span data-bind="text: name"></span>: <span data-bind="text: message"></span></li>
-                    </ul>
-                </td>
-            </tr>
-            </tbody>
-        </table>
+    <div class="form-actions">
+        <button data-bind="click: submit" class="btn btn-primary">
+            <span data-bind="validationCss: true"></span>
+            Submit
+        </button>
+    </div>
+</div>
 
-        <div class="clearfix">
-            <button data-bind="click: addContact" class="btn btn-success btn-block">Add Contact</button>
+<script type="text/html" id="address-template">
+    <div data-bind="validationCss: street" class="control-group">
+        <label for="street" class="control-label">Street</label>
+
+        <div class="controls">
+            <input id="street" type="text" data-bind="value: street"/>
+
+            <div data-bind="validationMessageText: street" class="help-block"></div>
         </div>
-    </fieldset>
+    </div>
+    <div data-bind="validationCss: town" class="control-group">
+        <label for="town" class="control-label">Town</label>
 
+        <div class="controls">
+            <input id="town" type="text" data-bind="value: town"/>
+
+            <div data-bind="validationMessageText: town" class="help-block"></div>
+        </div>
+    </div>
+    <div data-bind="validationCss: postcode" class="control-group">
+        <label for="postcode" class="control-label">Postcode</label>
+
+        <div class="controls">
+            <input id="postcode" type="text" data-bind="value: postcode"/>
+
+            <div data-bind="validationMessageText: postcode" class="help-block"></div>
+        </div>
+    </div>
+</script>
+
+<script type="text/html" id="summary-template">
     <ul data-bind="foreach: validation().summary(), visibleWhenSummaryNotEmpty: true" class="alert alert-error">
         <li><span data-bind="text: name"></span>: <span data-bind="text: message"></span></li>
     </ul>
-
-    <div class="form-actions">
-        <button data-bind="click: submit" class="btn btn-primary">Submit</button>
-    </div>
-</div>
+</script>
               </div>
               <div id="sample-live-model" class="tab-pane">
                 <pre data-bind="text: JSON.stringify(ko.toJS($data), null, 2)"></pre>
@@ -116,67 +117,68 @@
               <div id="sample-html" class="tab-pane">
                 <pre class=".brush: xml"></pre><script type="text/html"><div id="sample" class="form-horizontal">
     <fieldset>
-        <legend>List Details</legend>
-        <div data-bind="validationCss: listName" class="control-group">
-            <label for="listName" class="control-label">Name</label>
-
-            <div class="controls">
-                <input id="listName" type="text" data-bind="value: listName"/>
-
-                <div data-bind="validationMessageText: listName" class="help-block"></div>
-            </div>
-        </div>
+        <legend>Order Details</legend>
+        <fieldset>
+            <label class="checkbox">
+                <input name="shipToBillingAddress" type="checkbox" data-bind="checked: shipToBillingAddress"/>
+                Ship to Billing Address
+            </label>
+        </fieldset>
+        <fieldset>
+            <legend>Billing Address</legend>
+            <!-- ko template: { name: 'address-template', data: billingAddress } --><!-- /ko -->
+            <!-- ko template: { name: 'summary-template', data: billingAddress } --><!-- /ko -->
+        </fieldset>
+        <fieldset data-bind="visibleWhenApplicable: shippingAddress">
+            <legend>Shipping Address</legend>
+            <!-- ko template: { name: 'address-template', data: shippingAddress } --><!-- /ko -->
+            <!-- ko template: { name: 'summary-template', data: shippingAddress } --><!-- /ko -->
+        </fieldset>
     </fieldset>
 
-    <fieldset>
-        <legend>Contacts</legend>
-        <table width="100%">
-            <thead>
-            <tr>
-                <th width="30%">First Name</th>
-                <th width="30%">Surname</th>
-                <th width="30%">Number</th>
-                <th width="10%"></th>
-            </tr>
-            </thead>
-            <tbody data-bind="foreach: contacts">
-            <tr>
-                <td data-bind="validationCss: firstName" class="control-group">
-                    <input type="text" data-bind="value: firstName" class="input-medium"/>
-                </td>
-                <td data-bind="validationCss: surname" class="control-group">
-                    <input type="text" data-bind="value: surname" class="input-medium"/>
-                </td>
-                <td data-bind="validationCss: number" class="control-group">
-                    <input type="text" data-bind="value: number" class="input-medium"/>
-                </td>
-                <td>
-                    <button data-bind="click: $root.removeContact" class="btn btn-danger">Delete</button>
-                </td>
-            </tr>
-            <tr data-bind="visibleWhenSummaryNotEmpty: true">
-                <td colspan="4">
-                    <ul data-bind="foreach: validation().summary()" class="alert alert-error">
-                        <li><span data-bind="text: name"></span>: <span data-bind="text: message"></span></li>
-                    </ul>
-                </td>
-            </tr>
-            </tbody>
-        </table>
+    <div class="form-actions">
+        <button data-bind="click: submit" class="btn btn-primary">
+            <span data-bind="validationCss: true"></span>
+            Submit
+        </button>
+    </div>
+</div>
 
-        <div class="clearfix">
-            <button data-bind="click: addContact" class="btn btn-success btn-block">Add Contact</button>
+<script type="text/html" id="address-template">
+    <div data-bind="validationCss: street" class="control-group">
+        <label for="street" class="control-label">Street</label>
+
+        <div class="controls">
+            <input id="street" type="text" data-bind="value: street"/>
+
+            <div data-bind="validationMessageText: street" class="help-block"></div>
         </div>
-    </fieldset>
+    </div>
+    <div data-bind="validationCss: town" class="control-group">
+        <label for="town" class="control-label">Town</label>
 
+        <div class="controls">
+            <input id="town" type="text" data-bind="value: town"/>
+
+            <div data-bind="validationMessageText: town" class="help-block"></div>
+        </div>
+    </div>
+    <div data-bind="validationCss: postcode" class="control-group">
+        <label for="postcode" class="control-label">Postcode</label>
+
+        <div class="controls">
+            <input id="postcode" type="text" data-bind="value: postcode"/>
+
+            <div data-bind="validationMessageText: postcode" class="help-block"></div>
+        </div>
+    </div>
+</script>
+
+<script type="text/html" id="summary-template">
     <ul data-bind="foreach: validation().summary(), visibleWhenSummaryNotEmpty: true" class="alert alert-error">
         <li><span data-bind="text: name"></span>: <span data-bind="text: message"></span></li>
     </ul>
-
-    <div class="form-actions">
-        <button data-bind="click: submit" class="btn btn-primary">Submit</button>
-    </div>
-</div></script>
+</script></script>
               </div>
               <div id="sample-script-pane" class="tab-pane">
                 <pre class=".brush: js"></pre>
@@ -228,25 +230,27 @@
     <!-- sample script-->
     <div id="sample-script"><script type="text/javascript">
 function RunSample() {
-    function Contact() {
+    function Address() {
         var self = valerie.validatableModel({
-            "firstName": ko.observable()
+            "street": ko.observable()
                 .validate()
                 .string()
-                .name("First Name")
+                .name("Street")
                 .required()
+                .minimumLength(5)
                 .end(),
-            "surname": ko.observable()
+            "town": ko.observable()
                 .validate()
                 .string()
-                .name("Surname")
-                .end(),
-            "number": ko.observable()
-                .validate()
-                .name("Number")
+                .name("Town")
                 .required()
-                .expression(/^\d{11}$/)
-                .ruleMessage("11 digits required.")
+                .minimumLength(2)
+                .end(),
+            "postcode": ko.observable()
+                .validate()
+                .name("Postcode")
+                .required()
+                .postcode()
                 .end()
         })
             .name("Contact")
@@ -257,43 +261,23 @@ function RunSample() {
     }
 
     function ViewModel() {
-        var contacts = ko.observableArray()
-                .validateAsModel()
-                .name("Contacts")
+        var shipToBillingAddress = ko.observable(false)
+                .validate()
+                .name("Ship to Billing Address")
                 .end(),
-            contactsPropertyValidationState = contacts.propertyValidationState()
-                .name("Contacts")
-                .numberOfItems(2, 5)
-                .ruleMessage("At least two contacts are required. Up to 5 can be added."),
             self = valerie.validatableModel({
-                "listName": ko.observable()
-                    .validate()
-                    .string()
-                    .name("List Name")
-                    .required()
-                    .minimumLength(5)
+                "shipToBillingAddress": shipToBillingAddress,
+                "billingAddress": new Address(),
+                "shippingAddress": new Address()
+                    .validation()
+                    .applicable(ko.computed(function () { return !shipToBillingAddress(); }))
                     .end(),
-                "contacts": contacts,
-                "addContact": function () {
-                    var contact = new Contact();
-                    contacts.validation().startValidatingSubModel(contact);
-                    contacts.push(contact);
-                },
-                "removeContact": function (contact) {
-                    contacts.validation().stopValidatingSubModel(contact);
-                    contacts.remove(contact);
-                },
                 "submit": function () {
                     self.validation().touched(true);
                     self.validation().updateSummary(true);
-                },
-                "reset": function () {
-                    self.validation().touched(false);
-                    self.validation().clearSummary(true);
                 }
             })
                 .validateChildPropertiesAndSubModels()
-                .addValidationStates(contactsPropertyValidationState)
                 .end();
 
         return self;

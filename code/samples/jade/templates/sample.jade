@@ -44,6 +44,11 @@ block scripts
     script(type='text/javascript',src='../valerie/localisation/en/core-en.js')
     script(type='text/javascript',src='../valerie/localisation/en/full-en.js')
 
+    // valerie - en-gb
+    script(type='text/javascript',src='../valerie/localisation/en-gb/full-en-gb.js')
+    script(type='text/javascript',src='../valerie/localisation/en-gb/valerie.converters-en-gb.js')
+    script(type='text/javascript',src='../valerie/localisation/en-gb/valerie.propertyValidationState-fluentConverters-en-gb.js')
+
     // syntax highlighter
     script(type='text/javascript',src='../thirdParty/syntaxHighlighter/scripts/shCore.js')
     script(type='text/javascript',src='../thirdParty/syntaxHighlighter/scripts/shBrushJScript.js')
@@ -57,7 +62,8 @@ block scripts
         block sample-script
 
 block content
-    block sample-introduction
+    div.introduction
+        block sample-introduction
 
     div.tabbable
         ul.nav.nav-tabs

@@ -1,0 +1,64 @@
+<div id="sample" class="form-horizontal">
+    <fieldset>
+        <legend>Order Details</legend>
+        <fieldset>
+            <label class="checkbox">
+                <input name="shipToBillingAddress" type="checkbox" data-bind="checked: shipToBillingAddress"/>
+                Ship to Billing Address
+            </label>
+        </fieldset>
+        <fieldset>
+            <legend>Billing Address</legend>
+            <!-- ko template: { name: 'address-template', data: billingAddress } --><!-- /ko -->
+            <!-- ko template: { name: 'summary-template', data: billingAddress } --><!-- /ko -->
+        </fieldset>
+        <fieldset data-bind="visibleWhenApplicable: shippingAddress">
+            <legend>Shipping Address</legend>
+            <!-- ko template: { name: 'address-template', data: shippingAddress } --><!-- /ko -->
+            <!-- ko template: { name: 'summary-template', data: shippingAddress } --><!-- /ko -->
+        </fieldset>
+    </fieldset>
+
+    <div class="form-actions">
+        <button data-bind="click: submit" class="btn btn-primary">
+            <span data-bind="validationCss: true"></span>
+            Submit
+        </button>
+    </div>
+</div>
+
+<script type="text/html" id="address-template">
+    <div data-bind="validationCss: street" class="control-group">
+        <label for="street" class="control-label">Street</label>
+
+        <div class="controls">
+            <input id="street" type="text" data-bind="value: street"/>
+
+            <div data-bind="validationMessageText: street" class="help-block"></div>
+        </div>
+    </div>
+    <div data-bind="validationCss: town" class="control-group">
+        <label for="town" class="control-label">Town</label>
+
+        <div class="controls">
+            <input id="town" type="text" data-bind="value: town"/>
+
+            <div data-bind="validationMessageText: town" class="help-block"></div>
+        </div>
+    </div>
+    <div data-bind="validationCss: postcode" class="control-group">
+        <label for="postcode" class="control-label">Postcode</label>
+
+        <div class="controls">
+            <input id="postcode" type="text" data-bind="value: postcode"/>
+
+            <div data-bind="validationMessageText: postcode" class="help-block"></div>
+        </div>
+    </div>
+</script>
+
+<script type="text/html" id="summary-template">
+    <ul data-bind="foreach: validation().summary(), visibleWhenSummaryNotEmpty: true" class="alert alert-error">
+        <li><span data-bind="text: name"></span>: <span data-bind="text: message"></span></li>
+    </ul>
+</script>
