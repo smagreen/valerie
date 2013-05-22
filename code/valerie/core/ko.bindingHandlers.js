@@ -269,9 +269,9 @@
 
         /**
          * Sets the text of the element to be a formatted representation of the specified property.
-         * @name ko.bindingHandlers.formattedValue
+         * @name ko.bindingHandlers.formattedText
          */
-        koBindingHandlers.formattedValue = isolatedBindingHandler(
+        koBindingHandlers.formattedText = isolatedBindingHandler(
             function (element, valueAccessor, allBindingsAccessor) {
                 var bindings = allBindingsAccessor(),
                     observableOrComputedOrValue = valueAccessor(),
