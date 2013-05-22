@@ -14,8 +14,8 @@
      * Adds thousands separators to the given number string.
      * @memberof valerie.formatting
      * @param {string} numberString a string representation of a number
-     * @param {char|string} thousandsSeparator the character to use to separate the thousands
-     * @param {char|string} decimalSeparator the character used to separate the whole part of the number from its
+     * @param {string} thousandsSeparator the character to use to separate the thousands
+     * @param {string} decimalSeparator the character used to separate the whole part of the number from its
      * fractional part
      * @return {string} the number string with separators added if required
      */
@@ -33,7 +33,7 @@
      * Pads the front of the given string to the given width using the given character.
      * @memberof valerie.formatting
      * @param {string} stringToPad the string to pad
-     * @param {char|string} paddingCharacter the character to use to pad the string
+     * @param {string} paddingCharacter the character to use to pad the string
      * @param {number} width the width to pad the string to
      * @return {string} the string padded, if required, to the given width
      */

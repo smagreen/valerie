@@ -39,9 +39,9 @@
         /**
          * Initialises the helper.<br/>
          * <i>[fluent]</i>
-         * @param {char|string} decimalSeparator the character or string to use as the decimal separator
-         * @param {char|string} thousandsSeparator the character or string to use as the thousands separator
-         * @param {char|string} currencySign the character or string to use as the currency sign
+         * @param {string} decimalSeparator the character or string to use as the decimal separator
+         * @param {string} thousandsSeparator the character or string to use as the thousands separator
+         * @param {string} currencySign the character or string to use as the currency sign
          * @param {number} currencyMinorUnitPlaces the number of decimal places to use when parsing and formatting the
          * currency's minor units
          * @returns {valerie.NumericHelper}
