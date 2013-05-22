@@ -83,10 +83,14 @@
         },
         touchedWriteFunction = function (value) {
             var index,
-                validationStates = this.validationStates();
+                validationStates = this.validationStates(),
+                validationState;
 
             for (index = 0; index < validationStates.length; index++) {
-                validationStates[index].touched(value);
+                validationState = validationStates[index];
+                if (validationState.isApplicable()) {
+                    validationState.touched(value);
+                }
             }
         };
 
@@ -214,8 +218,8 @@
          * @method
          * @return {boolean} <code>true</code> if the model is applicable, <code>false</code> otherwise
          */
-        this.isApplicable = function() {
-            return this.settings.applicable;
+        this.isApplicable = function () {
+            return this.settings.applicable();
         };
 
         //noinspection JSValidateJSDoc
@@ -408,7 +412,7 @@
                 for (index = 0; index < states.length; index++) {
                     state = states[index];
 
-                    if (state.updateSummary) {
+                    if (state.isApplicable() && state.updateSummary) {
                         state.updateSummary(true);
                     }
                 }
