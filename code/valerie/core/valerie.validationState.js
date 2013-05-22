@@ -62,22 +62,18 @@
                     continue;
                 }
 
-                if (validationState) {
-                    if (utils.isObject(value)) {
-                        if (includeSubModels) {
-                            validationStates.push(validationState);
-                        }
-                    }
-                    else {
+                if (validationState instanceof valerie.PropertyValidationState) {
+                    validationStates.push(validationState);
+                }
+                else {
+                    if (includeSubModels) {
                         validationStates.push(validationState);
                     }
                 }
 
-                if (utils.isArrayOrObject(value)) {
-                    if (recurse) {
-                        //noinspection JSValidateTypes
-                        valerie.validationState.findIn(value, includeSubModels, true, validationStates);
-                    }
+                if (recurse && utils.isArrayOrObject(value)) {
+                    //noinspection JSValidateTypes
+                    valerie.validationState.findIn(value, includeSubModels, true, validationStates);
                 }
             }
         }
