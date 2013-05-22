@@ -614,21 +614,18 @@ var valerie = {};
                     continue;
                 }
 
-                if (utils.isArrayOrObject(value)) {
-                    if (includeSubModels && validationState) {
-                        //noinspection JSUnresolvedFunction
+                if (validationState instanceof valerie.PropertyValidationState) {
+                    validationStates.push(validationState);
+                }
+                else {
+                    if (includeSubModels) {
                         validationStates.push(validationState);
                     }
+                }
 
-                    if (recurse) {
-                        //noinspection JSValidateTypes
-                        valerie.validationState.findIn(value, includeSubModels, true, validationStates);
-                    }
-                } else {
-                    if (validationState) {
-                        //noinspection JSUnresolvedFunction
-                        validationStates.push(validationState);
-                    }
+                if (recurse && utils.isArrayOrObject(value)) {
+                    //noinspection JSValidateTypes
+                    valerie.validationState.findIn(value, includeSubModels, true, validationStates);
                 }
             }
         }
@@ -1577,7 +1574,7 @@ var valerie = {};
     "use strict";
 
     /**
-     * Creates and sets a validation state on a Knockout observable.<br/>
+     * Creates and sets a property validation state on a Knockout observable.<br/>
      * <i>[fluent]</i>
      * @name ko.observable#validate
      * @method
@@ -1588,6 +1585,34 @@ var valerie = {};
      */
     ko.observable.fn.validate = function(validationOptions) {
         return valerie.validatableProperty(this, validationOptions);
+    };
+
+    /**
+     * Creates and sets a model validation state on a Knockout observable array.<br/>
+     * <i>[fluent]</i>
+     * @name ko.observableArray#validateAsModel
+     * @method
+     * @fluent
+     * @param {valerie.ModelValidationState.options} [validationOptions] the options to use when creating the
+     * validation state
+     * @return {valerie.ModelValidationState} the validation state belonging to the observable array
+     */
+    ko.observableArray.fn.validateAsModel = function(validationOptions) {
+        return valerie.validatableModel(this, validationOptions);
+    };
+
+    /**
+     * Creates and returns a property validation state on a Knockout observable array.<br/>
+     * <i>[fluent]</i>
+     * @name ko.observableArray#propertyValidationState
+     * @method
+     * @fluent
+     * @param {valerie.PropertyValidationState.options} [validationOptions] the options to use when creating the
+     * validation state
+     * @return {valerie.PropertyValidationState} the validation state created for the observable array
+     */
+    ko.observableArray.fn.propertyValidationState = function(validationOptions) {
+        return new valerie.PropertyValidationState(this, validationOptions);
     };
 })();
 
@@ -1862,9 +1887,9 @@ var valerie = {};
 
         /**
          * Sets the text of the element to be a formatted representation of the specified property.
-         * @name ko.bindingHandlers.formattedValue
+         * @name ko.bindingHandlers.formattedText
          */
-        koBindingHandlers.formattedValue = isolatedBindingHandler(
+        koBindingHandlers.formattedText = isolatedBindingHandler(
             function (element, valueAccessor, allBindingsAccessor) {
                 var bindings = allBindingsAccessor(),
                     observableOrComputedOrValue = valueAccessor(),
