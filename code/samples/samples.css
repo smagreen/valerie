@@ -43,6 +43,11 @@ header h1 {
     opacity: 0.4;
 }
 
+/* Bootstrap - Tab Pane */
+.tab-pane {
+    overflow: hidden;
+}
+
 /* Bootstrap - Forms */
 .success .help-block {
     display: none;
