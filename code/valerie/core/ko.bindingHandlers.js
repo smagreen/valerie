@@ -382,6 +382,19 @@
             });
 
         /**
+         * Makes the element visible if the chosen property or model is applicable, invisible otherwise.
+         * @name ko.bindingHandlers.visibleWhenApplicable
+         */
+        koBindingHandlers.visibleWhenApplicable = isolatedBindingHandler(
+            function (element, valueAccessor, allBindingsAccessor, viewModel) {
+                var functionToApply = function (validationState) {
+                    setElementVisibility(element, validationState.isApplicable());
+                };
+
+                applyForValidationState(functionToApply, element, valueAccessor, allBindingsAccessor, viewModel);
+            });
+
+        /**
          * Makes the element visible when the entry bound to the chosen property is in focus, invisible otherwise.
          * @name ko.bindingHandlers.visibleWhenFocused
          */
