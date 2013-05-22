@@ -256,8 +256,8 @@ function RunSample() {
                 .end(),
             contactsPropertyValidationState = contacts.propertyValidationState()
                 .name("Contacts")
-                .minimumNumberOfItems(2)
-                .ruleMessage("At least two contacts are required."),
+                .numberOfItems(2, 5)
+                .ruleMessage("At least two contacts are required. Up to 5 can be added."),
             self = valerie.validatableModel({
                 "listName": ko.observable()
                     .validate()
