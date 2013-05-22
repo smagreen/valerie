@@ -62,14 +62,16 @@
                     continue;
                 }
 
-                if (validationState instanceof valerie.PropertyValidationState) {
-                    //noinspection JSUnresolvedFunction
-                    validationStates.push(validationState);
-                }
-                else {
-                    if (includeSubModels) {
+                if (validationState) {
+                    if (validationState instanceof valerie.PropertyValidationState) {
                         //noinspection JSUnresolvedFunction
                         validationStates.push(validationState);
+                    }
+
+                    else if (includeSubModels) {
+                        //noinspection JSUnresolvedFunction
+                        validationStates.push(validationState);
+
                     }
                 }
 
