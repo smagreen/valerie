@@ -614,14 +614,16 @@ var valerie = {};
                     continue;
                 }
 
-                if (validationState instanceof valerie.PropertyValidationState) {
-                    //noinspection JSUnresolvedFunction
-                    validationStates.push(validationState);
-                }
-                else {
-                    if (includeSubModels) {
+                if (validationState) {
+                    if (validationState instanceof valerie.PropertyValidationState) {
                         //noinspection JSUnresolvedFunction
                         validationStates.push(validationState);
+                    }
+
+                    else if (includeSubModels) {
+                        //noinspection JSUnresolvedFunction
+                        validationStates.push(validationState);
+
                     }
                 }
 
@@ -2737,7 +2739,7 @@ var valerie = {};
             return rangeRule.test(length);
         };
 
-        this.settings = options;
+        this.settings = rangeRule.settings;
     };
 
     /**
@@ -3426,17 +3428,17 @@ var valerie = {};
      * <i>[fluent, full]</i>
      * @name valerie.PropertyValidationState#ruleMessage
      * @method
-     * @param {string} message the validation message
+     * @param {string} failureMessageFormat the format for the validation message
      * @return {valerie.PropertyValidationState} the validation state
      */
-    prototype.ruleMessage = function (message) {
+    prototype.ruleMessage = function (failureMessageFormat) {
         var stateRules = this.settings.rules,
             index = stateRules.length - 1,
             rule;
 
         if (index >= 0) {
             rule = stateRules[index];
-            rule.settings.failureMessageFormat = message;
+            rule.settings.failureMessageFormat = failureMessageFormat;
         }
 
         return this;
