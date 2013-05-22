@@ -158,7 +158,7 @@
             return rangeRule.test(length);
         };
 
-        this.settings = options;
+        this.settings = rangeRule.settings;
     };
 
     /**

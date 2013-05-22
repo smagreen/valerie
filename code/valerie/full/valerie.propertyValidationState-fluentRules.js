@@ -255,17 +255,17 @@
      * <i>[fluent, full]</i>
      * @name valerie.PropertyValidationState#ruleMessage
      * @method
-     * @param {string} message the validation message
+     * @param {string} failureMessageFormat the format for the validation message
      * @return {valerie.PropertyValidationState} the validation state
      */
-    prototype.ruleMessage = function (message) {
+    prototype.ruleMessage = function (failureMessageFormat) {
         var stateRules = this.settings.rules,
             index = stateRules.length - 1,
             rule;
 
         if (index >= 0) {
             rule = stateRules[index];
-            rule.settings.failureMessageFormat = message;
+            rule.settings.failureMessageFormat = failureMessageFormat;
         }
 
         return this;
